@@ -1,11 +1,14 @@
-server.port: 5000
-
+server:
+  port: 5000
+  error:
+    include-message: always
+    include-binding-errors: always
 spring.jpa.database: POSTGRESQL
 spring.datasource.platform: postgres
-spring.datasource.url: jdbc:postgresql://go-gas-ds.ctvlu6yusdgv.ap-south-1.rds.amazonaws.com/go_gas_db
-spring.datasource.username: gogas
-spring.datasource.password: gogas123
+spring.datasource.url: 
+spring.datasource.username: 
+spring.datasource.password: 
 spring.jpa.show-sql: true
 spring.jpa.generate-ddl: true
-spring.jpa.hibernate.ddl-auto: create-drop
+spring.jpa.hibernate.ddl-auto: update
 spring.jpa.properties.hibernate.jdbc.lob.non_contextual_creation: true
