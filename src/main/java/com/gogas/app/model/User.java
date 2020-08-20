@@ -14,6 +14,8 @@ import javax.persistence.Table;
 
 import org.hibernate.annotations.GenericGenerator;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 @Entity
 @Table(name = "gogasuser")
 public class User extends GoGasEntity implements Serializable {
@@ -31,6 +33,7 @@ public class User extends GoGasEntity implements Serializable {
 	private String firstName;
 	@Column(name = "lastname")
 	private String lastName;
+	
 	@Column(name = "phone", unique = true)
 	private Long phone;
 
@@ -40,14 +43,15 @@ public class User extends GoGasEntity implements Serializable {
 	@Column(name = "profileImage")
 	private String profileImage;
 
-	@OneToOne(cascade = CascadeType.ALL)
+	@OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
 	@JoinColumn(name = "address_id", referencedColumnName = "id")
 	private Address address;
 
-	@OneToOne(cascade = CascadeType.ALL)
+	@OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
 	@JoinColumn(name = "identityProof_id", referencedColumnName = "id")
 	private IdentityProof identityProof;
 
+	@JsonIgnore
 	@Column(name = "password")
 	private String password;
 

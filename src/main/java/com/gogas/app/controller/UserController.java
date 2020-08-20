@@ -4,6 +4,8 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
+import javax.validation.Valid;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -18,6 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.gogas.app.model.Address;
 import com.gogas.app.model.User;
 import com.gogas.app.model.UserRole;
+import com.gogas.app.model.dto.CredentialsDTO;
 import com.gogas.app.repository.UserRepository;
 import com.gogas.app.service.UserService;
 
@@ -77,5 +80,10 @@ public class UserController {
 	@GetMapping("/findall")
 	public List<User> findAll() {
 		return userRepository.findAll();
+	}
+	
+	@PostMapping("/change-password")
+	public ResponseEntity<String> changePassword(@RequestBody @Valid CredentialsDTO credentialsDTO){
+		return ResponseEntity.ok(userService.changePassword(credentialsDTO));
 	}
 }
