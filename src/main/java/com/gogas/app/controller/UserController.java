@@ -61,12 +61,9 @@ public class UserController {
 		address.setState("Karnataka");
 		address.setStreetname("MG Street");
 		user.setAddress(address);
-		user.setContact(9886333900L);
 		user.setCreateat(LocalDateTime.now());
 		user.setCreatedby("ADMIN01");
-		user.setEmergencycontact("Father - 999999999");
 		user.setFirstName("Naseer");
-		user.setGovtidproof("Aadhaar - 909234223424");
 		user.setLastmodifiedat(LocalDateTime.now());
 		user.setLastmodifiedby("ADMIN01");
 		user.setLastName("PA");

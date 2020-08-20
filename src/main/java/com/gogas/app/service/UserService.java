@@ -35,7 +35,7 @@ public class UserService {
 		} catch (Exception pe) {
 			if (pe.getLocalizedMessage().contains("constraint"))
 				throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
-						"Contact number " + user.getContact() + " already exists in the system");
+						"Contact number " + user.getPhone() + " already exists in the system");
 		}
 
 		return savedUser;
@@ -54,7 +54,7 @@ public class UserService {
 		} catch (Exception pe) {
 			if (pe.getLocalizedMessage().contains("Key (contact)"))
 				throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
-						"Contact number " + user.getContact() + " already exists in the system");
+						"Contact number " + user.getPhone() + " already exists in the system");
 		}
 
 		return savedUser;
