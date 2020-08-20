@@ -62,11 +62,11 @@ public class CAndFController {
 		address.setCity("Bengaluru");
 		address.setGeolat("12.3344");
 		address.setGeolong("23.5555");
-		address.setHouseno("No 7");
+		address.setDoorNo("No 7");
 		address.setLocality("RT Nagar");
 		address.setPincode("560069");
 		address.setState("Karnataka");
-		address.setStreetname("MG Street");
+		address.setStreetName("MG Street");
 		candF.setAddress(address);
 		candF.setCreateat(LocalDateTime.now());
 		candF.setCreatedby("ADMIN01");

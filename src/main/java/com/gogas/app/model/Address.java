@@ -20,10 +20,10 @@ public class Address {
 	@GenericGenerator(name="system-uuid", strategy = "uuid")
 	@Column(name = "id", unique = true)
 	private String id;
-	@Column(name = "houseno")
-	private String houseno;
-	@Column(name = "streetname")
-	private String streetname;
+	@Column(name = "doorNo")
+	private String doorNo;
+	@Column(name = "streetName")
+	private String streetName;
 	@Column(name = "locality")
 	private String locality;
 	@Column(name = "city")
@@ -51,20 +51,20 @@ public class Address {
 		this.id = id;
 	}
 
-	public String getHouseno() {
-		return houseno;
+	public String getDoorNo() {
+		return doorNo;
 	}
 
-	public void setHouseno(String houseno) {
-		this.houseno = houseno;
+	public void setDoorNo(String doorNo) {
+		this.doorNo = doorNo;
 	}
 
-	public String getStreetname() {
-		return streetname;
+	public String getStreetName() {
+		return streetName;
 	}
 
-	public void setStreetname(String streetname) {
-		this.streetname = streetname;
+	public void setStreetName(String streetName) {
+		this.streetName = streetName;
 	}
 
 	public String getLocality() {
