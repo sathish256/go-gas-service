@@ -17,6 +17,17 @@ public class GoGasEntity {
 	@Column(name = "lastmodifiedby")
 	private String lastmodifiedby;
 
+	@Column(name = "active")
+	private boolean active;
+
+	public boolean isActive() {
+		return active;
+	}
+
+	public void setActive(boolean active) {
+		this.active = active;
+	}
+
 	public LocalDateTime getCreateat() {
 		return createat;
 	}
