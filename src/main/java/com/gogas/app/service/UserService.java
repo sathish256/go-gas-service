@@ -103,4 +103,10 @@ public class UserService {
 		return response;
 	}
 
+	public User findUserByPhone(String name) {
+		return Optional.ofNullable(userRepository.findByPhone(Long.parseLong(name)))
+				.orElseThrow(() -> new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,
+						"Could not retrive Logged in User Infomation"));
+	}
+
 }
