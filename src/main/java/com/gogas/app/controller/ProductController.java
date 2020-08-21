@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.gogas.app.model.CAndFPrice;
 import com.gogas.app.model.DealerPrice;
 import com.gogas.app.model.Product;
 import com.gogas.app.repository.ProductRepository;
@@ -51,18 +52,23 @@ public class ProductController {
 	public Product bulkcreate() {
 
 		Product product = new Product();
-		product.setCandfprice(new BigDecimal(1250.00));
+		List<CAndFPrice> candFPrice = new ArrayList<>();
+		CAndFPrice fPrice = new CAndFPrice();
+		fPrice.setCandfId("D001");
+		fPrice.setPrice(new BigDecimal(1300.00));
+		candFPrice.add(fPrice);
+		product.setCandfPrice(candFPrice);
 		product.setId(UUID.randomUUID().toString());
 		product.setName("Cylinder");
 		product.setType("Fiber");
 		product.setSpecification("15KG");
 		List<DealerPrice> dealerprice = new ArrayList<>();
 		DealerPrice dp = new DealerPrice();
-		dp.setDealerid("D001");
+		dp.setDealerId("D001");
 		dp.setPrice(new BigDecimal(1300.00));
 		dealerprice.add(dp);
 
-		product.setDealerprice(dealerprice);
+		product.setDealerPrice(dealerprice);
 		return productRepository.save(product);
 	}
 

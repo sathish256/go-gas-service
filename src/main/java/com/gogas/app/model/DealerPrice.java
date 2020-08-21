@@ -4,40 +4,26 @@ import java.math.BigDecimal;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
-import org.hibernate.annotations.GenericGenerator;
-
 @Entity
 @Table(name = "dealerprice")
-public class DealerPrice extends GoGasEntity {
+public class DealerPrice {
 
 	@Id
-	@GeneratedValue(generator = "system-uuid")
-	@GenericGenerator(name = "system-uuid", strategy = "uuid")
-	@Column(name = "id", unique = true)
-	private String id;
-	@Column(name = "dealerid")
-	private String dealerid;
+	@Column(name = "dealerId", nullable = false)
+	private String dealerId;
+
 	@Column(name = "price")
 	private BigDecimal price;
 
-	public String getId() {
-		return id;
+	public String getDealerId() {
+		return dealerId;
 	}
 
-	public void setId(String id) {
-		this.id = id;
-	}
-
-	public String getDealerid() {
-		return dealerid;
-	}
-
-	public void setDealerid(String dealerid) {
-		this.dealerid = dealerid;
+	public void setDealerId(String dealerId) {
+		this.dealerId = dealerId;
 	}
 
 	public BigDecimal getPrice() {

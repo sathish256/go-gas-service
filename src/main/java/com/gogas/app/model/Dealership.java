@@ -40,7 +40,7 @@ public class Dealership extends GoGasEntity {
 	@Column(name = "ownerPhone")
 	private String ownerPhone;
 
-	@OneToMany(cascade = CascadeType.ALL)
+	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<DealerAllocation> dealerAllocation;
 
 	public String getId() {
