@@ -5,9 +5,9 @@ server:
     include-binding-errors: always
 spring.jpa.database: POSTGRESQL
 spring.datasource.platform: postgres
-spring.datasource.url: jdbc:postgresql://ec2-54-247-103-43.eu-west-1.compute.amazonaws.com:5432/de2d6b7k8534rs
-spring.datasource.username: jkoakcyryfueqv
-spring.datasource.password: cad6d7b2f69b5b785b59c685b6fe068d05960bfb68d35d2cf9a6fa7efe0bb97b
+spring.datasource.url: 
+spring.datasource.username: 
+spring.datasource.password: 
 #spring.jpa.show-sql: true
 spring.jpa.generate-ddl: true
 spring.jpa.hibernate.ddl-auto: update
