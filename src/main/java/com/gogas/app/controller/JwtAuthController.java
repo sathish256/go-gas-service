@@ -27,7 +27,6 @@ import com.gogas.app.model.dto.AuthRequest;
 import com.gogas.app.model.dto.AuthResponse;
 import com.gogas.app.service.JwtUserDetailsService;
 import com.gogas.app.service.UserService;
-import com.gogas.app.utils.PasswordUtil;
 
 @RestController
 @CrossOrigin
@@ -88,8 +87,6 @@ public class JwtAuthController {
 		user.setLastName("PA");
 		user.setRole(UserRole.ADMIN);
 		user.setPhone(9886333900L);
-		user.setPassword(PasswordUtil.generateRandomPassword());
-		System.out.println(user.getPassword());
 		return ResponseEntity.ok(userService.addUser(user));
 	}
 

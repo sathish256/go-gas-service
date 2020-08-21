@@ -15,7 +15,7 @@ public class SMSUtil {
 	private static final Logger logger = LoggerFactory.getLogger(SMSUtil.class);
 
 	public static String sendSMS(Long contact, String message) {
-		logger.info("SMSUtil::sendSMS::{}", contact);
+		logger.info("SMSUtil::sendSMS::{}::{}", contact,message);
 		try {
 			// Construct data
 			String apiKey = "apikey=" + "GpjNUVXOBwM-P8sxHKLh8ieoFQh4Fmhwaa35A0q2oo";
