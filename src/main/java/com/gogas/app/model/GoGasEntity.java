@@ -3,6 +3,8 @@ package com.gogas.app.model;
 import java.time.LocalDateTime;
 
 import javax.persistence.Column;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.MappedSuperclass;
 
 @MappedSuperclass
@@ -17,15 +19,18 @@ public class GoGasEntity {
 	@Column(name = "lastmodifiedby")
 	private String lastmodifiedby;
 
-	@Column(name = "active")
-	private boolean active;
+	@Column(name = "state")
+	@Enumerated(EnumType.STRING)
+	private State state;
 
-	public boolean isActive() {
-		return active;
+
+
+	public State getState() {
+		return state;
 	}
 
-	public void setActive(boolean active) {
-		this.active = active;
+	public void setState(State state) {
+		this.state = state;
 	}
 
 	public LocalDateTime getCreateat() {
