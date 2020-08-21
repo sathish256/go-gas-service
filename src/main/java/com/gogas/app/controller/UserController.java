@@ -1,8 +1,7 @@
 package com.gogas.app.controller;
 
-import java.time.LocalDateTime;
 import java.util.List;
-import java.util.UUID;
+import java.util.Map;
 
 import javax.validation.Valid;
 
@@ -17,9 +16,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.gogas.app.model.Address;
 import com.gogas.app.model.User;
-import com.gogas.app.model.UserRole;
 import com.gogas.app.model.dto.CredentialsDTO;
 import com.gogas.app.repository.UserRepository;
 import com.gogas.app.service.UserService;
@@ -50,40 +47,18 @@ public class UserController {
 		return ResponseEntity.ok(userService.updateUser(user));
 	}
 
-	@GetMapping("/dummyuser")
-	public User bulkcreate() {
-
-		User user = new User();
-		user.setUid("ADMIN01");
-		Address address = new Address();
-		address.setId(UUID.randomUUID().toString());
-		address.setCity("Bengaluru");
-		address.setGeolat("12.3344");
-		address.setGeolong("23.5555");
-		address.setDoorNo("No 7");
-		address.setLocality("RT Nagar");
-		address.setPincode("560069");
-		address.setState("Karnataka");
-		address.setStreetName("MG Street");
-		user.setAddress(address);
-		user.setCreateat(LocalDateTime.now());
-		user.setCreatedby("ADMIN01");
-		user.setFirstName("Naseer");
-		user.setLastmodifiedat(LocalDateTime.now());
-		user.setLastmodifiedby("ADMIN01");
-		user.setLastName("PA");
-		user.setRole(UserRole.ADMIN);
-
-		return userRepository.save(user);
-	}
-
 	@GetMapping("/findall")
 	public List<User> findAll() {
 		return userRepository.findAll();
 	}
 	
 	@PostMapping("/change-password")
-	public ResponseEntity<String> changePassword(@RequestBody @Valid CredentialsDTO credentialsDTO){
-		return ResponseEntity.ok(userService.changePassword(credentialsDTO));
+	public ResponseEntity<Map<String,String>> changePassword(@RequestBody @Valid CredentialsDTO credentialsDTO){
+		return ResponseEntity.ok(userService.changePassword(credentialsDTO, false));
+	}
+	
+	@PostMapping("/reset-password")
+	public ResponseEntity<Map<String,String>> resetPassword(@RequestBody @Valid CredentialsDTO credentialsDTO){
+		return ResponseEntity.ok(userService.changePassword(credentialsDTO, true));
 	}
 }
