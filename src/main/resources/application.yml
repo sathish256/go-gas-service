@@ -3,6 +3,7 @@ server:
   error:
     include-message: always
     include-binding-errors: always
+    include-exception: true
 spring.jpa.database: POSTGRESQL
 spring.datasource.platform: postgres
 spring.datasource.url: 
@@ -11,7 +12,6 @@ spring.datasource.password:
 #spring.jpa.show-sql: true
 spring.jpa.generate-ddl: true
 spring.jpa.hibernate.ddl-auto: update
-spring.jpa.properties.hibernate.jdbc.lob.non_contextual_creation: true
 spring:
   session:
     jdbc:
