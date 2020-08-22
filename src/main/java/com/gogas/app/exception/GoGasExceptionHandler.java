@@ -14,6 +14,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.http.converter.HttpMessageNotWritableException;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.HttpMediaTypeNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
@@ -231,6 +232,36 @@ public class GoGasExceptionHandler extends ResponseEntityExceptionHandler {
 		apiError.setDebugMessage(ex.getMessage());
 		return buildResponseEntity(apiError);
 	}
+
+	/**
+	 * Handle Exception, handle generic Exception.class
+	 *
+	 * @param ex the Exception
+	 * @return the GoGasResponse object
+	 */
+	@ExceptionHandler(Exception.class)
+	protected ResponseEntity<Object> handleGenericException(Exception ex, WebRequest request) {
+		ex.printStackTrace();
+		GoGasResponse apiError = new GoGasResponse(HttpStatus.INTERNAL_SERVER_ERROR);
+		apiError.setMessage(ex.getMessage());
+		apiError.setDebugMessage(ex.getMessage());
+		return buildResponseEntity(apiError);
+	}
+
+	/**
+	 * Handle Exception, handle generic Exception.class
+	 *
+	 * @param ex the Exception
+	 * @return the GoGasResponse object
+	 */
+	@ExceptionHandler(AccessDeniedException.class)
+	protected ResponseEntity<Object> handleAccessDeniedException(AccessDeniedException ex, WebRequest request) {
+		GoGasResponse apiError = new GoGasResponse(HttpStatus.FORBIDDEN);
+		apiError.setMessage("User role forbidden to access the resources");
+		apiError.setDebugMessage(ex.getMessage());
+		return buildResponseEntity(apiError);
+	}
+
 
 	private ResponseEntity<Object> buildResponseEntity(GoGasResponse apiError) {
 		return new ResponseEntity<>(apiError, apiError.getStatus());
