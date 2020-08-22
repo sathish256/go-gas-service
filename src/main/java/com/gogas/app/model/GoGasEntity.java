@@ -10,59 +10,57 @@ import javax.persistence.MappedSuperclass;
 @MappedSuperclass
 public class GoGasEntity {
 
-	@Column(name = "createdat")
-	private LocalDateTime createat = LocalDateTime.now();
-	@Column(name = "createdby")
-	private String createdby;
-	@Column(name = "lastmodifiedat")
-	private LocalDateTime lastmodifiedat = LocalDateTime.now();
-	@Column(name = "lastmodifiedby")
-	private String lastmodifiedby;
+	@Column(name = "createdAt")
+	private LocalDateTime createdAt = LocalDateTime.now();
+	@Column(name = "createdBy")
+	private String createdBy;
+	@Column(name = "lastmodifiedAt")
+	private LocalDateTime lastmodifiedAt = LocalDateTime.now();
+	@Column(name = "lastmodifiedBy")
+	private String lastmodifiedBy;
 
-	@Column(name = "state")
+	@Column(name = "status")
 	@Enumerated(EnumType.STRING)
-	private State state;
+	private State status;
 
-
-
-	public State getState() {
-		return state;
+	public LocalDateTime getCreatedAt() {
+		return createdAt;
 	}
 
-	public void setState(State state) {
-		this.state = state;
+	public void setCreatedAt(LocalDateTime createdAt) {
+		this.createdAt = createdAt;
 	}
 
-	public LocalDateTime getCreateat() {
-		return createat;
+	public String getCreatedBy() {
+		return createdBy;
 	}
 
-	public void setCreateat(LocalDateTime createat) {
-		this.createat = createat;
+	public void setCreatedBy(String createdBy) {
+		this.createdBy = createdBy;
 	}
 
-	public String getCreatedby() {
-		return createdby;
+	public LocalDateTime getLastmodifiedAt() {
+		return lastmodifiedAt;
 	}
 
-	public void setCreatedby(String createdby) {
-		this.createdby = createdby;
+	public void setLastmodifiedAt(LocalDateTime lastmodifiedAt) {
+		this.lastmodifiedAt = lastmodifiedAt;
 	}
 
-	public LocalDateTime getLastmodifiedat() {
-		return lastmodifiedat;
+	public String getLastmodifiedBy() {
+		return lastmodifiedBy;
 	}
 
-	public void setLastmodifiedat(LocalDateTime lastmodifiedat) {
-		this.lastmodifiedat = lastmodifiedat;
+	public void setLastmodifiedBy(String lastmodifiedBy) {
+		this.lastmodifiedBy = lastmodifiedBy;
 	}
 
-	public String getLastmodifiedby() {
-		return lastmodifiedby;
+	public State getStatus() {
+		return status;
 	}
 
-	public void setLastmodifiedby(String lastmodifiedby) {
-		this.lastmodifiedby = lastmodifiedby;
+	public void setStatus(State status) {
+		this.status = status;
 	}
 
 }

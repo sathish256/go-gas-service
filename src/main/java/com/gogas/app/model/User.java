@@ -3,7 +3,6 @@ package com.gogas.app.model;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -25,15 +24,15 @@ public class User extends GoGasEntity implements Serializable {
 	 */
 	private static final long serialVersionUID = -7178441752343638821L;
 	@Id
-	@GeneratedValue(generator="system-uuid")
-	@GenericGenerator(name="system-uuid", strategy = "uuid")
-	@Column(name = "uid", unique = true)
-	private String uid;
+	@GeneratedValue(generator = "system-uuid")
+	@GenericGenerator(name = "system-uuid", strategy = "uuid")
+	@Column(name = "id", unique = true)
+	private String id;
 	@Column(name = "firstname")
 	private String firstName;
 	@Column(name = "lastname")
 	private String lastName;
-	
+
 	@Column(name = "phone", unique = true)
 	private Long phone;
 
@@ -43,12 +42,12 @@ public class User extends GoGasEntity implements Serializable {
 	@Column(name = "profileImage")
 	private String profileImage;
 
-	@OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
-	@JoinColumn(name = "address_id", referencedColumnName = "id")
+	@OneToOne
+    @JoinColumn(name="addressId")
 	private Address address;
 
-	@OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
-	@JoinColumn(name = "identityProof_id", referencedColumnName = "id")
+	@OneToOne
+    @JoinColumn(name="identityProofId")
 	private IdentityProof identityProof;
 
 	@JsonIgnore
@@ -58,20 +57,18 @@ public class User extends GoGasEntity implements Serializable {
 	@Column(name = "lastLoginTimestamp")
 	private LocalDateTime lastLoginTimestamp;
 
-	@OneToOne(cascade = CascadeType.ALL)
-	@JoinColumn(name = "candfId", referencedColumnName = "id")
-	private CAndF candF;
+	@Column(name = "candfId", nullable = false)
+	private String candfId;
 
-	@OneToOne(cascade = CascadeType.ALL)
-	@JoinColumn(name = "dealershipId", referencedColumnName = "id")
-	private Dealership dealership;
+	@Column(name = "dealershipId", nullable = false)
+	private String dealershipId;
 
-	public String getUid() {
-		return uid;
+	public String getId() {
+		return id;
 	}
 
-	public void setUid(String uid) {
-		this.uid = uid;
+	public void setId(String id) {
+		this.id = id;
 	}
 
 	public String getFirstName() {
@@ -146,20 +143,20 @@ public class User extends GoGasEntity implements Serializable {
 		this.lastLoginTimestamp = lastLoginTimestamp;
 	}
 
-	public CAndF getCandF() {
-		return candF;
+	public String getCandfId() {
+		return candfId;
 	}
 
-	public void setCandF(CAndF candF) {
-		this.candF = candF;
+	public void setCandfId(String candfId) {
+		this.candfId = candfId;
 	}
 
-	public Dealership getDealership() {
-		return dealership;
+	public String getDealershipId() {
+		return dealershipId;
 	}
 
-	public void setDealership(Dealership dealership) {
-		this.dealership = dealership;
+	public void setDealershipId(String dealershipId) {
+		this.dealershipId = dealershipId;
 	}
 
 }

@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.gogas.app.config.JwtTokenUtil;
 import com.gogas.app.model.Address;
+import com.gogas.app.model.IdentityProof;
 import com.gogas.app.model.User;
 import com.gogas.app.model.UserRole;
 import com.gogas.app.model.dto.AuthRequest;
@@ -67,26 +68,28 @@ public class JwtAuthController {
 	public ResponseEntity<?> saveUser() throws Exception {
 
 		User user = new User();
-		user.setUid("ADMIN01");
 		Address address = new Address();
 		address.setId(UUID.randomUUID().toString());
 		address.setCity("Bengaluru");
-		address.setGeolat("12.3344");
-		address.setGeolong("23.5555");
+		address.setGeoLat("12.3344");
+		address.setGeoLong("23.5555");
 		address.setDoorNo("No 7");
 		address.setLocality("RT Nagar");
 		address.setPincode("560069");
 		address.setState("Karnataka");
 		address.setStreetName("MG Street");
 		user.setAddress(address);
-		user.setCreateat(LocalDateTime.now());
-		user.setCreatedby("ADMIN01");
+		user.setCreatedAt(LocalDateTime.now());
+		user.setCreatedBy("ADMIN01");
 		user.setFirstName("Naseer");
-		user.setLastmodifiedat(LocalDateTime.now());
-		user.setLastmodifiedby("ADMIN01");
+		user.setLastmodifiedAt(LocalDateTime.now());
+		user.setLastmodifiedBy("ADMIN01");
 		user.setLastName("PA");
 		user.setRole(UserRole.ADMIN);
 		user.setPhone(9886333900L);
+		user.setIdentityProof(new IdentityProof());
+		user.setCandfId("cnfid");
+		user.setDealershipId("dealerid");
 		return ResponseEntity.ok(userService.addUser(user));
 	}
 

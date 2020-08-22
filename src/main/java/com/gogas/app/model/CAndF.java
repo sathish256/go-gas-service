@@ -1,6 +1,5 @@
 package com.gogas.app.model;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -16,8 +15,8 @@ import org.hibernate.annotations.GenericGenerator;
 public class CAndF extends GoGasEntity {
 
 	@Id
-	@GeneratedValue(generator="system-uuid")
-	@GenericGenerator(name="system-uuid", strategy = "uuid")
+	@GeneratedValue(generator = "system-uuid")
+	@GenericGenerator(name = "system-uuid", strategy = "uuid")
 	@Column(name = "id", unique = true)
 	private String id;
 
@@ -27,8 +26,8 @@ public class CAndF extends GoGasEntity {
 	@Column(name = "phone")
 	private String phone;
 
-	@OneToOne(cascade = CascadeType.ALL)
-	@JoinColumn(name = "address_id", referencedColumnName = "id")
+	@OneToOne
+	@JoinColumn(name = "addressId")
 	private Address address;
 
 	@Column(name = "ownerName")

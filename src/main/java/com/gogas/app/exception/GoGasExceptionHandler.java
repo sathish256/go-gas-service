@@ -42,7 +42,8 @@ public class GoGasExceptionHandler extends ResponseEntityExceptionHandler {
 	}
 
 	@ExceptionHandler(Exception.class)
-	public ResponseEntity<Object> assertionException(final IllegalArgumentException e) {
+	public ResponseEntity<Object> assertionException(Exception e) {
+		e.printStackTrace();
 		return new ResponseEntity<>(e.getLocalizedMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
 	}
 }

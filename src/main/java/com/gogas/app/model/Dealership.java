@@ -19,8 +19,8 @@ import org.hibernate.annotations.GenericGenerator;
 public class Dealership extends GoGasEntity {
 
 	@Id
-	@GeneratedValue(generator="system-uuid")
-	@GenericGenerator(name="system-uuid", strategy = "uuid")
+	@GeneratedValue(generator = "system-uuid")
+	@GenericGenerator(name = "system-uuid", strategy = "uuid")
 	@Column(name = "id", unique = true)
 	private String id;
 
@@ -30,8 +30,8 @@ public class Dealership extends GoGasEntity {
 	@Column(name = "phone")
 	private String phone;
 
-	@OneToOne(cascade = CascadeType.ALL)
-	@JoinColumn(name = "address_id", referencedColumnName = "id")
+	@OneToOne
+	@JoinColumn(name = "addressId")
 	private Address address;
 
 	@Column(name = "ownerName")
@@ -40,6 +40,9 @@ public class Dealership extends GoGasEntity {
 	@Column(name = "ownerPhone")
 	private String ownerPhone;
 
+	@Column(name = "candfId")
+	private String candfId;
+	
 	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<DealerAllocation> dealerAllocation;
 
@@ -99,4 +102,12 @@ public class Dealership extends GoGasEntity {
 		this.dealerAllocation = dealerAllocation;
 	}
 
+	public String getCandfId() {
+		return candfId;
+	}
+
+	public void setCandfId(String candfId) {
+		this.candfId = candfId;
+	}
+	
 }

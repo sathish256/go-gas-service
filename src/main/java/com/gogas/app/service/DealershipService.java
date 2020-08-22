@@ -5,9 +5,11 @@ import java.time.LocalDateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.gogas.app.model.Dealership;
+import com.gogas.app.repository.AddressRepository;
 import com.gogas.app.repository.DealershipRepository;
 
 @Service
@@ -16,6 +18,9 @@ public class DealershipService {
 	@Autowired
 	private DealershipRepository dealershipRepository;
 
+	@Autowired
+	private AddressRepository addressRepository;
+
 	public Dealership getDealership(String uid) {
 		return dealershipRepository.findById(uid).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
 				"Dealership id " + uid + " does not exists in the system"));
@@ -23,13 +28,14 @@ public class DealershipService {
 
 	public Dealership addDealership(Dealership dealership) {
 
-		if (dealershipRepository.existsById(dealership.getId()))
+		if (!StringUtils.isEmpty(dealership.getId()) &&  dealershipRepository.existsById(dealership.getId()))
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
 					"Dealership id " + dealership.getId() + " already exists in the system");
 		Dealership savedDealership = null;
 		try {
-			dealership.setCreateat(LocalDateTime.now());
-			dealership.setLastmodifiedat(LocalDateTime.now());
+			dealership.setCreatedAt(LocalDateTime.now());
+			dealership.setLastmodifiedAt(LocalDateTime.now());
+			dealership.setAddress(addressRepository.save(dealership.getAddress()));
 			savedDealership = dealershipRepository.save(dealership);
 
 		} catch (Exception pe) {
@@ -48,7 +54,8 @@ public class DealershipService {
 					"Dealership id " + dealership.getId() + " does not exists in the system");
 		Dealership savedDealership = null;
 		try {
-			dealership.setLastmodifiedat(LocalDateTime.now());
+			dealership.setLastmodifiedAt(LocalDateTime.now());
+			dealership.setAddress(addressRepository.save(dealership.getAddress()));
 			savedDealership = dealershipRepository.save(dealership);
 
 		} catch (Exception pe) {

@@ -4,20 +4,17 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 import org.hibernate.annotations.GenericGenerator;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
 @Table(name = "address")
 public class Address {
 
 	@Id
-	@GeneratedValue(generator="system-uuid")
-	@GenericGenerator(name="system-uuid", strategy = "uuid")
+	@GeneratedValue(generator = "system-uuid")
+	@GenericGenerator(name = "system-uuid", strategy = "uuid")
 	@Column(name = "id", unique = true)
 	private String id;
 	@Column(name = "doorNo")
@@ -33,15 +30,11 @@ public class Address {
 	@Column(name = "pincode")
 	private String pincode;
 
-	@Column(name = "geolong")
-	private String geolong;
+	@Column(name = "geoLong")
+	private String geoLong;
 
-	@Column(name = "geolat")
-	private String geolat;
-
-	@JsonIgnore
-	@OneToOne(mappedBy = "address")
-	private User user;
+	@Column(name = "geoLat")
+	private String geoLat;
 
 	public String getId() {
 		return id;
@@ -99,28 +92,20 @@ public class Address {
 		this.pincode = pincode;
 	}
 
-	public String getGeolong() {
-		return geolong;
+	public String getGeoLong() {
+		return geoLong;
 	}
 
-	public void setGeolong(String geolong) {
-		this.geolong = geolong;
+	public void setGeoLong(String geoLong) {
+		this.geoLong = geoLong;
 	}
 
-	public String getGeolat() {
-		return geolat;
+	public String getGeoLat() {
+		return geoLat;
 	}
 
-	public void setGeolat(String geolat) {
-		this.geolat = geolat;
-	}
-
-	public User getUser() {
-		return user;
-	}
-
-	public void setUser(User user) {
-		this.user = user;
+	public void setGeoLat(String geoLat) {
+		this.geoLat = geoLat;
 	}
 
 }

@@ -60,20 +60,20 @@ public class CAndFController {
 		Address address = new Address();
 		address.setId(UUID.randomUUID().toString());
 		address.setCity("Bengaluru");
-		address.setGeolat("12.3344");
-		address.setGeolong("23.5555");
+		address.setGeoLat("12.3344");
+		address.setGeoLong("23.5555");
 		address.setDoorNo("No 7");
 		address.setLocality("RT Nagar");
 		address.setPincode("560069");
 		address.setState("Karnataka");
 		address.setStreetName("MG Street");
 		candF.setAddress(address);
-		candF.setCreateat(LocalDateTime.now());
-		candF.setCreatedby("ADMIN01");
-		candF.setLastmodifiedat(LocalDateTime.now());
-		candF.setLastmodifiedby("ADMIN01");
+		candF.setCreatedAt(LocalDateTime.now());
+		candF.setCreatedBy("ADMIN01");
+		candF.setLastmodifiedAt(LocalDateTime.now());
+		candF.setLastmodifiedBy("ADMIN01");
 
-		return candFRepository.save(candF);
+		return candFService.addCAndF(candF);
 	}
 
 	@GetMapping("/findall")

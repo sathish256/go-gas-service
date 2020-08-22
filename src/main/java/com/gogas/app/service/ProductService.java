@@ -28,8 +28,8 @@ public class ProductService {
 					"Product id " + product.getId() + " already exists in the system");
 		Product savedProduct = null;
 		try {
-			product.setCreateat(LocalDateTime.now());
-			product.setLastmodifiedat(LocalDateTime.now());
+			product.setCreatedAt(LocalDateTime.now());
+			product.setLastmodifiedAt(LocalDateTime.now());
 			savedProduct = productRepository.save(product);
 
 		} catch (Exception pe) {
@@ -48,7 +48,7 @@ public class ProductService {
 					"Product id " + product.getId() + " does not exists in the system");
 		Product savedProduct = null;
 		try {
-			product.setLastmodifiedat(LocalDateTime.now());
+			product.setLastmodifiedAt(LocalDateTime.now());
 			savedProduct = productRepository.save(product);
 
 		} catch (Exception pe) {

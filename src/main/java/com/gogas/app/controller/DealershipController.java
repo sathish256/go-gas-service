@@ -1,8 +1,8 @@
 package com.gogas.app.controller;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.gogas.app.model.Address;
+import com.gogas.app.model.DealerAllocation;
 import com.gogas.app.model.Dealership;
 import com.gogas.app.repository.DealershipRepository;
 import com.gogas.app.service.DealershipService;
@@ -50,23 +51,31 @@ public class DealershipController {
 	public Dealership bulkcreate() {
 
 		Dealership dealership = new Dealership();
+		dealership.setId("dealerid");
 		Address address = new Address();
-		address.setId(UUID.randomUUID().toString());
 		address.setCity("Bengaluru");
-		address.setGeolat("12.3344");
-		address.setGeolong("23.5555");
+		address.setGeoLat("12.3344");
+		address.setGeoLong("23.5555");
 		address.setDoorNo("No 7");
 		address.setLocality("RT Nagar");
 		address.setPincode("560069");
 		address.setState("Karnataka");
 		address.setStreetName("MG Street");
 		dealership.setAddress(address);
-		dealership.setCreateat(LocalDateTime.now());
-		dealership.setCreatedby("ADMIN01");
-		dealership.setLastmodifiedat(LocalDateTime.now());
-		dealership.setLastmodifiedby("ADMIN01");
+		dealership.setCreatedAt(LocalDateTime.now());
+		dealership.setCreatedBy("ADMIN01");
+		dealership.setLastmodifiedAt(LocalDateTime.now());
+		dealership.setLastmodifiedBy("ADMIN01");
 
-		return dealershipRepository.save(dealership);
+		List<DealerAllocation> dealerAllocation = new ArrayList<>();
+		DealerAllocation de = new DealerAllocation();
+		de.setProductId("product-1");
+		de.setQuantity(1000);
+		dealerAllocation.add(de);
+
+		dealership.setDealerAllocation(dealerAllocation);
+
+		return dealershipService.addDealership(dealership);
 	}
 
 	@GetMapping("/findall")
