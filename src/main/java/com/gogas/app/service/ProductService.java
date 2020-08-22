@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.gogas.app.model.Product;
@@ -23,7 +24,7 @@ public class ProductService {
 
 	public Product addProduct(Product product) {
 
-		if (productRepository.existsById(product.getId()))
+		if (!StringUtils.isEmpty(product.getId()) && productRepository.existsById(product.getId()))
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
 					"Product id " + product.getId() + " already exists in the system");
 		Product savedProduct = null;

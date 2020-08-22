@@ -1,7 +1,6 @@
 package com.gogas.app.controller;
 
 import java.util.List;
-import java.util.Map;
 
 import javax.validation.Valid;
 
@@ -18,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.gogas.app.model.User;
 import com.gogas.app.model.dto.CredentialsDTO;
+import com.gogas.app.model.dto.GoGasResponse;
 import com.gogas.app.repository.UserRepository;
 import com.gogas.app.service.UserService;
 
@@ -51,14 +51,14 @@ public class UserController {
 	public List<User> findAll() {
 		return userRepository.findAll();
 	}
-	
+
 	@PostMapping("/change-password")
-	public ResponseEntity<Map<String,String>> changePassword(@RequestBody @Valid CredentialsDTO credentialsDTO){
+	public ResponseEntity<GoGasResponse> changePassword(@RequestBody @Valid CredentialsDTO credentialsDTO) {
 		return ResponseEntity.ok(userService.changePassword(credentialsDTO, false));
 	}
-	
+
 	@PostMapping("/reset-password")
-	public ResponseEntity<Map<String,String>> resetPassword(@RequestBody @Valid CredentialsDTO credentialsDTO){
+	public ResponseEntity<GoGasResponse> resetPassword(@RequestBody @Valid CredentialsDTO credentialsDTO) {
 		return ResponseEntity.ok(userService.changePassword(credentialsDTO, true));
 	}
 }

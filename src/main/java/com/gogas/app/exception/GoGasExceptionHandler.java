@@ -1,49 +1,239 @@
 package com.gogas.app.exception;
 
-import java.time.LocalDate;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
+import static org.springframework.http.HttpStatus.BAD_REQUEST;
+import static org.springframework.http.HttpStatus.NOT_FOUND;
 
+import org.hibernate.exception.ConstraintViolationException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.AccessDeniedException;
-import org.springframework.security.core.AuthenticationException;
+import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.http.converter.HttpMessageNotWritableException;
+import org.springframework.web.HttpMediaTypeNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.context.request.ServletWebRequest;
 import org.springframework.web.context.request.WebRequest;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
+import org.springframework.web.server.ResponseStatusException;
+import org.springframework.web.servlet.NoHandlerFoundException;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
+import com.gogas.app.auth.SecurityServiceImpl;
+import com.gogas.app.model.dto.GoGasResponse;
+
+@Order(Ordered.HIGHEST_PRECEDENCE)
 @ControllerAdvice
 public class GoGasExceptionHandler extends ResponseEntityExceptionHandler {
 
+	private static final Logger LOGGER = LoggerFactory.getLogger(SecurityServiceImpl.class);
+
+	/**
+	 * Handle ResponseStatusException. Triggered when a 'required' request parameter
+	 * is missing.
+	 *
+	 * @param ex      ResponseStatusException
+	 * @param headers HttpHeaders
+	 * @param status  HttpStatus
+	 * @param request WebRequest
+	 * @return the GoGasResponse object
+	 */
+	@ExceptionHandler(ResponseStatusException.class)
+	protected ResponseEntity<Object> handleResponseStatusException(ResponseStatusException ex, WebRequest request) {
+		return buildResponseEntity(new GoGasResponse(ex.getStatus(), ex.getReason(), ex));
+	}
+
+	/**
+	 * Handle MissingServletRequestParameterException. Triggered when a 'required'
+	 * request parameter is missing.
+	 *
+	 * @param ex      MissingServletRequestParameterException
+	 * @param headers HttpHeaders
+	 * @param status  HttpStatus
+	 * @param request WebRequest
+	 * @return the GoGasResponse object
+	 */
+	@Override
+	protected ResponseEntity<Object> handleMissingServletRequestParameter(MissingServletRequestParameterException ex,
+			HttpHeaders headers, HttpStatus status, WebRequest request) {
+		String error = ex.getParameterName() + " parameter is missing";
+		return buildResponseEntity(new GoGasResponse(BAD_REQUEST, error, ex));
+	}
+
+	/**
+	 * Handle HttpMediaTypeNotSupportedException. This one triggers when JSON is
+	 * invalid as well.
+	 *
+	 * @param ex      HttpMediaTypeNotSupportedException
+	 * @param headers HttpHeaders
+	 * @param status  HttpStatus
+	 * @param request WebRequest
+	 * @return the GoGasResponse object
+	 */
+	@Override
+	protected ResponseEntity<Object> handleHttpMediaTypeNotSupported(HttpMediaTypeNotSupportedException ex,
+			HttpHeaders headers, HttpStatus status, WebRequest request) {
+		StringBuilder builder = new StringBuilder();
+		builder.append(ex.getContentType());
+		builder.append(" media type is not supported. Supported media types are ");
+		ex.getSupportedMediaTypes().forEach(t -> builder.append(t).append(", "));
+		return buildResponseEntity(
+				new GoGasResponse(HttpStatus.UNSUPPORTED_MEDIA_TYPE, builder.substring(0, builder.length() - 2), ex));
+	}
+
+	/**
+	 * Handle MethodArgumentNotValidException. Triggered when an object fails @Valid
+	 * validation.
+	 *
+	 * @param ex      the MethodArgumentNotValidException that is thrown when @Valid
+	 *                validation fails
+	 * @param headers HttpHeaders
+	 * @param status  HttpStatus
+	 * @param request WebRequest
+	 * @return the GoGasResponse object
+	 */
 	@Override
 	protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex,
 			HttpHeaders headers, HttpStatus status, WebRequest request) {
-
-		Map<String, Object> body = new LinkedHashMap<>();
-		body.put("timestamp", LocalDate.now());
-		body.put("status", status.value());
-
-		List<String> errors = ex.getBindingResult().getFieldErrors().stream()
-				.map(x -> x.getField() + " - " + x.getDefaultMessage()).collect(Collectors.toList());
-
-		body.put("errors", errors);
-
-		return new ResponseEntity<>(body, HttpStatus.BAD_REQUEST);
+		GoGasResponse apiError = new GoGasResponse(BAD_REQUEST);
+		apiError.setMessage("Validation error");
+		apiError.addValidationErrors(ex.getBindingResult().getFieldErrors());
+		apiError.addValidationError(ex.getBindingResult().getGlobalErrors());
+		return buildResponseEntity(apiError);
 	}
 
-	@ExceptionHandler({ AccessDeniedException.class, AuthenticationException.class })
-	public ResponseEntity<Object> handleAccessDeniedException(Exception ex, WebRequest request) {
-		return new ResponseEntity<Object>(ex.getLocalizedMessage(), new HttpHeaders(), HttpStatus.FORBIDDEN);
+	/**
+	 * Handles javax.validation.ConstraintViolationException. Thrown when @Validated
+	 * fails.
+	 *
+	 * @param ex the ConstraintViolationException
+	 * @return the GoGasResponse object
+	 */
+	@ExceptionHandler(javax.validation.ConstraintViolationException.class)
+	protected ResponseEntity<Object> handleConstraintViolation(javax.validation.ConstraintViolationException ex) {
+		GoGasResponse apiError = new GoGasResponse(BAD_REQUEST);
+		apiError.setMessage("Validation error");
+		apiError.addValidationErrors(ex.getConstraintViolations());
+		return buildResponseEntity(apiError);
 	}
 
-	@ExceptionHandler(Exception.class)
-	public ResponseEntity<Object> assertionException(Exception e) {
-		e.printStackTrace();
-		return new ResponseEntity<>(e.getLocalizedMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+	/**
+	 * Handles EntityNotFoundException. Created to encapsulate errors with more
+	 * detail than javax.persistence.EntityNotFoundException.
+	 *
+	 * @param ex the EntityNotFoundException
+	 * @return the GoGasResponse object
+	 */
+	@ExceptionHandler(EntityNotFoundException.class)
+	protected ResponseEntity<Object> handleEntityNotFound(EntityNotFoundException ex) {
+		GoGasResponse apiError = new GoGasResponse(NOT_FOUND);
+		apiError.setMessage(ex.getMessage());
+		return buildResponseEntity(apiError);
 	}
+
+	/**
+	 * Handle HttpMessageNotReadableException. Happens when request JSON is
+	 * malformed.
+	 *
+	 * @param ex      HttpMessageNotReadableException
+	 * @param headers HttpHeaders
+	 * @param status  HttpStatus
+	 * @param request WebRequest
+	 * @return the GoGasResponse object
+	 */
+	@Override
+	protected ResponseEntity<Object> handleHttpMessageNotReadable(HttpMessageNotReadableException ex,
+			HttpHeaders headers, HttpStatus status, WebRequest request) {
+		ServletWebRequest servletWebRequest = (ServletWebRequest) request;
+		LOGGER.info("{} to {}", servletWebRequest.getHttpMethod(), servletWebRequest.getRequest().getServletPath());
+		String error = "Malformed JSON request";
+		return buildResponseEntity(new GoGasResponse(HttpStatus.BAD_REQUEST, error, ex));
+	}
+
+	/**
+	 * Handle HttpMessageNotWritableException.
+	 *
+	 * @param ex      HttpMessageNotWritableException
+	 * @param headers HttpHeaders
+	 * @param status  HttpStatus
+	 * @param request WebRequest
+	 * @return the GoGasResponse object
+	 */
+	@Override
+	protected ResponseEntity<Object> handleHttpMessageNotWritable(HttpMessageNotWritableException ex,
+			HttpHeaders headers, HttpStatus status, WebRequest request) {
+		String error = "Error writing JSON output";
+		return buildResponseEntity(new GoGasResponse(HttpStatus.INTERNAL_SERVER_ERROR, error, ex));
+	}
+
+	/**
+	 * Handle NoHandlerFoundException.
+	 *
+	 * @param ex
+	 * @param headers
+	 * @param status
+	 * @param request
+	 * @return
+	 */
+	@Override
+	protected ResponseEntity<Object> handleNoHandlerFoundException(NoHandlerFoundException ex, HttpHeaders headers,
+			HttpStatus status, WebRequest request) {
+		GoGasResponse apiError = new GoGasResponse(BAD_REQUEST);
+		apiError.setMessage(
+				String.format("Could not find the %s method for URL %s", ex.getHttpMethod(), ex.getRequestURL()));
+		apiError.setDebugMessage(ex.getMessage());
+		return buildResponseEntity(apiError);
+	}
+
+	/**
+	 * Handle javax.persistence.EntityNotFoundException
+	 */
+	@ExceptionHandler(javax.persistence.EntityNotFoundException.class)
+	protected ResponseEntity<Object> handleEntityNotFound(javax.persistence.EntityNotFoundException ex) {
+		return buildResponseEntity(new GoGasResponse(HttpStatus.NOT_FOUND, ex));
+	}
+
+	/**
+	 * Handle DataIntegrityViolationException, inspects the cause for different DB
+	 * causes.
+	 *
+	 * @param ex the DataIntegrityViolationException
+	 * @return the GoGasResponse object
+	 */
+	@ExceptionHandler(DataIntegrityViolationException.class)
+	protected ResponseEntity<Object> handleDataIntegrityViolation(DataIntegrityViolationException ex,
+			WebRequest request) {
+		if (ex.getCause() instanceof ConstraintViolationException) {
+			return buildResponseEntity(new GoGasResponse(HttpStatus.CONFLICT, "Database error", ex.getCause()));
+		}
+		return buildResponseEntity(new GoGasResponse(HttpStatus.INTERNAL_SERVER_ERROR, ex));
+	}
+
+	/**
+	 * Handle Exception, handle generic Exception.class
+	 *
+	 * @param ex the Exception
+	 * @return the GoGasResponse object
+	 */
+	@ExceptionHandler(MethodArgumentTypeMismatchException.class)
+	protected ResponseEntity<Object> handleMethodArgumentTypeMismatch(MethodArgumentTypeMismatchException ex,
+			WebRequest request) {
+		GoGasResponse apiError = new GoGasResponse(BAD_REQUEST);
+		apiError.setMessage(String.format("The parameter '%s' of value '%s' could not be converted to type '%s'",
+				ex.getName(), ex.getValue(), ex.getRequiredType().getSimpleName()));
+		apiError.setDebugMessage(ex.getMessage());
+		return buildResponseEntity(apiError);
+	}
+
+	private ResponseEntity<Object> buildResponseEntity(GoGasResponse apiError) {
+		return new ResponseEntity<>(apiError, apiError.getStatus());
+	}
+
 }

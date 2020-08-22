@@ -1,9 +1,6 @@
 package com.gogas.app.controller;
 
-import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -16,8 +13,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.gogas.app.model.CAndFPrice;
-import com.gogas.app.model.DealerPrice;
 import com.gogas.app.model.Product;
 import com.gogas.app.repository.ProductRepository;
 import com.gogas.app.service.ProductService;
@@ -46,30 +41,6 @@ public class ProductController {
 	@PutMapping
 	public ResponseEntity<Product> updateProduct(@RequestBody Product product) {
 		return ResponseEntity.ok(productService.updateProduct(product));
-	}
-
-	@GetMapping("/dummyproduct")
-	public Product bulkcreate() {
-
-		Product product = new Product();
-		List<CAndFPrice> candFPrice = new ArrayList<>();
-		CAndFPrice fPrice = new CAndFPrice();
-		fPrice.setCandfId("D001");
-		fPrice.setPrice(new BigDecimal(1300.00));
-		candFPrice.add(fPrice);
-		product.setCandfPrice(candFPrice);
-		product.setId(UUID.randomUUID().toString());
-		product.setName("Cylinder");
-		product.setType("Fiber");
-		product.setSpecification("15KG");
-		List<DealerPrice> dealerprice = new ArrayList<>();
-		DealerPrice dp = new DealerPrice();
-		dp.setDealerId("D001");
-		dp.setPrice(new BigDecimal(1300.00));
-		dealerprice.add(dp);
-
-		product.setDealerPrice(dealerprice);
-		return productRepository.save(product);
 	}
 
 	@GetMapping("/findall")

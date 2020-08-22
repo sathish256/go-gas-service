@@ -1,6 +1,5 @@
 package com.gogas.app.controller;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -18,7 +17,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
-import com.gogas.app.model.Address;
 import com.gogas.app.model.CAndF;
 import com.gogas.app.repository.CAndFRepository;
 import com.gogas.app.service.CAndFService;
@@ -50,30 +48,6 @@ public class CAndFController {
 		Optional.ofNullable(candF.getId())
 				.orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid candF ID"));
 		return ResponseEntity.ok(candFService.updateCAndF(candF));
-	}
-
-	@GetMapping("/dummycandF")
-	public CAndF bulkcreate() {
-
-		CAndF candF = new CAndF();
-		candF.setId(UUID.randomUUID().toString());
-		Address address = new Address();
-		address.setId(UUID.randomUUID().toString());
-		address.setCity("Bengaluru");
-		address.setGeoLat("12.3344");
-		address.setGeoLong("23.5555");
-		address.setDoorNo("No 7");
-		address.setLocality("RT Nagar");
-		address.setPincode("560069");
-		address.setState("Karnataka");
-		address.setStreetName("MG Street");
-		candF.setAddress(address);
-		candF.setCreatedAt(LocalDateTime.now());
-		candF.setCreatedBy("ADMIN01");
-		candF.setLastmodifiedAt(LocalDateTime.now());
-		candF.setLastmodifiedBy("ADMIN01");
-
-		return candFService.addCAndF(candF);
 	}
 
 	@GetMapping("/findall")

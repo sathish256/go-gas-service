@@ -1,8 +1,6 @@
 package com.gogas.app.service;
 
 import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,8 +10,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
+import com.gogas.app.exception.EntityNotFoundException;
 import com.gogas.app.model.User;
 import com.gogas.app.model.dto.CredentialsDTO;
+import com.gogas.app.model.dto.GoGasResponse;
 import com.gogas.app.repository.AddressRepository;
 import com.gogas.app.repository.IdentityProofRepository;
 import com.gogas.app.repository.UserRepository;
@@ -36,8 +36,8 @@ public class UserService {
 	private BCryptPasswordEncoder bCryptPasswordEncoder;
 
 	public User getUser(String uid) {
-		return userRepository.findById(uid).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
-				"User id " + uid + " does not exists in the system"));
+		return userRepository.findById(uid).orElseThrow(
+				() ->  new EntityNotFoundException(User.class, "id", uid));
 	}
 
 	@Transactional
@@ -93,10 +93,9 @@ public class UserService {
 	}
 
 	@Transactional
-	public Map<String, String> changePassword(CredentialsDTO credentialsDTO, boolean isReset) {
+	public GoGasResponse changePassword(CredentialsDTO credentialsDTO, boolean isReset) {
 
-		Map<String, String> response = new HashMap<>();
-		response.put("status", "Password changed successfully!");
+		String message = "Password changed successfully!";
 
 		User user = Optional.ofNullable(userRepository.findByPhone(Long.parseLong(credentialsDTO.getPhone())))
 				.orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST,
@@ -106,7 +105,7 @@ public class UserService {
 			String generatedPwd = PasswordUtil.generateRandomPassword();
 			credentialsDTO.setNewPassword(generatedPwd);
 			SMSUtil.sendSMS(user.getPhone(), "GoGas - Reset Login Password : " + generatedPwd);
-			response.put("status", "Password reset successfully!");
+			message = "Password changed successfully!";
 
 		} else if (!bCryptPasswordEncoder.matches(credentialsDTO.getCurrentPassword(), user.getPassword())) {
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
@@ -117,7 +116,7 @@ public class UserService {
 		user.setLastmodifiedAt(LocalDateTime.now());
 		userRepository.save(user);
 
-		return response;
+		return new GoGasResponse(HttpStatus.OK, message);
 	}
 
 	@Transactional
