@@ -13,7 +13,7 @@ public class GoGasConfig {
 		return new WebMvcConfigurer() {
 			@Override
 			public void addCorsMappings(CorsRegistry registry) {
-				registry.addMapping("/**").allowedOrigins("https://gogas-web.herokuapp.com", "http://localhost:8080");
+				registry.addMapping("/**").allowedOrigins("*");
 			}
 		};
 	}
