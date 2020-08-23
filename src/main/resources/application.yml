@@ -4,6 +4,8 @@ server:
     include-message: always
     include-binding-errors: always
     include-exception: true
+  servlet:
+    context-path: /api
 spring.jpa.database: POSTGRESQL
 spring.datasource.platform: postgres
 spring.datasource.url: 
@@ -17,5 +19,4 @@ spring:
     jdbc:
       initialize-schema: embedded      
 spring.session.store-type: jdbc
-
 jwt.secret: go-gas-service
