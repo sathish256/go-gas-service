@@ -1,4 +1,4 @@
-package com.gogas.app.model;
+package com.gogas.app.model.common;
 
 import java.io.Serializable;
 

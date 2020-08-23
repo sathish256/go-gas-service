@@ -1,4 +1,4 @@
-package com.gogas.app.model;
+package com.gogas.app.model.product;
 
 import java.io.Serializable;
 import java.util.List;
@@ -12,6 +12,8 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 import org.hibernate.annotations.GenericGenerator;
+
+import com.gogas.app.model.common.GoGasEntity;
 
 @Entity
 @Table(name = "product")

@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.server.ResponseStatusException;
 
-import com.gogas.app.model.Product;
+import com.gogas.app.model.product.Product;
 import com.gogas.app.repository.ProductRepository;
 
 @Service

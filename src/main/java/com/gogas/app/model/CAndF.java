@@ -10,13 +10,16 @@ import javax.persistence.Table;
 
 import org.hibernate.annotations.GenericGenerator;
 
+import com.gogas.app.model.common.Address;
+import com.gogas.app.model.common.GoGasEntity;
+
 @Entity
 @Table(name = "candf")
 public class CAndF extends GoGasEntity {
 
 	@Id
 	@GeneratedValue(generator = "system-uuid")
-	@GenericGenerator(name = "system-uuid", strategy = "uuid")
+	@GenericGenerator(name = "system-uuid", strategy = "uuid2")
 	@Column(name = "id", unique = true)
 	private String id;
 

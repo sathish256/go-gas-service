@@ -20,12 +20,12 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.gogas.app.config.JwtTokenUtil;
-import com.gogas.app.model.Address;
-import com.gogas.app.model.IdentityProof;
-import com.gogas.app.model.User;
-import com.gogas.app.model.UserRole;
+import com.gogas.app.model.common.Address;
+import com.gogas.app.model.common.IdentityProof;
 import com.gogas.app.model.dto.AuthRequest;
 import com.gogas.app.model.dto.AuthResponse;
+import com.gogas.app.model.user.User;
+import com.gogas.app.model.user.UserRole;
 import com.gogas.app.service.JwtUserDetailsService;
 import com.gogas.app.service.UserService;
 

@@ -11,9 +11,9 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.gogas.app.exception.EntityNotFoundException;
-import com.gogas.app.model.User;
 import com.gogas.app.model.dto.CredentialsDTO;
 import com.gogas.app.model.dto.GoGasResponse;
+import com.gogas.app.model.user.User;
 import com.gogas.app.repository.AddressRepository;
 import com.gogas.app.repository.IdentityProofRepository;
 import com.gogas.app.repository.UserRepository;
@@ -28,7 +28,7 @@ public class UserService {
 
 	@Autowired
 	private AddressRepository addressRepository;
-	
+
 	@Autowired
 	private IdentityProofRepository identityProofRepository;
 
@@ -36,8 +36,7 @@ public class UserService {
 	private BCryptPasswordEncoder bCryptPasswordEncoder;
 
 	public User getUser(String uid) {
-		return userRepository.findById(uid).orElseThrow(
-				() ->  new EntityNotFoundException(User.class, "id", uid));
+		return userRepository.findById(uid).orElseThrow(() -> new EntityNotFoundException(User.class, "id", uid));
 	}
 
 	@Transactional
@@ -53,7 +52,8 @@ public class UserService {
 			user.setCreatedAt(LocalDateTime.now());
 			user.setLastmodifiedAt(LocalDateTime.now());
 			user.setAddress(addressRepository.save(user.getAddress()));
-			user.setIdentityProof(identityProofRepository.save(user.getIdentityProof()));
+			if (user.getIdentityProof() != null)
+				user.setIdentityProof(identityProofRepository.save(user.getIdentityProof()));
 			savedUser = userRepository.save(user);
 
 			SMSUtil.sendSMS(user.getPhone(), "GoGas - NewUser login Password : " + generatedPwd);
@@ -80,7 +80,8 @@ public class UserService {
 			user.setPassword(dbUser.getPassword());
 			user.setLastmodifiedAt(LocalDateTime.now());
 			user.setAddress(addressRepository.save(user.getAddress()));
-			user.setIdentityProof(identityProofRepository.save(user.getIdentityProof()));
+			if (user.getIdentityProof() != null)
+				user.setIdentityProof(identityProofRepository.save(user.getIdentityProof()));
 			savedUser = userRepository.save(user);
 
 		} catch (Exception pe) {

@@ -16,51 +16,51 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.gogas.app.model.customer.Customer;
 import com.gogas.app.model.dto.CredentialsDTO;
 import com.gogas.app.model.dto.GoGasResponse;
-import com.gogas.app.model.user.User;
-import com.gogas.app.repository.UserRepository;
-import com.gogas.app.service.UserService;
+import com.gogas.app.repository.CustomerRepository;
+import com.gogas.app.service.CustomerService;
 
 @RestController
-@RequestMapping("/v1/gogas/user")
+@RequestMapping("/v1/gogas/customer")
 @CrossOrigin
-public class UserController {
+public class CustomerController {
 
 	@Autowired
-	private UserService userService;
+	private CustomerService customerService;
 
 	@Autowired
-	private UserRepository userRepository;
+	private CustomerRepository customerRepository;
 
 	@GetMapping("/{uid}")
-	public ResponseEntity<User> getUser(@PathVariable String uid) {
-		return ResponseEntity.ok(userService.getUser(uid));
+	public ResponseEntity<Customer> getCustomer(@PathVariable String uid) {
+		return ResponseEntity.ok(customerService.getCustomer(uid));
 	}
 
 	@PostMapping
-	public ResponseEntity<User> addUser(@RequestBody User user) {
-		return ResponseEntity.ok(userService.addUser(user));
+	public ResponseEntity<Customer> addCustomer(@RequestBody Customer customer) {
+		return ResponseEntity.ok(customerService.addCustomer(customer));
 	}
 
 	@PutMapping
-	public ResponseEntity<User> updateUser(@RequestBody User user) {
-		return ResponseEntity.ok(userService.updateUser(user));
+	public ResponseEntity<Customer> updateCustomer(@RequestBody Customer customer) {
+		return ResponseEntity.ok(customerService.updateCustomer(customer));
 	}
 
 	@PreAuthorize("hasRole('DEALER')")
 	@GetMapping("/findall")
-	public List<User> findAll() {
-		return userRepository.findAll();
+	public List<Customer> findAll() {
+		return customerRepository.findAll();
 	}
 
 	@PostMapping("/change-password")
 	public ResponseEntity<GoGasResponse> changePassword(@RequestBody @Valid CredentialsDTO credentialsDTO) {
-		return ResponseEntity.ok(userService.changePassword(credentialsDTO, false));
+		return ResponseEntity.ok(customerService.changePassword(credentialsDTO, false));
 	}
 
 	@PostMapping("/reset-password")
 	public ResponseEntity<GoGasResponse> resetPassword(@RequestBody @Valid CredentialsDTO credentialsDTO) {
-		return ResponseEntity.ok(userService.changePassword(credentialsDTO, true));
+		return ResponseEntity.ok(customerService.changePassword(credentialsDTO, true));
 	}
 }

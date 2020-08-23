@@ -1,4 +1,4 @@
-package com.gogas.app.model;
+package com.gogas.app.model.product;
 
 import java.math.BigDecimal;
 

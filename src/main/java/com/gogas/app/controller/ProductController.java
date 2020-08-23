@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.gogas.app.model.Product;
+import com.gogas.app.model.product.Product;
 import com.gogas.app.repository.ProductRepository;
 import com.gogas.app.service.ProductService;
 

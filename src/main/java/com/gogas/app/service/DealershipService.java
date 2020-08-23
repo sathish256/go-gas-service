@@ -1,6 +1,7 @@
 package com.gogas.app.service;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -28,7 +29,7 @@ public class DealershipService {
 
 	public Dealership addDealership(Dealership dealership) {
 
-		if (!StringUtils.isEmpty(dealership.getId()) &&  dealershipRepository.existsById(dealership.getId()))
+		if (!StringUtils.isEmpty(dealership.getId()) && dealershipRepository.existsById(dealership.getId()))
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
 					"Dealership id " + dealership.getId() + " already exists in the system");
 		Dealership savedDealership = null;
@@ -65,6 +66,15 @@ public class DealershipService {
 		}
 
 		return savedDealership;
+	}
+
+	public List<Dealership> search(String candfId, String phone) {
+		if (!StringUtils.isEmpty(phone))
+			return dealershipRepository.findByPhone(phone);
+		else if (!StringUtils.isEmpty(candfId))
+			return dealershipRepository.findByCandfId(candfId);
+
+		return dealershipRepository.findAll();
 	}
 
 }

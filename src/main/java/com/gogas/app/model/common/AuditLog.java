@@ -1,4 +1,4 @@
-package com.gogas.app.model;
+package com.gogas.app.model.common;
 
 import java.io.Serializable;
 
@@ -11,7 +11,7 @@ import javax.persistence.Table;
 import org.hibernate.annotations.GenericGenerator;
 
 @Entity
-@Table(name = "customer")
+@Table(name = "auditlog")
 public class AuditLog implements Serializable {
 	/**
 	 * 

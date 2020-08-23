@@ -1,4 +1,4 @@
-package com.gogas.app.model;
+package com.gogas.app.model.user;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
@@ -14,6 +14,9 @@ import javax.persistence.Table;
 import org.hibernate.annotations.GenericGenerator;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.gogas.app.model.common.Address;
+import com.gogas.app.model.common.GoGasEntity;
+import com.gogas.app.model.common.IdentityProof;
 
 @Entity
 @Table(name = "gogasuser")
@@ -25,7 +28,7 @@ public class User extends GoGasEntity implements Serializable {
 	private static final long serialVersionUID = -7178441752343638821L;
 	@Id
 	@GeneratedValue(generator = "system-uuid")
-	@GenericGenerator(name = "system-uuid", strategy = "uuid")
+	@GenericGenerator(name = "system-uuid", strategy = "uuid2")
 	@Column(name = "id", unique = true)
 	private String id;
 	@Column(name = "firstname")

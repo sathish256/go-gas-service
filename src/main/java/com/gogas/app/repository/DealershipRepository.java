@@ -13,4 +13,8 @@ public interface DealershipRepository extends JpaRepository<Dealership, String> 
 	List<Dealership> findByName(String name);
 
 	List<Dealership> findAll();
+
+	List<Dealership> findByPhone(String phone);
+
+	List<Dealership> findByCandfId(String candfId);
 }

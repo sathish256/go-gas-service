@@ -11,10 +11,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.gogas.app.model.Dealership;
-import com.gogas.app.repository.DealershipRepository;
 import com.gogas.app.service.DealershipService;
 
 @RestController
@@ -24,9 +24,6 @@ public class DealershipController {
 
 	@Autowired
 	private DealershipService dealershipService;
-
-	@Autowired
-	private DealershipRepository dealershipRepository;
 
 	@GetMapping("/{uid}")
 	public ResponseEntity<Dealership> getDealership(@PathVariable String uid) {
@@ -45,6 +42,12 @@ public class DealershipController {
 
 	@GetMapping("/findall")
 	public List<Dealership> findAll() {
-		return dealershipRepository.findAll();
+		return dealershipService.search(null, null);
+	}
+
+	@GetMapping("/search")
+	public List<Dealership> search(@RequestParam(value = "candfId") String candfId,
+			@RequestParam(value = "phone") String phone) {
+		return dealershipService.search(candfId, phone);
 	}
 }

@@ -1,4 +1,4 @@
-package com.gogas.app.model;
+package com.gogas.app.model.customer;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -9,20 +9,20 @@ import javax.persistence.Table;
 import org.hibernate.annotations.GenericGenerator;
 
 @Entity
-@Table(name = "identityproof")
-public class IdentityProof {
+@Table(name = "primarycontact")
+public class PrimaryContact {
 
 	@Id
 	@GeneratedValue(generator = "system-uuid")
-	@GenericGenerator(name = "system-uuid", strategy = "uuid")
+	@GenericGenerator(name = "system-uuid", strategy = "uuid2")
 	@Column(name = "id", unique = true)
 	private String id;
 	@Column(name = "name")
 	private String name;
-	@Column(name = "type")
-	private String type;
-	@Column(name = "filepath")
-	private String filepath;
+	@Column(name = "designation")
+	private String designation;
+	@Column(name = "phone")
+	private String phone;
 
 	public String getId() {
 		return id;
@@ -40,20 +40,20 @@ public class IdentityProof {
 		this.name = name;
 	}
 
-	public String getType() {
-		return type;
+	public String getDesignation() {
+		return designation;
 	}
 
-	public void setType(String type) {
-		this.type = type;
+	public void setDesignation(String designation) {
+		this.designation = designation;
 	}
 
-	public String getFilepath() {
-		return filepath;
+	public String getPhone() {
+		return phone;
 	}
 
-	public void setFilepath(String filepath) {
-		this.filepath = filepath;
+	public void setPhone(String phone) {
+		this.phone = phone;
 	}
 
 }
