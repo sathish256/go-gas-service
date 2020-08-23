@@ -60,10 +60,10 @@ public class User extends GoGasEntity implements Serializable {
 	@Column(name = "lastLoginTimestamp")
 	private LocalDateTime lastLoginTimestamp;
 
-	@Column(name = "candfId", nullable = false)
+	@Column(name = "candfId")
 	private String candfId;
 
-	@Column(name = "dealershipId", nullable = false)
+	@Column(name = "dealershipId")
 	private String dealershipId;
 
 	public String getId() {
