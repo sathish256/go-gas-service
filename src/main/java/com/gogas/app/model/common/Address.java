@@ -13,8 +13,8 @@ import org.hibernate.annotations.GenericGenerator;
 public class Address {
 
 	@Id
-	@GeneratedValue(generator = "system-uuid")
-	@GenericGenerator(name = "system-uuid", strategy = "uuid2")
+	@GeneratedValue(generator = "address-uuid")
+	@GenericGenerator(name = "address-uuid", strategy = "uuid2")
 	@Column(name = "id", unique = true)
 	private String id;
 	@Column(name = "doorNo")

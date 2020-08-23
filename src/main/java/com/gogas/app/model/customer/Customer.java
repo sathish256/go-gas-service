@@ -27,8 +27,8 @@ public class Customer extends GoGasEntity implements Serializable {
 	private static final long serialVersionUID = -7178441752343638821L;
 
 	@Id
-	@GeneratedValue(generator = "system-uuid")
-	@GenericGenerator(name = "system-uuid", strategy = "uuid")
+	@GeneratedValue(generator = "customer-uuid")
+	@GenericGenerator(name = "customer-uuid", strategy = "uuid2")
 	@Column(name = "id", unique = true)
 	private String id;
 

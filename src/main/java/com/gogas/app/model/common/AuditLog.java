@@ -18,8 +18,8 @@ public class AuditLog implements Serializable {
 	 */
 	private static final long serialVersionUID = -418881350587540504L;
 	@Id
-	@GeneratedValue(generator="system-uuid")
-	@GenericGenerator(name="system-uuid", strategy = "uuid")
+	@GeneratedValue(generator="audit-uuid")
+	@GenericGenerator(name="audit-uuid", strategy = "uuid")
 	@Column(name = "id", unique = true)
 	private String id;
 	@Column(name = "firstname")

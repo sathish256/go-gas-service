@@ -13,8 +13,8 @@ import org.hibernate.annotations.GenericGenerator;
 public class IdentityProof {
 
 	@Id
-	@GeneratedValue(generator = "system-uuid")
-	@GenericGenerator(name = "system-uuid", strategy = "uuid2")
+	@GeneratedValue(generator = "idproof-uuid")
+	@GenericGenerator(name = "idproof-uuid", strategy = "uuid2")
 	@Column(name = "id", unique = true)
 	private String id;
 	@Column(name = "name")

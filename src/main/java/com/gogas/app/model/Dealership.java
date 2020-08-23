@@ -22,8 +22,8 @@ import com.gogas.app.model.common.GoGasEntity;
 public class Dealership extends GoGasEntity {
 
 	@Id
-	@GeneratedValue(generator = "system-uuid")
-	@GenericGenerator(name = "system-uuid", strategy = "uuid2")
+	@GeneratedValue(generator = "dealership-uuid")
+	@GenericGenerator(name = "dealership-uuid", strategy = "uuid2")
 	@Column(name = "id", unique = true)
 	private String id;
 

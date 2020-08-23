@@ -13,8 +13,8 @@ import org.hibernate.annotations.GenericGenerator;
 public class PrimaryContact {
 
 	@Id
-	@GeneratedValue(generator = "system-uuid")
-	@GenericGenerator(name = "system-uuid", strategy = "uuid2")
+	@GeneratedValue(generator = "pc-uuid")
+	@GenericGenerator(name = "pc-uuid", strategy = "uuid2")
 	@Column(name = "id", unique = true)
 	private String id;
 	@Column(name = "name")

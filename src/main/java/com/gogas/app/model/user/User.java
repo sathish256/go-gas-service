@@ -27,8 +27,8 @@ public class User extends GoGasEntity implements Serializable {
 	 */
 	private static final long serialVersionUID = -7178441752343638821L;
 	@Id
-	@GeneratedValue(generator = "system-uuid")
-	@GenericGenerator(name = "system-uuid", strategy = "uuid2")
+	@GeneratedValue(generator = "user-uuid")
+	@GenericGenerator(name = "user-uuid", strategy = "uuid2")
 	@Column(name = "id", unique = true)
 	private String id;
 	@Column(name = "firstname")
@@ -46,11 +46,11 @@ public class User extends GoGasEntity implements Serializable {
 	private String profileImage;
 
 	@OneToOne
-    @JoinColumn(name="addressId")
+	@JoinColumn(name = "addressId")
 	private Address address;
 
 	@OneToOne
-    @JoinColumn(name="identityProofId")
+	@JoinColumn(name = "identityProofId")
 	private IdentityProof identityProof;
 
 	@JsonIgnore

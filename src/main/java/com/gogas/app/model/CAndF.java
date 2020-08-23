@@ -18,8 +18,8 @@ import com.gogas.app.model.common.GoGasEntity;
 public class CAndF extends GoGasEntity {
 
 	@Id
-	@GeneratedValue(generator = "system-uuid")
-	@GenericGenerator(name = "system-uuid", strategy = "uuid2")
+	@GeneratedValue(generator = "candf-uuid")
+	@GenericGenerator(name = "candf-uuid", strategy = "uuid2")
 	@Column(name = "id", unique = true)
 	private String id;
 
