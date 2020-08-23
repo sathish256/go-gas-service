@@ -23,7 +23,6 @@ import com.gogas.app.service.CAndFService;
 
 @RestController
 @RequestMapping("/v1/gogas/candf")
-@CrossOrigin
 public class CAndFController {
 
 	@Autowired

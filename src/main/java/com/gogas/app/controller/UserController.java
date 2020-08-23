@@ -27,7 +27,6 @@ import com.gogas.app.service.UserService;
 
 @RestController
 @RequestMapping("/v1/gogas/user")
-@CrossOrigin
 public class UserController {
 
 	@Autowired

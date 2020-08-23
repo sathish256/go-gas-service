@@ -30,7 +30,6 @@ import com.gogas.app.service.JwtUserDetailsService;
 import com.gogas.app.service.UserService;
 
 @RestController
-@CrossOrigin
 public class JwtAuthController {
 
 	@Autowired

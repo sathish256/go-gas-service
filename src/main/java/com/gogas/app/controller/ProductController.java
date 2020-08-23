@@ -19,7 +19,6 @@ import com.gogas.app.service.ProductService;
 
 @RestController
 @RequestMapping("/v1/gogas/product")
-@CrossOrigin
 public class ProductController {
 
 	@Autowired

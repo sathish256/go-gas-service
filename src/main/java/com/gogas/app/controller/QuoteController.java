@@ -19,7 +19,6 @@ import com.gogas.app.service.QuoteService;
 
 @RestController
 @RequestMapping("/v1/gogas/quote")
-@CrossOrigin
 public class QuoteController {
 
 	@Autowired

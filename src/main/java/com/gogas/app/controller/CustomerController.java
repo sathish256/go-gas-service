@@ -24,7 +24,6 @@ import com.gogas.app.service.CustomerService;
 
 @RestController
 @RequestMapping("/v1/gogas/customer")
-@CrossOrigin
 public class CustomerController {
 
 	@Autowired

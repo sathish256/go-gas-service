@@ -19,7 +19,6 @@ import com.gogas.app.service.DealershipService;
 
 @RestController
 @RequestMapping("/v1/gogas/dealer")
-@CrossOrigin
 public class DealershipController {
 
 	@Autowired
