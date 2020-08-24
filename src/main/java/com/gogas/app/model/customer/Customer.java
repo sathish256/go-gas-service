@@ -50,12 +50,22 @@ public class Customer extends GoGasEntity implements Serializable {
 	private IdentityProof identityProof;
 
 	@OneToOne
-	@JoinColumn(name = "primaryContact")
-	private PrimaryContact primaryContact;
+	@JoinColumn(name = "addressProofId")
+	private IdentityProof addressProofId;
+
+	@OneToOne
+	@JoinColumn(name = "orgInfo")
+	private Organization organization;
+
+	@Column(name = "dealerId")
+	private String dealerId;
 
 	@JsonIgnore
 	@Column(name = "password", nullable = false)
 	private String password;
+
+	@Column(name = "profileImage")
+	private String profileImage;
 
 	public String getId() {
 		return id;
@@ -105,12 +115,28 @@ public class Customer extends GoGasEntity implements Serializable {
 		this.identityProof = identityProof;
 	}
 
-	public PrimaryContact getPrimaryContact() {
-		return primaryContact;
+	public IdentityProof getAddressProofId() {
+		return addressProofId;
 	}
 
-	public void setPrimaryContact(PrimaryContact primaryContact) {
-		this.primaryContact = primaryContact;
+	public void setAddressProofId(IdentityProof addressProofId) {
+		this.addressProofId = addressProofId;
+	}
+
+	public Organization getOrganization() {
+		return organization;
+	}
+
+	public void setOrganization(Organization organization) {
+		this.organization = organization;
+	}
+
+	public String getDealerId() {
+		return dealerId;
+	}
+
+	public void setDealerId(String dealerId) {
+		this.dealerId = dealerId;
 	}
 
 	public String getPassword() {
@@ -119,6 +145,14 @@ public class Customer extends GoGasEntity implements Serializable {
 
 	public void setPassword(String password) {
 		this.password = password;
+	}
+
+	public String getProfileImage() {
+		return profileImage;
+	}
+
+	public void setProfileImage(String profileImage) {
+		this.profileImage = profileImage;
 	}
 
 }
