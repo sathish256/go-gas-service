@@ -57,6 +57,9 @@ public class CustomerService {
 			customer.setAddress(addressRepository.save(customer.getAddress()));
 			if (customer.getIdentityProof() != null)
 				customer.setIdentityProof(identityProofRepository.save(customer.getIdentityProof()));
+			
+			if (customer.getAddressProofId() != null)
+				customer.setAddressProofId(identityProofRepository.save(customer.getAddressProofId()));
 			savedCustomer = customerRepository.save(customer);
 
 			SMSUtil.sendSMS(customer.getPhone(), "GoGas - NewCustomer login Password : " + generatedPwd);
@@ -85,6 +88,9 @@ public class CustomerService {
 			customer.setAddress(addressRepository.save(customer.getAddress()));
 			if (customer.getIdentityProof() != null)
 				customer.setIdentityProof(identityProofRepository.save(customer.getIdentityProof()));
+			
+			if (customer.getAddressProofId() != null)
+				customer.setAddressProofId(identityProofRepository.save(customer.getAddressProofId()));
 			savedCustomer = customerRepository.save(customer);
 
 		} catch (Exception pe) {

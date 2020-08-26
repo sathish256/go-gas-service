@@ -1,6 +1,7 @@
 package com.gogas.app.service;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -127,6 +128,20 @@ public class UserService {
 		return Optional.ofNullable(userRepository.findByPhone(Long.parseLong(name)))
 				.orElseThrow(() -> new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,
 						"Could not retrive Logged in User Infomation"));
+	}
+
+	public List<User> findAll() {
+		return userRepository.findAll();
+	}
+
+	public User deleteUser(String phone) {
+
+		User user = Optional.ofNullable(userRepository.findByPhone(Long.parseLong(phone)))
+				.orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST,
+						"Could not find the User Infomation in the system"));
+
+		userRepository.deleteById(user.getId());
+		return user;
 	}
 
 }

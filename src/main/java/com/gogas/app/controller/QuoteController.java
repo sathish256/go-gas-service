@@ -4,7 +4,6 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -18,7 +17,7 @@ import com.gogas.app.model.order.GoGasQuote;
 import com.gogas.app.service.QuoteService;
 
 @RestController
-@RequestMapping("/v1/gogas/quote")
+@RequestMapping("/v1/quote")
 public class QuoteController {
 
 	@Autowired
