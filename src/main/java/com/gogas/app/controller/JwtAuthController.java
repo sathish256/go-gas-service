@@ -79,10 +79,10 @@ public class JwtAuthController {
 		user.setAddress(address);
 		user.setCreatedAt(LocalDateTime.now());
 		user.setCreatedBy("ADMIN01");
-		user.setFirstName("Naseer");
+		user.setFirstName("Sathish");
 		user.setLastmodifiedAt(LocalDateTime.now());
 		user.setLastmodifiedBy("ADMIN01");
-		user.setLastName("PA");
+		user.setLastName("K");
 		user.setRole(UserRole.ADMIN);
 		user.setPhone(9886333900L);
 		user.setIdentityProof(new IdentityProof());

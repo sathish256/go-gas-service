@@ -65,6 +65,29 @@ public class User extends GoGasEntity implements Serializable {
 
 	@Column(name = "dealershipId")
 	private String dealershipId;
+	
+	@Column(name = "hasfullAccess")
+	private boolean hasFullAccess;
+	
+	@Column(name = "allowedPages")
+	private String allowedPages;
+	
+
+	public String getAllowedPages() {
+		return allowedPages;
+	}
+
+	public void setAllowedPages(String allowedPages) {
+		this.allowedPages = allowedPages;
+	}
+
+	public boolean isHasFullAccess() {
+		return hasFullAccess;
+	}
+
+	public void setHasFullAccess(boolean hasFullAccess) {
+		this.hasFullAccess = hasFullAccess;
+	}
 
 	public String getId() {
 		return id;
