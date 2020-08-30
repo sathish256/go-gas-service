@@ -11,7 +11,7 @@ public class PasswordUtil {
 		String small_letter = "abcdefghijklmnopqrstuvwxyz";
 		String numbers = "0123456789";
 
-		String finalString = cap_letter + small_letter + numbers + symbol;
+		String finalString = small_letter + numbers;
 
 		Random random = new Random();
 

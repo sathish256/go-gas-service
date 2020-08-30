@@ -13,6 +13,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import com.connectgas.app.exception.EntityNotFoundException;
 import com.connectgas.app.model.customer.Customer;
+import com.connectgas.app.model.customer.Organization;
 import com.connectgas.app.model.dto.ConnectGasResponse;
 import com.connectgas.app.model.dto.CredentialsDTO;
 import com.connectgas.app.repository.AddressRepository;
@@ -65,9 +66,11 @@ public class CustomerService {
 			if (customer.getAddressProofId() != null)
 				customer.setAddressProofId(identityProofRepository.save(customer.getAddressProofId()));
 
-			if (customer.getOrganization() != null)
-				customer.setOrganization(organizationRepository.save(customer.getOrganization()));
-
+			if (customer.getOrganization() != null) {
+				Organization org = customer.getOrganization();
+				org.setOrgAddress(addressRepository.save(org.getOrgAddress()));
+				customer.setOrganization(organizationRepository.save(org));
+			}
 			savedCustomer = customerRepository.save(customer);
 
 			SMSUtil.sendSMS(Long.parseLong(customer.getPhone()),
@@ -101,9 +104,11 @@ public class CustomerService {
 			if (customer.getAddressProofId() != null)
 				customer.setAddressProofId(identityProofRepository.save(customer.getAddressProofId()));
 
-			if (customer.getOrganization() != null)
-				customer.setOrganization(organizationRepository.save(customer.getOrganization()));
-
+			if (customer.getOrganization() != null) {
+				Organization org = customer.getOrganization();
+				org.setOrgAddress(addressRepository.save(org.getOrgAddress()));
+				customer.setOrganization(organizationRepository.save(org));
+			}
 			savedCustomer = customerRepository.save(customer);
 
 		} catch (Exception pe) {
