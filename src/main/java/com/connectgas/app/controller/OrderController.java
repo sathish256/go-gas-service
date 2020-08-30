@@ -34,7 +34,7 @@ public class OrderController {
 		return ResponseEntity.ok(orderService.generateOrderbyQuote(quoteid));
 	}
 
-	@PostMapping
+	@PostMapping("/new")
 	public ResponseEntity<OrderDTO> directOrder(@RequestBody OrderDTO order) {
 		return ResponseEntity.ok(orderService.directOrder(order));
 	}

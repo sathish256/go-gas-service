@@ -4,14 +4,22 @@ import java.math.BigDecimal;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
+
+import org.hibernate.annotations.GenericGenerator;
 
 @Entity
 @Table(name = "quoteproduct")
 public class QuoteProduct {
-
+	
 	@Id
+	@GeneratedValue(generator = "op-uuid")
+	@GenericGenerator(name = "op-uuid", strategy = "uuid2")
+	@Column(name = "id", unique = true)
+	private String id;
+
 	@Column(name = "productId", nullable = false)
 	private String productId;
 
@@ -66,5 +74,15 @@ public class QuoteProduct {
 	public void setQuantity(Integer quantity) {
 		this.quantity = quantity;
 	}
+
+	public String getId() {
+		return id;
+	}
+
+	public void setId(String id) {
+		this.id = id;
+	}
+	
+	
 	
 }

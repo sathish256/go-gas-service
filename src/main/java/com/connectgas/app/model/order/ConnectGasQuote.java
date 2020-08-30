@@ -24,7 +24,7 @@ public class ConnectGasQuote extends GoGasEntity implements Serializable {
 	private static final long serialVersionUID = 7541870822535152218L;
 	@Id
 	@GeneratedValue(generator = "quote-uuid")
-	@GenericGenerator(name = "quote-uuid", strategy = "uuid")
+	@GenericGenerator(name = "quote-uuid", strategy = "uuid2")
 	@Column(name = "id", unique = true)
 	private String id;
 	@Column(name = "customerId")
