@@ -31,7 +31,7 @@ public class OrderController {
 
 	@PostMapping("/{quoteid}")
 	public ResponseEntity<OrderDTO> generateOrderbyQuote(@PathVariable String quoteid) {
-		return ResponseEntity.ok(orderService.addConnectGasQuote(quoteid));
+		return ResponseEntity.ok(orderService.generateOrderbyQuote(quoteid));
 	}
 
 	@PostMapping

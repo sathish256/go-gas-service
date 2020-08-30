@@ -5,16 +5,29 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
+import com.connectgas.app.model.Dealership;
 import com.connectgas.app.model.customer.Customer;
+import com.connectgas.app.model.customer.CustomerType;
+import com.connectgas.app.model.order.ConnectGasQuote;
+import com.connectgas.app.model.order.Order;
 import com.connectgas.app.model.order.OrderProduct;
 import com.connectgas.app.model.order.OrderStatus;
 import com.connectgas.app.model.order.PaymentInfo;
+import com.connectgas.app.model.order.QuoteProduct;
 import com.connectgas.app.model.order.dto.OrderCustomer;
 import com.connectgas.app.model.order.dto.OrderDTO;
 import com.connectgas.app.repository.CustomerRepository;
+import com.connectgas.app.repository.DealershipRepository;
+import com.connectgas.app.repository.OrderRepository;
+import com.connectgas.app.repository.QuoteRepository;
+import com.connectgas.app.utils.SMSUtil;
 
 @Service
 public class OrderService {
@@ -22,12 +35,92 @@ public class OrderService {
 	@Autowired
 	private CustomerRepository customerRepository;
 
+	@Autowired
+	private QuoteRepository quoteRepository;
+
+	@Autowired
+	private OrderRepository orderRepository;
+
+	@Autowired
+	private DealershipRepository dealershipRepository;
+
 	public OrderDTO getOrder(String id) {
 		return null;
 	}
 
-	public OrderDTO addConnectGasQuote(String quoteid) {
-		return null;
+	public OrderDTO generateOrderbyQuote(String quoteId) {
+
+		String loggedInUser = SecurityContextHolder.getContext().getAuthentication().getName();
+
+		ConnectGasQuote quote = quoteRepository.findById(quoteId)
+				.orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST,
+						"Error while placing order for Quote id " + quoteId + " not available in the system"));
+
+		OrderDTO order = new OrderDTO();
+
+		order.setCreatedAt(LocalDateTime.now());
+		order.setCreatedBy(loggedInUser);
+
+		order.setOrderedBy("Quote");
+		order.setQuoteId(quoteId);
+		order.setDealerId(quote.getDealerId());
+
+		Customer customer = customerRepository.findById(quote.getCustomerId()).orElseThrow(
+				() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Error while placing order for Customer id "
+						+ quote.getCustomerId() + " not available in the system"));
+
+		OrderCustomer orderCustomer = new OrderCustomer();
+		orderCustomer.setId(quote.getCustomerId());
+		orderCustomer.setName(customer.getName());
+		orderCustomer.setType(CustomerType.COMMERCIAL);
+		orderCustomer.setAddress(customer.getOrganization().getOrgAddress());
+		order.setCustomer(orderCustomer);
+
+		order.setLastmodifiedAt(LocalDateTime.now());
+		order.setLastmodifiedBy(loggedInUser);
+
+		List<OrderProduct> orderedProducts = new ArrayList<>();
+		BigDecimal billAmount = new BigDecimal(0.0);
+		for (QuoteProduct qp : quote.getQuoteProducts()) {
+			OrderProduct product = new OrderProduct();
+			product.setOrderedPrice(qp.getQuotePrice());
+			product.setQuantity(qp.getQuantity());
+			product.setProductId(qp.getProductId());
+
+			billAmount = billAmount.add(qp.getQuotePrice().multiply(new BigDecimal(qp.getQuantity())));
+			orderedProducts.add(product);
+		}
+
+		order.setOrderedProducts(orderedProducts);
+		order.setOrderStatus(OrderStatus.PLACED.toString());
+
+		List<PaymentInfo> paymentInfo = new ArrayList<>();
+		PaymentInfo payment = new PaymentInfo();
+		payment.setBillAmount(billAmount);
+		paymentInfo.add(payment);
+
+		order.setPaymentInfo(null);
+		order.setReturnProducts(null);
+
+		return saveOrUpdateOrder(order);
+	}
+
+	private OrderDTO saveOrUpdateOrder(OrderDTO order) {
+		Dealership dealer = dealershipRepository.findById(order.getDealerId()).orElseThrow(
+				() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Error while placing order to dealer id "
+						+ order.getDealerId() + " not available in the system"));
+		Order dbOrder = new Order();
+
+		BeanUtils.copyProperties(order, dbOrder);
+		dbOrder.setCustomerId(order.getCustomer().getId());
+
+		orderRepository.save(dbOrder);
+
+		order.setId(dbOrder.getId());
+		SMSUtil.sendSMS(Long.parseLong(order.getCustomer().getPhone()),
+				"Order ID " + dbOrder.getId() + " placed to " + dealer.getName());
+
+		return order;
 	}
 
 	public OrderDTO directOrder(OrderDTO order) {
@@ -83,7 +176,30 @@ public class OrderService {
 	}
 
 	public OrderDTO assignDeliveryPerson(String name, String orderid, String userid) {
-		return sampleOrder();
+		Order dbOrder = orderRepository.findById(orderid)
+				.orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST,
+						"Error while updating order id " + orderid + " not available in the system"));
+		dbOrder.setDeliveryPersonId(userid);
+		dbOrder.setLastmodifiedAt(LocalDateTime.now());
+		dbOrder.setLastmodifiedBy(name);
+
+		orderRepository.save(dbOrder);
+
+		OrderDTO order = new OrderDTO();
+		BeanUtils.copyProperties(dbOrder, order);
+
+		Customer customer = customerRepository.findById(dbOrder.getCustomerId()).orElseThrow(
+				() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Error while placing order for Customer id "
+						+ dbOrder.getCustomerId() + " not available in the system"));
+
+		OrderCustomer orderCustomer = new OrderCustomer();
+		orderCustomer.setId(customer.getId());
+		orderCustomer.setName(customer.getName());
+		orderCustomer.setType(CustomerType.COMMERCIAL);
+		orderCustomer.setAddress(customer.getOrganization().getOrgAddress());
+
+		order.setCustomer(orderCustomer);
+		return order;
 	}
 
 }
