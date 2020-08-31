@@ -185,10 +185,11 @@ public class OrderService {
 			if (od.getOrderedBy().equals(OrderedBy.COMMERCIAL.toString())) {
 				orderCustomer.setType(CustomerType.COMMERCIAL);
 				orderCustomer.setAddress(customer.getOrganization().getOrgAddress());
-			}else {
+			} else {
 				orderCustomer.setType(CustomerType.INDIVIDUAL);
 				orderCustomer.setAddress(customer.getAddress());
 			}
+			order.setCustomer(orderCustomer);
 
 			orders.add(order);
 
