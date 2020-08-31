@@ -22,7 +22,7 @@ public class OrderDTO implements Serializable {
 
 	private String quoteId;
 
-	private String orderedBy;
+	private OrderedBy orderedBy;
 
 	private String deliveryPersonId;
 
@@ -45,6 +45,8 @@ public class OrderDTO implements Serializable {
 	private String lastmodifiedBy;
 
 	private State status;
+	
+	private LocalDateTime scheduledAt;
 
 	public Long getId() {
 		return id;
@@ -78,11 +80,11 @@ public class OrderDTO implements Serializable {
 		this.quoteId = quoteId;
 	}
 
-	public String getOrderedBy() {
+	public OrderedBy getOrderedBy() {
 		return orderedBy;
 	}
 
-	public void setOrderedBy(String orderedBy) {
+	public void setOrderedBy(OrderedBy orderedBy) {
 		this.orderedBy = orderedBy;
 	}
 
@@ -172,6 +174,14 @@ public class OrderDTO implements Serializable {
 
 	public void setStatus(State status) {
 		this.status = status;
+	}
+
+	public LocalDateTime getScheduledAt() {
+		return scheduledAt;
+	}
+
+	public void setScheduledAt(LocalDateTime scheduledAt) {
+		this.scheduledAt = scheduledAt;
 	}
 
 }

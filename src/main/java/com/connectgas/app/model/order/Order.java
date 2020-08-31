@@ -27,7 +27,7 @@ public class Order extends GoGasEntity implements Serializable {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "order_seq")
-	@SequenceGenerator(name = "order_seq", sequenceName = "order_seq",initialValue = 1000, allocationSize = 1)
+	@SequenceGenerator(name = "order_seq", sequenceName = "order_seq", initialValue = 1000, allocationSize = 1)
 	@Column(name = "id", unique = true)
 	private Long id;
 
@@ -57,12 +57,23 @@ public class Order extends GoGasEntity implements Serializable {
 
 	@Column(name = "deliveredTimestamp")
 	private LocalDateTime deliveredTimestamp;
-	
+
 	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<OrderProduct> orderedProducts;
-	
+
 	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<OrderProduct> returnProducts;
+
+	@Column(name = "scheduledAt")
+	private LocalDateTime scheduledAt;
+
+	public LocalDateTime getScheduledAt() {
+		return scheduledAt;
+	}
+
+	public void setScheduledAt(LocalDateTime scheduledAt) {
+		this.scheduledAt = scheduledAt;
+	}
 
 	public Long getId() {
 		return id;

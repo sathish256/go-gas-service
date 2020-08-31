@@ -22,8 +22,12 @@ import com.connectgas.app.model.order.OrderProduct;
 import com.connectgas.app.model.order.OrderStatus;
 import com.connectgas.app.model.order.PaymentInfo;
 import com.connectgas.app.model.order.QuoteProduct;
+import com.connectgas.app.model.order.QuoteStatus;
 import com.connectgas.app.model.order.dto.OrderCustomer;
 import com.connectgas.app.model.order.dto.OrderDTO;
+import com.connectgas.app.model.order.dto.OrderedBy;
+import com.connectgas.app.model.user.User;
+import com.connectgas.app.model.user.UserRole;
 import com.connectgas.app.repository.CustomerRepository;
 import com.connectgas.app.repository.DealershipRepository;
 import com.connectgas.app.repository.OrderRepository;
@@ -45,7 +49,7 @@ public class OrderService {
 
 	@Autowired
 	private DealershipRepository dealershipRepository;
-	
+
 	@Autowired
 	private UserRepository userRepository;
 
@@ -66,7 +70,7 @@ public class OrderService {
 		order.setCreatedAt(LocalDateTime.now());
 		order.setCreatedBy(loggedInUser);
 
-		order.setOrderedBy("Quote");
+		order.setOrderedBy(OrderedBy.COMMERCIAL);
 		order.setQuoteId(quoteId);
 		order.setDealerId(quote.getDealerId());
 
@@ -81,7 +85,6 @@ public class OrderService {
 		orderCustomer.setAddress(customer.getOrganization().getOrgAddress());
 		orderCustomer.setPhone(customer.getPhone());
 		order.setCustomer(orderCustomer);
-
 		order.setLastmodifiedAt(LocalDateTime.now());
 		order.setLastmodifiedBy(loggedInUser);
 
@@ -108,10 +111,10 @@ public class OrderService {
 		order.setPaymentInfo(null);
 		order.setReturnProducts(null);
 
-		return saveOrUpdateOrder(order);
+		return saveOrUpdateOrder(order, quote, loggedInUser);
 	}
 
-	private OrderDTO saveOrUpdateOrder(OrderDTO order) {
+	private OrderDTO saveOrUpdateOrder(OrderDTO order, ConnectGasQuote quote, String loggedInUser) {
 		Dealership dealer = dealershipRepository.findById(order.getDealerId()).orElseThrow(
 				() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Error while placing order to dealer id "
 						+ order.getDealerId() + " not available in the system"));
@@ -119,6 +122,7 @@ public class OrderService {
 
 		BeanUtils.copyProperties(order, dbOrder);
 		dbOrder.setCustomerId(order.getCustomer().getId());
+		dbOrder.setOrderedBy(order.getOrderedBy().toString());
 
 		orderRepository.save(dbOrder);
 
@@ -126,6 +130,13 @@ public class OrderService {
 		if (StringUtils.hasText(order.getCustomer().getPhone()))
 			SMSUtil.sendSMS(Long.parseLong(order.getCustomer().getPhone()),
 					"Order ID " + dbOrder.getId() + " placed to " + dealer.getName());
+
+		if (quote != null) {
+			quote.setQuoteStatus(QuoteStatus.ORDERED);
+			quote.setLastmodifiedAt(LocalDateTime.now());
+			quote.setLastmodifiedBy(loggedInUser);
+			quoteRepository.save(quote);
+		}
 
 		return order;
 	}
@@ -139,48 +150,51 @@ public class OrderService {
 	}
 
 	public List<OrderDTO> getOrders(String phone) {
-		
+
+		User user = userRepository.findByPhone(phone);
+
+		if (user == null)
+			return null;
+
+		if (user.getRole().equals(UserRole.DELIVERY))
+			return toOderDTO(orderRepository.findByDeliveryPersonId(user.getId()));
+
+		if (user.getRole().equals(UserRole.DEALER))
+			return toOderDTO(orderRepository.findByDeliveryPersonId(user.getDealershipId()));
+
 		return null;
 	}
 
-	public OrderDTO sampleOrder() {
-		Customer cus = customerRepository.findAll().get(0);
-		OrderDTO order = new OrderDTO();
-		order.setId(1001L);
-		order.setCreatedAt(LocalDateTime.now());
-		order.setCreatedBy("user23");
-		OrderCustomer customer = new OrderCustomer();
-		customer.setAddress(cus.getAddress());
-		customer.setId(cus.getId());
-		customer.setName(cus.getName());
-		customer.setType(cus.getType());
-		order.setCustomer(customer);
+	private List<OrderDTO> toOderDTO(List<Order> dbOrders) {
 
-		order.setDealerId("dealerid");
-		order.setDeliveryPersonId("deliveryPersonId");
-		order.setLastmodifiedAt(LocalDateTime.now());
-		order.setLastmodifiedBy("user23");
-		order.setOrderedBy("Quote");
-		order.setQuoteId("quote123");
-		List<OrderProduct> orderedProducts = new ArrayList<>();
-		OrderProduct product = new OrderProduct();
-		product.setOrderedPrice(BigDecimal.valueOf(1300.00));
-		product.setQuantity(5);
-		product.setProductId("productId");
-		orderedProducts.add(product);
-		order.setOrderedProducts(orderedProducts);
-		order.setOrderStatus(OrderStatus.PLACED.toString());
+		List<OrderDTO> orders = new ArrayList<>();
+		for (Order od : dbOrders) {
+			OrderDTO order = new OrderDTO();
+			BeanUtils.copyProperties(od, order);
 
-		List<PaymentInfo> paymentInfo = new ArrayList<>();
-		PaymentInfo payment = new PaymentInfo();
-		payment.setPaymentType("COD");
-		payment.setBillAmount(BigDecimal.valueOf(1300.00));
-		payment.setPartialPay(false);
-		paymentInfo.add(payment);
-		order.setPaymentInfo(paymentInfo);
-		order.setReturnProducts(orderedProducts);
+			Customer customer = customerRepository.findById(od.getCustomerId())
+					.orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST,
+							"Error while placing order for Customer id " + od.getCustomerId()
+									+ " not available in the system"));
 
-		return order;
+			OrderCustomer orderCustomer = new OrderCustomer();
+			orderCustomer.setId(customer.getId());
+			orderCustomer.setName(customer.getName());
+			orderCustomer.setPhone(customer.getPhone());
+
+			if (od.getOrderedBy().equals(OrderedBy.COMMERCIAL.toString())) {
+				orderCustomer.setType(CustomerType.COMMERCIAL);
+				orderCustomer.setAddress(customer.getOrganization().getOrgAddress());
+			}else {
+				orderCustomer.setType(CustomerType.INDIVIDUAL);
+				orderCustomer.setAddress(customer.getAddress());
+			}
+
+			orders.add(order);
+
+		}
+
+		return orders;
 	}
 
 	public OrderDTO assignDeliveryPerson(String name, String orderid, String userid) {
@@ -210,9 +224,8 @@ public class OrderService {
 		return order;
 	}
 
-	public List<Order> search(String dealerid) {
-		List<Order> orders = orderRepository.findByDealerId(dealerid);
-		return orders;
+	public List<OrderDTO> search(String dealerId) {
+		return toOderDTO(orderRepository.findByDealerId(dealerId));
 	}
 
 }
