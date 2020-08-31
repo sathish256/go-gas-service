@@ -52,8 +52,8 @@ public class CustomerController {
 	}
 	
 	@GetMapping("/search")
-	public List<Customer> search(@RequestParam("dealerid") String dealerid) {
-		return customerService.search(dealerid);
+	public List<Customer> search(@RequestParam("dealerId") String dealerId) {
+		return customerService.search(dealerId);
 	}
 	
 	

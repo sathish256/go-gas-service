@@ -155,8 +155,8 @@ public class CustomerService {
 						"Could not retrive Logged in Customer Infomation"));
 	}
 
-	public List<Customer> search(String dealerid) {
-		return customerRepository.findByDealerId(dealerid);
+	public List<Customer> search(String dealerId) {
+		return customerRepository.findByDealerId(dealerId);
 	}
 
 }
