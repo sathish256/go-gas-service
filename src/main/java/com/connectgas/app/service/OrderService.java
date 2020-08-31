@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.connectgas.app.model.Dealership;
@@ -74,6 +75,7 @@ public class OrderService {
 		orderCustomer.setName(customer.getName());
 		orderCustomer.setType(CustomerType.COMMERCIAL);
 		orderCustomer.setAddress(customer.getOrganization().getOrgAddress());
+		orderCustomer.setPhone(customer.getPhone());
 		order.setCustomer(orderCustomer);
 
 		order.setLastmodifiedAt(LocalDateTime.now());
@@ -117,8 +119,9 @@ public class OrderService {
 		orderRepository.save(dbOrder);
 
 		order.setId(dbOrder.getId());
-		SMSUtil.sendSMS(Long.parseLong(order.getCustomer().getPhone()),
-				"Order ID " + dbOrder.getId() + " placed to " + dealer.getName());
+		if (StringUtils.hasText(order.getCustomer().getPhone()))
+			SMSUtil.sendSMS(Long.parseLong(order.getCustomer().getPhone()),
+					"Order ID " + dbOrder.getId() + " placed to " + dealer.getName());
 
 		return order;
 	}
