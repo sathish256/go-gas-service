@@ -15,6 +15,6 @@ public interface OrderRepository extends JpaRepository<Order, String> {
 
 	List<Order> findAll();
 
-	List<ConnectGasQuote> findByDealerId(String dealerId);
+	List<Order> findByDealerId(String dealerId);
 
 }

@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.connectgas.app.model.customer.Customer;
@@ -49,6 +50,13 @@ public class CustomerController {
 	public List<Customer> findAll() {
 		return customerRepository.findAll();
 	}
+	
+	@GetMapping("/search")
+	public List<Customer> search(@RequestParam("dealerid") String dealerid) {
+		return customerService.search(dealerid);
+	}
+	
+	
 
 	@PostMapping("/change-password")
 	public ResponseEntity<ConnectGasResponse> changePassword(@RequestBody @Valid CredentialsDTO credentialsDTO) {

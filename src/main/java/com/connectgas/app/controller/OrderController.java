@@ -12,8 +12,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.connectgas.app.model.order.Order;
 import com.connectgas.app.model.order.dto.OrderDTO;
 import com.connectgas.app.service.OrderService;
 
@@ -45,9 +47,13 @@ public class OrderController {
 	}
 
 	@GetMapping("/myorders")
-	public List<OrderDTO> findOrdersByLoggedInUser() {
-		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-		return orderService.getOrders(auth.getName());
+	public List<OrderDTO> findOrdersByLoggedInUser(@PathVariable String dealerid) {
+		return orderService.getOrders(dealerid);
+	}
+
+	@GetMapping("/search")
+	public List<Order> search(@RequestParam("dealerid") String dealerid) {
+		return orderService.search(dealerid);
 	}
 
 	@PostMapping("/assign/{orderid}/{userid}")

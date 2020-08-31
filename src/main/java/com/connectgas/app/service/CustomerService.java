@@ -1,6 +1,7 @@
 package com.connectgas.app.service;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -152,6 +153,10 @@ public class CustomerService {
 		return Optional.ofNullable(customerRepository.findByPhone(name))
 				.orElseThrow(() -> new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,
 						"Could not retrive Logged in Customer Infomation"));
+	}
+
+	public List<Customer> search(String dealerid) {
+		return customerRepository.findByDealerId(dealerid);
 	}
 
 }

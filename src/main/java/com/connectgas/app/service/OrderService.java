@@ -28,6 +28,7 @@ import com.connectgas.app.repository.CustomerRepository;
 import com.connectgas.app.repository.DealershipRepository;
 import com.connectgas.app.repository.OrderRepository;
 import com.connectgas.app.repository.QuoteRepository;
+import com.connectgas.app.repository.UserRepository;
 import com.connectgas.app.utils.SMSUtil;
 
 @Service
@@ -44,6 +45,9 @@ public class OrderService {
 
 	@Autowired
 	private DealershipRepository dealershipRepository;
+	
+	@Autowired
+	private UserRepository userRepository;
 
 	public OrderDTO getOrder(String id) {
 		return null;
@@ -134,7 +138,8 @@ public class OrderService {
 		return null;
 	}
 
-	public List<OrderDTO> getOrders(String name) {
+	public List<OrderDTO> getOrders(String phone) {
+		
 		return null;
 	}
 
@@ -203,6 +208,11 @@ public class OrderService {
 
 		order.setCustomer(orderCustomer);
 		return order;
+	}
+
+	public List<Order> search(String dealerid) {
+		List<Order> orders = orderRepository.findByDealerId(dealerid);
+		return orders;
 	}
 
 }
