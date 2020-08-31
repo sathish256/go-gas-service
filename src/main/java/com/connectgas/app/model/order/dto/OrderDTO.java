@@ -6,6 +6,7 @@ import java.util.List;
 
 import com.connectgas.app.model.common.State;
 import com.connectgas.app.model.order.OrderProduct;
+import com.connectgas.app.model.order.OrderStatus;
 import com.connectgas.app.model.order.PaymentInfo;
 
 public class OrderDTO implements Serializable {
@@ -22,11 +23,11 @@ public class OrderDTO implements Serializable {
 
 	private String quoteId;
 
-	private OrderedBy orderedBy;
+	private OrderType orderType;
 
 	private String deliveryPersonId;
 
-	private String orderStatus;
+	private OrderStatus orderStatus;
 
 	private List<PaymentInfo> paymentInfo;
 
@@ -45,7 +46,7 @@ public class OrderDTO implements Serializable {
 	private String lastmodifiedBy;
 
 	private State status;
-	
+
 	private LocalDateTime scheduledAt;
 
 	public Long getId() {
@@ -80,12 +81,12 @@ public class OrderDTO implements Serializable {
 		this.quoteId = quoteId;
 	}
 
-	public OrderedBy getOrderedBy() {
-		return orderedBy;
+	public OrderType getOrderType() {
+		return orderType;
 	}
 
-	public void setOrderedBy(OrderedBy orderedBy) {
-		this.orderedBy = orderedBy;
+	public void setOrderType(OrderType orderType) {
+		this.orderType = orderType;
 	}
 
 	public String getDeliveryPersonId() {
@@ -96,11 +97,11 @@ public class OrderDTO implements Serializable {
 		this.deliveryPersonId = deliveryPersonId;
 	}
 
-	public String getOrderStatus() {
+	public OrderStatus getOrderStatus() {
 		return orderStatus;
 	}
 
-	public void setOrderStatus(String orderStatus) {
+	public void setOrderStatus(OrderStatus orderStatus) {
 		this.orderStatus = orderStatus;
 	}
 

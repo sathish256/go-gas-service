@@ -25,7 +25,7 @@ import com.connectgas.app.model.order.QuoteProduct;
 import com.connectgas.app.model.order.QuoteStatus;
 import com.connectgas.app.model.order.dto.OrderCustomer;
 import com.connectgas.app.model.order.dto.OrderDTO;
-import com.connectgas.app.model.order.dto.OrderedBy;
+import com.connectgas.app.model.order.dto.OrderType;
 import com.connectgas.app.model.user.User;
 import com.connectgas.app.model.user.UserRole;
 import com.connectgas.app.repository.CustomerRepository;
@@ -70,7 +70,7 @@ public class OrderService {
 		order.setCreatedAt(LocalDateTime.now());
 		order.setCreatedBy(loggedInUser);
 
-		order.setOrderedBy(OrderedBy.COMMERCIAL);
+		order.setOrderType(OrderType.COMMERCIAL);
 		order.setQuoteId(quoteId);
 		order.setDealerId(quote.getDealerId());
 
@@ -101,7 +101,7 @@ public class OrderService {
 		}
 
 		order.setOrderedProducts(orderedProducts);
-		order.setOrderStatus(OrderStatus.PLACED.toString());
+		order.setOrderStatus(OrderStatus.PLACED);
 
 		List<PaymentInfo> paymentInfo = new ArrayList<>();
 		PaymentInfo payment = new PaymentInfo();
@@ -122,7 +122,6 @@ public class OrderService {
 
 		BeanUtils.copyProperties(order, dbOrder);
 		dbOrder.setCustomerId(order.getCustomer().getId());
-		dbOrder.setOrderedBy(order.getOrderedBy().toString());
 
 		orderRepository.save(dbOrder);
 
@@ -142,11 +141,44 @@ public class OrderService {
 	}
 
 	public OrderDTO directOrder(OrderDTO order) {
-		return null;
+		String loggedInUser = SecurityContextHolder.getContext().getAuthentication().getName();
+		order.setOrderStatus(OrderStatus.PLACED);
+		return saveOrUpdateOrder(order, null, loggedInUser);
 	}
 
-	public OrderDTO updateOrderStatus(String status) {
-		return null;
+	public OrderDTO updateOrderStatus(String orderId, String status) {
+		String loggedInUser = SecurityContextHolder.getContext().getAuthentication().getName();
+
+		Order dbOrder = orderRepository.findById(orderId)
+				.orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST,
+						"Error while updating order id " + orderId + " not available in the system"));
+		dbOrder.setLastmodifiedAt(LocalDateTime.now());
+		dbOrder.setLastmodifiedBy(loggedInUser);
+		dbOrder.setOrderStatus(OrderStatus.valueOf(status));
+
+		orderRepository.save(dbOrder);
+
+		OrderDTO order = new OrderDTO();
+		BeanUtils.copyProperties(dbOrder, order);
+
+		Customer customer = customerRepository.findById(dbOrder.getCustomerId()).orElseThrow(
+				() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Error while placing order for Customer id "
+						+ dbOrder.getCustomerId() + " not available in the system"));
+		OrderCustomer orderCustomer = new OrderCustomer();
+		orderCustomer.setId(customer.getId());
+		orderCustomer.setName(customer.getName());
+		orderCustomer.setPhone(customer.getPhone());
+
+		if (dbOrder.getOrderType().equals(OrderType.COMMERCIAL)) {
+			orderCustomer.setType(CustomerType.COMMERCIAL);
+			orderCustomer.setAddress(customer.getOrganization().getOrgAddress());
+		} else {
+			orderCustomer.setType(CustomerType.INDIVIDUAL);
+			orderCustomer.setAddress(customer.getAddress());
+		}
+		order.setCustomer(orderCustomer);
+
+		return order;
 	}
 
 	public List<OrderDTO> getOrders(String phone) {
@@ -182,7 +214,7 @@ public class OrderService {
 			orderCustomer.setName(customer.getName());
 			orderCustomer.setPhone(customer.getPhone());
 
-			if (od.getOrderedBy().equals(OrderedBy.COMMERCIAL.toString())) {
+			if (od.getOrderType().equals(OrderType.COMMERCIAL)) {
 				orderCustomer.setType(CustomerType.COMMERCIAL);
 				orderCustomer.setAddress(customer.getOrganization().getOrgAddress());
 			} else {
@@ -205,6 +237,7 @@ public class OrderService {
 		dbOrder.setDeliveryPersonId(userid);
 		dbOrder.setLastmodifiedAt(LocalDateTime.now());
 		dbOrder.setLastmodifiedBy(name);
+		dbOrder.setOrderStatus(OrderStatus.ASSIGNED);
 
 		orderRepository.save(dbOrder);
 
@@ -214,13 +247,18 @@ public class OrderService {
 		Customer customer = customerRepository.findById(dbOrder.getCustomerId()).orElseThrow(
 				() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Error while placing order for Customer id "
 						+ dbOrder.getCustomerId() + " not available in the system"));
-
 		OrderCustomer orderCustomer = new OrderCustomer();
 		orderCustomer.setId(customer.getId());
 		orderCustomer.setName(customer.getName());
-		orderCustomer.setType(CustomerType.COMMERCIAL);
-		orderCustomer.setAddress(customer.getOrganization().getOrgAddress());
+		orderCustomer.setPhone(customer.getPhone());
 
+		if (dbOrder.getOrderType().equals(OrderType.COMMERCIAL)) {
+			orderCustomer.setType(CustomerType.COMMERCIAL);
+			orderCustomer.setAddress(customer.getOrganization().getOrgAddress());
+		} else {
+			orderCustomer.setType(CustomerType.INDIVIDUAL);
+			orderCustomer.setAddress(customer.getAddress());
+		}
 		order.setCustomer(orderCustomer);
 		return order;
 	}

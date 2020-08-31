@@ -15,7 +15,7 @@ import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
 import com.connectgas.app.model.common.GoGasEntity;
-import com.connectgas.app.model.customer.CustomerType;
+import com.connectgas.app.model.order.dto.OrderType;
 
 @Entity
 @Table(name = "cg_order")
@@ -34,23 +34,20 @@ public class Order extends GoGasEntity implements Serializable {
 	@Column(name = "customerId")
 	private String customerId;
 
-	@Column(name = "orderType")
-	private CustomerType orderType;
-
 	@Column(name = "dealerId")
 	private String dealerId;
 
 	@Column(name = "quoteId")
 	private String quoteId;
 
-	@Column(name = "orderedBy")
-	private String orderedBy;
+	@Column(name = "orderType")
+	private OrderType orderType;
 
 	@Column(name = "deliveryPersonId")
 	private String deliveryPersonId;
 
 	@Column(name = "orderStatus")
-	private String orderStatus;
+	private OrderStatus orderStatus;
 
 	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<PaymentInfo> paymentInfo;
@@ -91,11 +88,11 @@ public class Order extends GoGasEntity implements Serializable {
 		this.customerId = customerId;
 	}
 
-	public CustomerType getOrderType() {
+	public OrderType getOrderType() {
 		return orderType;
 	}
 
-	public void setOrderType(CustomerType orderType) {
+	public void setOrderType(OrderType orderType) {
 		this.orderType = orderType;
 	}
 
@@ -115,14 +112,6 @@ public class Order extends GoGasEntity implements Serializable {
 		this.quoteId = quoteId;
 	}
 
-	public String getOrderedBy() {
-		return orderedBy;
-	}
-
-	public void setOrderedBy(String orderedBy) {
-		this.orderedBy = orderedBy;
-	}
-
 	public String getDeliveryPersonId() {
 		return deliveryPersonId;
 	}
@@ -131,11 +120,11 @@ public class Order extends GoGasEntity implements Serializable {
 		this.deliveryPersonId = deliveryPersonId;
 	}
 
-	public String getOrderStatus() {
+	public OrderStatus getOrderStatus() {
 		return orderStatus;
 	}
 
-	public void setOrderStatus(String orderStatus) {
+	public void setOrderStatus(OrderStatus orderStatus) {
 		this.orderStatus = orderStatus;
 	}
 

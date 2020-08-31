@@ -40,9 +40,9 @@ public class OrderController {
 		return ResponseEntity.ok(orderService.directOrder(order));
 	}
 
-	@PutMapping("/{status}")
-	public ResponseEntity<OrderDTO> updateOrderStatus(@PathVariable String status) {
-		return ResponseEntity.ok(orderService.updateOrderStatus(status));
+	@PutMapping("/{orderId}/change-status/{status}")
+	public ResponseEntity<OrderDTO> updateOrderStatus(@PathVariable String orderId, @PathVariable String status) {
+		return ResponseEntity.ok(orderService.updateOrderStatus(orderId, status));
 	}
 
 	@GetMapping("/myorders")
@@ -56,10 +56,10 @@ public class OrderController {
 		return orderService.search(dealerId);
 	}
 
-	@PostMapping("/assign/{orderid}/{userid}")
-	public ResponseEntity<OrderDTO> assignDeliveryPerson(@PathVariable String orderid, @PathVariable String userid) {
+	@PostMapping("/{orderId}/assign/{userId}")
+	public ResponseEntity<OrderDTO> assignDeliveryPerson(@PathVariable String orderId, @PathVariable String userId) {
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-		return ResponseEntity.ok(orderService.assignDeliveryPerson(auth.getName(), orderid, userid));
+		return ResponseEntity.ok(orderService.assignDeliveryPerson(auth.getName(), orderId, userId));
 	}
 
 }
