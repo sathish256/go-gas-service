@@ -10,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.connectgas.app.exception.EntityNotFoundException;
@@ -156,6 +157,16 @@ public class UserService {
 			return userRepository.findByDealershipId(user.getDealershipId());
 
 		return userRepository.findAll();
+	}
+
+	public List<User> search(String candfId, String dealerId) {
+
+		if (StringUtils.hasText(candfId))
+			return userRepository.findByCandfId(candfId);
+		else if (StringUtils.hasText(dealerId))
+			return userRepository.findByDealershipId(dealerId);
+
+		throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "User Search requires either candfId or dealerId");
 	}
 
 }

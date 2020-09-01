@@ -8,7 +8,7 @@ import org.springframework.stereotype.Repository;
 import com.connectgas.app.model.order.Order;
 
 @Repository
-public interface OrderRepository extends JpaRepository<Order, String> {
+public interface OrderRepository extends JpaRepository<Order, Long> {
 
 	List<Order> findByCustomerId(String customerId);
 

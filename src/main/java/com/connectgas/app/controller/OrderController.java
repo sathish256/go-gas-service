@@ -41,7 +41,7 @@ public class OrderController {
 	}
 
 	@PutMapping("/{orderId}/change-status/{status}")
-	public ResponseEntity<OrderDTO> updateOrderStatus(@PathVariable String orderId, @PathVariable String status) {
+	public ResponseEntity<OrderDTO> updateOrderStatus(@PathVariable Long orderId, @PathVariable String status) {
 		return ResponseEntity.ok(orderService.updateOrderStatus(orderId, status));
 	}
 
@@ -56,8 +56,8 @@ public class OrderController {
 		return orderService.search(dealerId);
 	}
 
-	@PostMapping("/{orderId}/assign/{userId}")
-	public ResponseEntity<OrderDTO> assignDeliveryPerson(@PathVariable String orderId, @PathVariable String userId) {
+	@PutMapping("/{orderId}/assign/{userId}")
+	public ResponseEntity<OrderDTO> assignDeliveryPerson(@PathVariable Long orderId, @PathVariable String userId) {
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 		return ResponseEntity.ok(orderService.assignDeliveryPerson(auth.getName(), orderId, userId));
 	}

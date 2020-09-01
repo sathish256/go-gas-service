@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.connectgas.app.model.dto.ConnectGasResponse;
@@ -68,5 +69,11 @@ public class UserController {
 	@DeleteMapping("/delete/{phone}")
 	public ResponseEntity<User> deleteUser(@PathVariable String phone) {
 		return ResponseEntity.ok(userService.deleteUser(phone));
+	}
+	
+	@GetMapping("/search")
+	public List<User> search(@RequestParam(value = "candfId") String candfId,
+			@RequestParam(value = "dealerId") String dealerId) {
+		return userService.search(candfId, dealerId);
 	}
 }

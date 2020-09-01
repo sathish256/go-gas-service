@@ -146,7 +146,7 @@ public class OrderService {
 		return saveOrUpdateOrder(order, null, loggedInUser);
 	}
 
-	public OrderDTO updateOrderStatus(String orderId, String status) {
+	public OrderDTO updateOrderStatus(Long orderId, String status) {
 		String loggedInUser = SecurityContextHolder.getContext().getAuthentication().getName();
 
 		Order dbOrder = orderRepository.findById(orderId)
@@ -155,6 +155,9 @@ public class OrderService {
 		dbOrder.setLastmodifiedAt(LocalDateTime.now());
 		dbOrder.setLastmodifiedBy(loggedInUser);
 		dbOrder.setOrderStatus(OrderStatus.valueOf(status));
+
+		if (OrderStatus.DELIVERED.toString().equals(status))
+			dbOrder.setDeliveredTimestamp(LocalDateTime.now());
 
 		orderRepository.save(dbOrder);
 
@@ -230,7 +233,7 @@ public class OrderService {
 		return orders;
 	}
 
-	public OrderDTO assignDeliveryPerson(String name, String orderid, String userid) {
+	public OrderDTO assignDeliveryPerson(String name, Long orderid, String userid) {
 		Order dbOrder = orderRepository.findById(orderid)
 				.orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST,
 						"Error while updating order id " + orderid + " not available in the system"));
