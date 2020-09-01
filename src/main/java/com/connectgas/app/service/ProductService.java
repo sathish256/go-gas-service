@@ -34,9 +34,8 @@ public class ProductService {
 			savedProduct = productRepository.save(product);
 
 		} catch (Exception pe) {
-			if (pe.getLocalizedMessage().contains("constraint"))
-				throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
-						"Contact number " + product.getSpecification() + " already exists in the system");
+			throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,
+					"Error while creating product: " + pe.getLocalizedMessage());
 		}
 
 		return savedProduct;
@@ -53,9 +52,8 @@ public class ProductService {
 			savedProduct = productRepository.save(product);
 
 		} catch (Exception pe) {
-			if (pe.getLocalizedMessage().contains("Key (contact)"))
-				throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
-						"Contact number " + product.getSpecification() + " already exists in the system");
+			throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,
+					"Error while creating product: " + pe.getLocalizedMessage());
 		}
 
 		return savedProduct;
