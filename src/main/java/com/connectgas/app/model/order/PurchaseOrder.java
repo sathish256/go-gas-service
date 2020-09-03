@@ -4,9 +4,7 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.List;
 
-import com.connectgas.app.model.common.GoGasEntity;
-
-public class PurchaseOrder extends GoGasEntity implements Serializable {
+public class PurchaseOrder implements Serializable {
 	/**
 	 * 
 	 */
@@ -27,6 +25,14 @@ public class PurchaseOrder extends GoGasEntity implements Serializable {
 	private BigDecimal poAmount;
 
 	private List<PoPaymentInfo> paymentInfo;
+
+	private String createdAt;
+
+	private String createdBy;
+
+	private String lastmodifiedAt;
+
+	private String lastmodifiedBy;
 
 	public String getId() {
 		return id;
@@ -90,6 +96,38 @@ public class PurchaseOrder extends GoGasEntity implements Serializable {
 
 	public void setPaymentInfo(List<PoPaymentInfo> paymentInfo) {
 		this.paymentInfo = paymentInfo;
+	}
+
+	public String getCreatedAt() {
+		return createdAt;
+	}
+
+	public void setCreatedAt(String createdAt) {
+		this.createdAt = createdAt;
+	}
+
+	public String getCreatedBy() {
+		return createdBy;
+	}
+
+	public void setCreatedBy(String createdBy) {
+		this.createdBy = createdBy;
+	}
+
+	public String getLastmodifiedAt() {
+		return lastmodifiedAt;
+	}
+
+	public void setLastmodifiedAt(String lastmodifiedAt) {
+		this.lastmodifiedAt = lastmodifiedAt;
+	}
+
+	public String getLastmodifiedBy() {
+		return lastmodifiedBy;
+	}
+
+	public void setLastmodifiedBy(String lastmodifiedBy) {
+		this.lastmodifiedBy = lastmodifiedBy;
 	}
 
 }
