@@ -20,7 +20,7 @@ import com.connectgas.app.model.order.dto.OrderDTO;
 import com.connectgas.app.service.PorderService;
 
 @RestController
-@RequestMapping("/v1/order")
+@RequestMapping("/v1/purchase-order")
 public class PorderController {
 
 	@Autowired
