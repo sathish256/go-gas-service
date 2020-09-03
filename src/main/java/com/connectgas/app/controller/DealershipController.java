@@ -40,12 +40,11 @@ public class DealershipController {
 
 	@GetMapping("/findall")
 	public List<Dealership> findAll() {
-		return dealershipService.search(null, null);
+		return dealershipService.search(null);
 	}
 
 	@GetMapping("/search")
-	public List<Dealership> search(@RequestParam(value = "candfId") String candfId,
-			@RequestParam(value = "phone") String phone) {
-		return dealershipService.search(candfId, phone);
+	public List<Dealership> search(@RequestParam(value = "candfId") String candfId) {
+		return dealershipService.search(candfId);
 	}
 }

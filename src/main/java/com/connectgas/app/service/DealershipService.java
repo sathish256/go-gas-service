@@ -68,10 +68,8 @@ public class DealershipService {
 		return savedDealership;
 	}
 
-	public List<Dealership> search(String candfId, String phone) {
-		if (!StringUtils.isEmpty(phone))
-			return dealershipRepository.findByPhone(phone);
-		else if (!StringUtils.isEmpty(candfId))
+	public List<Dealership> search(String candfId) {
+		if (!StringUtils.isEmpty(candfId))
 			return dealershipRepository.findByCandfId(candfId);
 
 		return dealershipRepository.findAll();
