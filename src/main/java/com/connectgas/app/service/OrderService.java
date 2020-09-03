@@ -145,7 +145,7 @@ public class OrderService {
 		String loggedInUser = SecurityContextHolder.getContext().getAuthentication().getName();
 		order.setCreatedAt(LocalDateTime.now());
 		order.setLastmodifiedAt(LocalDateTime.now());
-		if(!order.getOrderStatus().equals(OrderStatus.DELIVERED))
+		if(!order.getOrderStatus().equals(OrderStatus.DELIVERED) && !order.getOrderStatus().equals(OrderStatus.ASSIGNED))
 			order.setOrderStatus(OrderStatus.PLACED);
 		return saveOrUpdateOrder(order, null, loggedInUser);
 	}
