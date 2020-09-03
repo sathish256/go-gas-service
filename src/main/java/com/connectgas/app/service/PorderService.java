@@ -2,9 +2,12 @@ package com.connectgas.app.service;
 
 import java.util.List;
 
+import org.springframework.stereotype.Service;
+
 import com.connectgas.app.model.order.PurchaseOrder;
 import com.connectgas.app.model.order.dto.OrderDTO;
 
+@Service
 public class PorderService {
 
 	public PurchaseOrder getOrder(String id) {

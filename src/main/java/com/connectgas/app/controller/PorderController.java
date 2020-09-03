@@ -24,37 +24,37 @@ import com.connectgas.app.service.PorderService;
 public class PorderController {
 
 	@Autowired
-	private PorderService orderService;
+	private PorderService porderService;
 
 	@GetMapping("/{id}")
 	public ResponseEntity<PurchaseOrder> getOrder(@PathVariable String id) {
-		return ResponseEntity.ok(orderService.getOrder(id));
+		return ResponseEntity.ok(porderService.getOrder(id));
 	}
 
 	@PostMapping("/{quoteid}")
 	public ResponseEntity<PurchaseOrder> generateOrderbyQuote(@PathVariable String quoteid) {
-		return ResponseEntity.ok(orderService.generateOrderbyQuote(quoteid));
+		return ResponseEntity.ok(porderService.generateOrderbyQuote(quoteid));
 	}
 
 	@PostMapping("/new")
 	public ResponseEntity<PurchaseOrder> directOrder(@RequestBody OrderDTO order) {
-		return ResponseEntity.ok(orderService.directOrder(order));
+		return ResponseEntity.ok(porderService.directOrder(order));
 	}
 
 	@PutMapping("/{orderId}/change-status/{status}")
 	public ResponseEntity<PurchaseOrder> updateOrderStatus(@PathVariable Long orderId, @PathVariable String status) {
-		return ResponseEntity.ok(orderService.updateOrderStatus(orderId, status));
+		return ResponseEntity.ok(porderService.updateOrderStatus(orderId, status));
 	}
 
 	@GetMapping("/myorders")
 	public List<PurchaseOrder> findOrdersByLoggedInUser() {
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-		return orderService.getOrders(auth.getName());
+		return porderService.getOrders(auth.getName());
 	}
 
 	@GetMapping("/search")
 	public List<PurchaseOrder> search(@RequestParam("dealerId") String dealerId) {
-		return orderService.search(dealerId);
+		return porderService.search(dealerId);
 	}
 
 }
