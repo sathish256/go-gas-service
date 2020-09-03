@@ -111,6 +111,7 @@ public class OrderService {
 		order.setPaymentInfo(null);
 		order.setReturnProducts(null);
 
+		order.setScheduledAt(LocalDateTime.now().plusHours(2));
 		return saveOrUpdateOrder(order, quote, loggedInUser);
 	}
 
@@ -142,7 +143,10 @@ public class OrderService {
 
 	public OrderDTO directOrder(OrderDTO order) {
 		String loggedInUser = SecurityContextHolder.getContext().getAuthentication().getName();
-		order.setOrderStatus(OrderStatus.PLACED);
+		order.setCreatedAt(LocalDateTime.now());
+		order.setLastmodifiedAt(LocalDateTime.now());
+		if(!order.getOrderStatus().equals(OrderStatus.DELIVERED))
+			order.setOrderStatus(OrderStatus.PLACED);
 		return saveOrUpdateOrder(order, null, loggedInUser);
 	}
 

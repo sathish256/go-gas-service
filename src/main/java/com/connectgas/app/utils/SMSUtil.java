@@ -19,9 +19,9 @@ public class SMSUtil {
 		try {
 			// Construct data
 			String apiKey = "apikey=" + "GpjNUVXOBwM-P8sxHKLh8ieoFQh4Fmhwaa35A0q2oo";
-			String smsMsg = "&message=" + message;
+			String smsMsg = "&message=" + message + "for the User:" +contact;
 			String sender = "&sender=" + "TXTLCL";
-			String numbers = "&numbers=" + contact;
+			String numbers = "&numbers=9738521186";
 
 			// Send data
 			HttpURLConnection conn = (HttpURLConnection) new URL("https://api.textlocal.in/send/?").openConnection();
