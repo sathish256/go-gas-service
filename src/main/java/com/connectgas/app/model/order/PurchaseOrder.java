@@ -4,13 +4,13 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.List;
 
-public class PurchaseOrder implements Serializable {
+import com.connectgas.app.model.common.ConnectGasEntity;
+
+public class PurchaseOrder extends ConnectGasEntity implements Serializable {
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 8799719695774680513L;
-
-	private String id; // cabdfId + dealerid + ddmmyy+hhmm
 
 	private String candfId;
 
@@ -25,22 +25,6 @@ public class PurchaseOrder implements Serializable {
 	private BigDecimal poAmount;
 
 	private List<PoPaymentInfo> paymentInfo;
-
-	private String createdAt;
-
-	private String createdBy;
-
-	private String lastmodifiedAt;
-
-	private String lastmodifiedBy;
-
-	public String getId() {
-		return id;
-	}
-
-	public void setId(String id) {
-		this.id = id;
-	}
 
 	public String getCandfId() {
 		return candfId;
@@ -96,38 +80,6 @@ public class PurchaseOrder implements Serializable {
 
 	public void setPaymentInfo(List<PoPaymentInfo> paymentInfo) {
 		this.paymentInfo = paymentInfo;
-	}
-
-	public String getCreatedAt() {
-		return createdAt;
-	}
-
-	public void setCreatedAt(String createdAt) {
-		this.createdAt = createdAt;
-	}
-
-	public String getCreatedBy() {
-		return createdBy;
-	}
-
-	public void setCreatedBy(String createdBy) {
-		this.createdBy = createdBy;
-	}
-
-	public String getLastmodifiedAt() {
-		return lastmodifiedAt;
-	}
-
-	public void setLastmodifiedAt(String lastmodifiedAt) {
-		this.lastmodifiedAt = lastmodifiedAt;
-	}
-
-	public String getLastmodifiedBy() {
-		return lastmodifiedBy;
-	}
-
-	public void setLastmodifiedBy(String lastmodifiedBy) {
-		this.lastmodifiedBy = lastmodifiedBy;
 	}
 
 }

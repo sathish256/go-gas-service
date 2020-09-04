@@ -1,77 +1,30 @@
 package com.connectgas.app.model.user;
 
 import java.io.Serializable;
-import java.time.LocalDateTime;
-
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.OneToOne;
-import javax.persistence.Table;
-
-import org.hibernate.annotations.GenericGenerator;
 
 import com.connectgas.app.model.common.Address;
-import com.connectgas.app.model.common.GoGasEntity;
+import com.connectgas.app.model.common.ConnectGasEntity;
 import com.connectgas.app.model.common.IdentityProof;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 
-@Entity
-@Table(name = "gogasuser")
-public class User extends GoGasEntity implements Serializable {
+public class User extends ConnectGasEntity implements Serializable {
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = -7178441752343638821L;
-	@Id
-	@GeneratedValue(generator = "user-uuid")
-	@GenericGenerator(name = "user-uuid", strategy = "uuid2")
-	@Column(name = "id", unique = true)
-	private String id;
-	@Column(name = "firstname")
 	private String firstName;
-	@Column(name = "lastname")
 	private String lastName;
-
-	@Column(name = "phone", unique = true)
 	private String phone;
-
-	@Column(name = "role")
 	private UserRole role;
-
-	@Column(name = "profileImage")
 	private String profileImage;
-
-	@OneToOne
-	@JoinColumn(name = "addressId")
 	private Address address;
-
-	@OneToOne
-	@JoinColumn(name = "identityProofId")
 	private IdentityProof identityProof;
-
-	@JsonIgnore
-	@Column(name = "password")
 	private String password;
-
-	@Column(name = "lastLoginTimestamp")
-	private LocalDateTime lastLoginTimestamp;
-
-	@Column(name = "candfId")
+	private String lastLoginTimestamp;
 	private String candfId;
-
-	@Column(name = "dealershipId")
 	private String dealershipId;
-	
-	@Column(name = "hasfullAccess")
 	private boolean hasFullAccess;
-	
-	@Column(name = "allowedPages")
 	private String allowedPages;
-	
 
 	public String getAllowedPages() {
 		return allowedPages;
@@ -87,14 +40,6 @@ public class User extends GoGasEntity implements Serializable {
 
 	public void setHasFullAccess(boolean hasFullAccess) {
 		this.hasFullAccess = hasFullAccess;
-	}
-
-	public String getId() {
-		return id;
-	}
-
-	public void setId(String id) {
-		this.id = id;
 	}
 
 	public String getFirstName() {
@@ -161,11 +106,11 @@ public class User extends GoGasEntity implements Serializable {
 		this.password = password;
 	}
 
-	public LocalDateTime getLastLoginTimestamp() {
+	public String getLastLoginTimestamp() {
 		return lastLoginTimestamp;
 	}
 
-	public void setLastLoginTimestamp(LocalDateTime lastLoginTimestamp) {
+	public void setLastLoginTimestamp(String lastLoginTimestamp) {
 		this.lastLoginTimestamp = lastLoginTimestamp;
 	}
 

@@ -1,6 +1,7 @@
 package com.connectgas.app.service;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -11,25 +12,24 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import com.connectgas.app.model.user.User;
-import com.connectgas.app.repository.UserRepository;
+import com.connectgas.app.repository.SimpleFirestoreRepository;
 
 @Service("jwtUserDetailsService")
 public class JwtUserDetailsService implements UserDetailsService {
 
 	@Autowired
-	private UserRepository userRepository;
+	private SimpleFirestoreRepository<User, String> userRepository;
 
 	@Override
-	@Transactional(readOnly = true)
 	public UserDetails loadUserByUsername(String phone) {
-		User user = userRepository.findByPhone(phone);
-		if (user == null)
-			throw new UsernameNotFoundException(phone);
-		user.setLastLoginTimestamp(LocalDateTime.now());
-		userRepository.save(user);
+		User user = userRepository
+				.findByPathAndValue("phone", phone, User.class.getSimpleName().toLowerCase(), User.class).stream()
+				.findFirst().orElseThrow(() -> new UsernameNotFoundException(phone));
+
+		user.setLastLoginTimestamp(LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME));
+		userRepository.save(user, User.class.getSimpleName().toLowerCase());
 		Set<GrantedAuthority> grantedAuthorities = new HashSet<>();
 		grantedAuthorities.add(new SimpleGrantedAuthority(user.getRole().toString()));
 

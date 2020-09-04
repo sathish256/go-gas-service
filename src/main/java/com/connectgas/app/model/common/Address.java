@@ -1,48 +1,15 @@
 package com.connectgas.app.model.common;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.Table;
-
-import org.hibernate.annotations.GenericGenerator;
-
-@Entity
-@Table(name = "address")
 public class Address {
 
-	@Id
-	@GeneratedValue(generator = "address-uuid")
-	@GenericGenerator(name = "address-uuid", strategy = "uuid2")
-	@Column(name = "id", unique = true)
-	private String id;
-	@Column(name = "doorNo")
 	private String doorNo;
-	@Column(name = "streetName")
 	private String streetName;
-	@Column(name = "locality")
 	private String locality;
-	@Column(name = "city")
 	private String city;
-	@Column(name = "state")
 	private String state;
-	@Column(name = "pincode")
 	private String pincode;
-
-	@Column(name = "geoLong")
 	private String geoLong;
-
-	@Column(name = "geoLat")
 	private String geoLat;
-
-	public String getId() {
-		return id;
-	}
-
-	public void setId(String id) {
-		this.id = id;
-	}
 
 	public String getDoorNo() {
 		return doorNo;

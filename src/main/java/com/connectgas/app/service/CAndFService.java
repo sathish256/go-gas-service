@@ -1,6 +1,8 @@
 package com.connectgas.app.service;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -9,39 +11,34 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.connectgas.app.model.CAndF;
-import com.connectgas.app.repository.AddressRepository;
-import com.connectgas.app.repository.CAndFRepository;
+import com.connectgas.app.repository.SimpleFirestoreRepository;
 
 @Service
 public class CAndFService {
 
 	@Autowired
-	private CAndFRepository candFRepository;
-
-	@Autowired
-	private AddressRepository addressRepository;
+	private SimpleFirestoreRepository<CAndF, String> candFRepository;
 
 	public CAndF getCAndF(String uid) {
-		return candFRepository.findById(uid).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
+		return candFRepository.fetchById(uid, getCollectionName(), CAndF.class).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
 				"CAndF id " + uid + " does not exists in the system"));
+	}
+
+	private String getCollectionName() {
+		return CAndF.class.getSimpleName().toLowerCase();
 	}
 
 	public CAndF addCAndF(CAndF candF) {
 
-		if (!StringUtils.isEmpty(candF.getId()) && candFRepository.existsById(candF.getId()))
-			throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
-					"CAndF id " + candF.getId() + " already exists in the system");
 		CAndF savedCAndF = null;
 		try {
-			candF.setCreatedAt(LocalDateTime.now());
-			candF.setLastmodifiedAt(LocalDateTime.now());
-			candF.setAddress(addressRepository.save(candF.getAddress()));
-			savedCAndF = candFRepository.save(candF);
+			candF.setId(UUID.randomUUID().toString());
+			candF.setCreatedAt(LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME));
+			candF.setLastmodifiedAt(LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME));
+			savedCAndF = candFRepository.save(candF,getCollectionName());
 
 		} catch (Exception pe) {
-			if (pe.getLocalizedMessage().contains("constraint"))
-				throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
-						"Contact number " + candF.getId() + " already exists in the system");
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, pe.getLocalizedMessage());
 		}
 
 		return savedCAndF;
@@ -49,15 +46,12 @@ public class CAndFService {
 
 	public CAndF updateCAndF(CAndF candF) {
 
-		if (!candFRepository.existsById(candF.getId()))
-			throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
-					"CAndF id " + candF.getId() + " does not exists in the system");
+		if (StringUtils.isEmpty(candF.getId()))
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "CAndF id should not be empty to update");
 		CAndF savedCAndF = null;
 		try {
-			candF.setLastmodifiedAt(LocalDateTime.now());
-			candF.setAddress(addressRepository.save(candF.getAddress()));
-			savedCAndF = candFRepository.save(candF);
-
+			candF.setLastmodifiedAt(LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME));
+			savedCAndF = candFRepository.save(candF,getCollectionName());
 		} catch (Exception pe) {
 			if (pe.getLocalizedMessage().contains("Key (contact)"))
 				throw new ResponseStatusException(HttpStatus.BAD_REQUEST,

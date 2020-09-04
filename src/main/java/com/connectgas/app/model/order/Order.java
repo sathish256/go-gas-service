@@ -4,64 +4,26 @@ import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.OneToMany;
-import javax.persistence.SequenceGenerator;
-import javax.persistence.Table;
-
-import com.connectgas.app.model.common.GoGasEntity;
+import com.connectgas.app.model.common.ConnectGasEntity;
+import com.connectgas.app.model.order.dto.OrderCustomer;
 import com.connectgas.app.model.order.dto.OrderType;
 
-@Entity
-@Table(name = "cg_order")
-public class Order extends GoGasEntity implements Serializable {
+public class Order extends ConnectGasEntity implements Serializable {
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 8799719695774680513L;
 
-	@Id
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "order_seq")
-	@SequenceGenerator(name = "order_seq", sequenceName = "order_seq", initialValue = 1000, allocationSize = 1)
-	@Column(name = "id", unique = true)
-	private Long id;
-
-	@Column(name = "customerId")
-	private String customerId;
-
-	@Column(name = "dealerId")
+	private OrderCustomer customer;
 	private String dealerId;
-
-	@Column(name = "quoteId")
 	private String quoteId;
-
-	@Column(name = "orderType")
 	private OrderType orderType;
-
-	@Column(name = "deliveryPersonId")
 	private String deliveryPersonId;
-
-	@Column(name = "orderStatus")
 	private OrderStatus orderStatus;
-
-	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<PaymentInfo> paymentInfo;
-
-	@Column(name = "deliveredTimestamp")
-	private LocalDateTime deliveredTimestamp;
-
-	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+	private String deliveredTimestamp;
 	private List<OrderProduct> orderedProducts;
-
-	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<OrderProduct> returnProducts;
-
-	@Column(name = "scheduledAt")
 	private LocalDateTime scheduledAt;
 
 	public LocalDateTime getScheduledAt() {
@@ -70,22 +32,6 @@ public class Order extends GoGasEntity implements Serializable {
 
 	public void setScheduledAt(LocalDateTime scheduledAt) {
 		this.scheduledAt = scheduledAt;
-	}
-
-	public Long getId() {
-		return id;
-	}
-
-	public void setId(Long id) {
-		this.id = id;
-	}
-
-	public String getCustomerId() {
-		return customerId;
-	}
-
-	public void setCustomerId(String customerId) {
-		this.customerId = customerId;
 	}
 
 	public OrderType getOrderType() {
@@ -136,11 +82,11 @@ public class Order extends GoGasEntity implements Serializable {
 		this.paymentInfo = paymentInfo;
 	}
 
-	public LocalDateTime getDeliveredTimestamp() {
+	public String getDeliveredTimestamp() {
 		return deliveredTimestamp;
 	}
 
-	public void setDeliveredTimestamp(LocalDateTime deliveredTimestamp) {
+	public void setDeliveredTimestamp(String deliveredTimestamp) {
 		this.deliveredTimestamp = deliveredTimestamp;
 	}
 
@@ -158,5 +104,13 @@ public class Order extends GoGasEntity implements Serializable {
 
 	public void setReturnProducts(List<OrderProduct> returnProducts) {
 		this.returnProducts = returnProducts;
+	}
+
+	public OrderCustomer getCustomer() {
+		return customer;
+	}
+
+	public void setCustomer(OrderCustomer customer) {
+		this.customer = customer;
 	}
 }

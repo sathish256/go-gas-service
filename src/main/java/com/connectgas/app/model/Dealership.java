@@ -2,51 +2,18 @@ package com.connectgas.app.model;
 
 import java.util.List;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
-import javax.persistence.Table;
-
-import org.hibernate.annotations.GenericGenerator;
-
 import com.connectgas.app.model.common.Address;
-import com.connectgas.app.model.common.GoGasEntity;
+import com.connectgas.app.model.common.ConnectGasEntity;
 
-@Entity
-@Table(name = "dealership")
-public class Dealership extends GoGasEntity {
+public class Dealership extends ConnectGasEntity {
 
-	@Id
-	@GeneratedValue(generator = "dealership-uuid")
-	@GenericGenerator(name = "dealership-uuid", strategy = "uuid2")
-	@Column(name = "id", unique = true)
 	private String id;
-
-	@Column(name = "name")
 	private String name;
-
-	@Column(name = "phone")
 	private String phone;
-
-	@OneToOne
-	@JoinColumn(name = "addressId")
 	private Address address;
-
-	@Column(name = "ownerName")
 	private String ownerName;
-
-	@Column(name = "ownerPhone")
 	private String ownerPhone;
-
-	@Column(name = "candfId")
 	private String candfId;
-	
-	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<DealerAllocation> dealerAllocation;
 
 	public String getId() {
@@ -112,5 +79,5 @@ public class Dealership extends GoGasEntity {
 	public void setCandfId(String candfId) {
 		this.candfId = candfId;
 	}
-	
+
 }

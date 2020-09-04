@@ -1,15 +1,16 @@
 package com.connectgas.app.service;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
-import java.util.Optional;
+import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -18,9 +19,7 @@ import com.connectgas.app.model.dto.ConnectGasResponse;
 import com.connectgas.app.model.dto.CredentialsDTO;
 import com.connectgas.app.model.user.User;
 import com.connectgas.app.model.user.UserRole;
-import com.connectgas.app.repository.AddressRepository;
-import com.connectgas.app.repository.IdentityProofRepository;
-import com.connectgas.app.repository.UserRepository;
+import com.connectgas.app.repository.SimpleFirestoreRepository;
 import com.connectgas.app.utils.PasswordUtil;
 import com.connectgas.app.utils.SMSUtil;
 
@@ -28,83 +27,71 @@ import com.connectgas.app.utils.SMSUtil;
 public class UserService {
 
 	@Autowired
-	private UserRepository userRepository;
-
-	@Autowired
-	private AddressRepository addressRepository;
-
-	@Autowired
-	private IdentityProofRepository identityProofRepository;
+	private SimpleFirestoreRepository<User, String> userRepository;
 
 	@Autowired
 	@Qualifier("bCryptPasswordEncoder")
 	private BCryptPasswordEncoder bCryptPasswordEncoder;
 
 	public User getUser(String uid) {
-		return userRepository.findById(uid).orElseThrow(() -> new EntityNotFoundException(User.class, "id", uid));
+		return userRepository.fetchById(uid, getCollectionName(), User.class)
+				.orElseThrow(() -> new EntityNotFoundException(User.class, "id", uid));
 	}
 
-	@Transactional
+	private String getCollectionName() {
+		return User.class.getSimpleName().toLowerCase();
+	}
+
 	public User addUser(User user) {
 
-		if (userRepository.existsByPhone(user.getPhone()))
+		if (!CollectionUtils
+				.isEmpty(userRepository.findByPathAndValue("phone", user.getPhone(), getCollectionName(), User.class)))
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
 					"User id " + user.getId() + " already exists in the system");
 		User savedUser = null;
 		try {
+			user.setId(UUID.randomUUID().toString());
 			String generatedPwd = PasswordUtil.generateRandomPassword();
 			user.setPassword(bCryptPasswordEncoder.encode(generatedPwd));
-			user.setCreatedAt(LocalDateTime.now());
-			user.setLastmodifiedAt(LocalDateTime.now());
-			user.setAddress(addressRepository.save(user.getAddress()));
-			if (user.getIdentityProof() != null)
-				user.setIdentityProof(identityProofRepository.save(user.getIdentityProof()));
-			savedUser = userRepository.save(user);
+			user.setCreatedAt(LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME));
+			user.setLastmodifiedAt(LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME));
+			savedUser = userRepository.save(user, getCollectionName());
 
 			SMSUtil.sendSMS(Long.parseLong(user.getPhone()), "GoGas - NewUser login Password : " + generatedPwd);
 
 		} catch (Exception pe) {
-			pe.printStackTrace();
-			if (pe.getLocalizedMessage().contains("constraint"))
-				throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
-						"Contact number " + user.getPhone() + " already exists in the system");
+			throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, pe.getLocalizedMessage());
 		}
 
 		return savedUser;
 	}
 
-	@Transactional
 	public User updateUser(User user) {
 
-		User dbUser = Optional.ofNullable(userRepository.findByPhone(user.getPhone()))
-				.orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST,
+		User dbUser = userRepository.findByPathAndValue("phone", user.getPhone(), getCollectionName(), User.class)
+				.stream().findFirst().orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST,
 						"User id " + user.getPhone() + " does not exists in the system"));
 
 		User savedUser = null;
 		try {
 			user.setPassword(dbUser.getPassword());
-			user.setLastmodifiedAt(LocalDateTime.now());
-			user.setAddress(addressRepository.save(user.getAddress()));
-			if (user.getIdentityProof() != null)
-				user.setIdentityProof(identityProofRepository.save(user.getIdentityProof()));
-			savedUser = userRepository.save(user);
+			user.setLastmodifiedAt(LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME));
+			savedUser = userRepository.save(user, getCollectionName());
 
 		} catch (Exception pe) {
-			if (pe.getLocalizedMessage().contains("Key (contact)"))
-				throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
-						"Contact number " + user.getPhone() + " already exists in the system");
+			throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, pe.getLocalizedMessage());
 		}
 
 		return savedUser;
 	}
 
-	@Transactional
 	public ConnectGasResponse changePassword(CredentialsDTO credentialsDTO, boolean isReset) {
 
 		String message = "Password changed successfully!";
 
-		User user = Optional.ofNullable(userRepository.findByPhone(credentialsDTO.getPhone()))
-				.orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST,
+		User user = userRepository
+				.findByPathAndValue("phone", credentialsDTO.getPhone(), getCollectionName(), User.class).stream()
+				.findFirst().orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST,
 						"User id " + credentialsDTO.getPhone() + " does not exists in the system"));
 
 		if (isReset) {
@@ -119,52 +106,49 @@ public class UserService {
 		}
 
 		user.setPassword(bCryptPasswordEncoder.encode(credentialsDTO.getNewPassword()));
-		user.setLastmodifiedAt(LocalDateTime.now());
-		userRepository.save(user);
+		user.setLastmodifiedAt(LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME));
+		userRepository.save(user, getCollectionName());
 
 		return new ConnectGasResponse(HttpStatus.OK, message);
 	}
 
-	@Transactional
 	public User findUserByPhone(String phone) {
-		return Optional.ofNullable(userRepository.findByPhone(phone))
-				.orElseThrow(() -> new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,
-						"Could not retrive Logged in User Infomation"));
+		return userRepository.findByPathAndValue("phone", phone, getCollectionName(), User.class).stream().findFirst()
+				.orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST,
+						"User id " + phone + " does not exists in the system"));
 	}
 
 	public List<User> findAll() {
-		return userRepository.findAll();
+		return userRepository.findAll(getCollectionName(),User.class);
 	}
 
 	public User deleteUser(String phone) {
 
-		User user = Optional.ofNullable(userRepository.findByPhone(phone))
-				.orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST,
-						"Could not find the User Infomation in the system"));
-
-		userRepository.deleteById(user.getId());
+		User user = findUserByPhone(phone);
+		userRepository.deleteById(user.getId(), getCollectionName());
 		return user;
 	}
 
 	public List<User> search(String phone) {
 
-		User user = userRepository.findByPhone(phone);
+		User user = findUserByPhone(phone);
 		if (user.getRole().equals(UserRole.ADMIN)) {
-			userRepository.findAll();
+			userRepository.findAll(getCollectionName(), User.class);
 		} else if (user.getRole().equals(UserRole.CANDF))
-			return userRepository.findByCandfId(user.getCandfId());
+			return userRepository.findByPathAndValue("candfId", user.getCandfId(), getCollectionName(), User.class);
 		else if (user.getRole().equals(UserRole.DEALER))
-			return userRepository.findByDealershipId(user.getDealershipId());
+			return userRepository.findByPathAndValue("dealershipId", user.getCandfId(), getCollectionName(),
+					User.class);
 
-		return userRepository.findAll();
+		return userRepository.findAll(getCollectionName(), User.class);
 	}
 
 	public List<User> search(String candfId, String dealerId) {
 
 		if (StringUtils.hasText(candfId))
-			return userRepository.findByCandfId(candfId);
+			return userRepository.findByPathAndValue("candfId", candfId, getCollectionName(), User.class);
 		else if (StringUtils.hasText(dealerId))
-			return userRepository.findByDealershipId(dealerId);
+			return userRepository.findByPathAndValue("dealershipId", dealerId, getCollectionName(), User.class);
 
 		throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "User Search requires either candfId or dealerId");
 	}

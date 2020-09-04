@@ -2,44 +2,14 @@ package com.connectgas.app.model.order;
 
 import java.math.BigDecimal;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.Table;
-
-import org.hibernate.annotations.GenericGenerator;
-
-@Entity
-@Table(name = "paymentInfo")
 public class PaymentInfo {
-
-	@Id
-	@GeneratedValue(generator = "pi-uuid")
-	@GenericGenerator(name = "pi-uuid", strategy = "uuid2")
-	@Column(name = "id", unique = true)
-	private String id;
-
-	@Column(name = "billAmount")
 	private BigDecimal billAmount;
-	@Column(name = "paidAmount")
 	private BigDecimal paidAmount;
-	@Column(name = "partialPay")
 	private boolean partialPay;
-	@Column(name = "arrearAmount")
 	private BigDecimal arrearAmount;
-	@Column(name = "paymentType")
 	private String paymentType;
-	@Column(name = "paymentStatus")
 	private String paymentStatus;
 
-	public String getId() {
-		return id;
-	}
-
-	public void setId(String id) {
-		this.id = id;
-	}
 
 	public BigDecimal getBillAmount() {
 		return billAmount;

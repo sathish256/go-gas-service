@@ -3,48 +3,17 @@ package com.connectgas.app.model.order;
 import java.io.Serializable;
 import java.util.List;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
+import com.connectgas.app.model.common.ConnectGasEntity;
 
-import org.hibernate.annotations.GenericGenerator;
-
-import com.connectgas.app.model.common.GoGasEntity;
-
-@Entity
-@Table(name = "cg_quote")
-public class ConnectGasQuote extends GoGasEntity implements Serializable {
+public class ConnectGasQuote extends ConnectGasEntity implements Serializable {
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 7541870822535152218L;
-	@Id
-	@GeneratedValue(generator = "quote-uuid")
-	@GenericGenerator(name = "quote-uuid", strategy = "uuid2")
-	@Column(name = "id", unique = true)
-	private String id;
-	@Column(name = "customerId")
 	private String customerId;
-	@Column(name = "dealerId")
 	private String dealerId;
-
-	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<QuoteProduct> quoteProducts;
-
-	@Column(name = "quoteStatus")
 	private QuoteStatus quoteStatus;
-
-	public String getId() {
-		return id;
-	}
-
-	public void setId(String id) {
-		this.id = id;
-	}
 
 	public String getCustomerId() {
 		return customerId;
@@ -78,4 +47,5 @@ public class ConnectGasQuote extends GoGasEntity implements Serializable {
 		this.quoteStatus = quoteStatus;
 	}
 
+	
 }

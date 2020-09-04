@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.connectgas.app.model.product.Product;
-import com.connectgas.app.repository.ProductRepository;
+import com.connectgas.app.repository.SimpleFirestoreRepository;
 import com.connectgas.app.service.ProductService;
 
 @RestController
@@ -24,7 +24,7 @@ public class ProductController {
 	private ProductService productService;
 
 	@Autowired
-	private ProductRepository productRepository;
+	private SimpleFirestoreRepository<Product, String> productRepository;
 
 	@GetMapping("/{pid}")
 	public ResponseEntity<Product> getProduct(@PathVariable String pid) {
@@ -43,6 +43,6 @@ public class ProductController {
 
 	@GetMapping("/findall")
 	public List<Product> findAll() {
-		return productRepository.findAll();
+		return productRepository.findAll(Product.class.getSimpleName().toLowerCase(), Product.class);
 	}
 }

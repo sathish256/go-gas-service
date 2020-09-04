@@ -1,51 +1,15 @@
 package com.connectgas.app.model;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.OneToOne;
-import javax.persistence.Table;
-
-import org.hibernate.annotations.GenericGenerator;
-
 import com.connectgas.app.model.common.Address;
-import com.connectgas.app.model.common.GoGasEntity;
+import com.connectgas.app.model.common.ConnectGasEntity;
 
-@Entity
-@Table(name = "candf")
-public class CAndF extends GoGasEntity {
+public class CAndF extends ConnectGasEntity {
 
-	@Id
-	@GeneratedValue(generator = "candf-uuid")
-	@GenericGenerator(name = "candf-uuid", strategy = "uuid2")
-	@Column(name = "id", unique = true)
-	private String id;
-
-	@Column(name = "name")
 	private String name;
-
-	@Column(name = "phone")
 	private String phone;
-
-	@OneToOne
-	@JoinColumn(name = "addressId")
 	private Address address;
-
-	@Column(name = "ownerName")
 	private String ownerName;
-
-	@Column(name = "ownerPhone")
 	private String ownerPhone;
-
-	public String getId() {
-		return id;
-	}
-
-	public void setId(String id) {
-		this.id = id;
-	}
 
 	public String getName() {
 		return name;

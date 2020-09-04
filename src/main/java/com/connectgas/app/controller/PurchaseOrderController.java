@@ -17,60 +17,59 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.connectgas.app.model.order.PurchaseOrder;
-import com.connectgas.app.model.order.dto.OrderDTO;
-import com.connectgas.app.service.PorderService;
+import com.connectgas.app.service.PurchaseOrderService;
 
 @RestController
 @RequestMapping("/v1/purchase-order")
-public class PorderController {
+public class PurchaseOrderController {
 
 	@Autowired
-	private PorderService porderService;
+	private PurchaseOrderService purchaseOrderService;
 
 	@GetMapping("/{id}")
 	public ResponseEntity<PurchaseOrder> getOrder(@PathVariable String id) {
-		return ResponseEntity.ok(porderService.getOrder(id));
+		return ResponseEntity.ok(purchaseOrderService.getOrder(id));
 	}
 
 	@PostMapping("/{quoteid}")
 	public ResponseEntity<PurchaseOrder> generateOrderbyQuote(@PathVariable String quoteid) {
-		return ResponseEntity.ok(porderService.generateOrderbyQuote(quoteid));
+		return ResponseEntity.ok(purchaseOrderService.generateOrderbyQuote(quoteid));
 	}
 
 	@PostMapping("/new")
-	public ResponseEntity<PurchaseOrder> directOrder(@RequestBody OrderDTO order) {
-		return ResponseEntity.ok(porderService.directOrder(order));
+	public ResponseEntity<PurchaseOrder> directOrder(@RequestBody PurchaseOrder order) {
+		return ResponseEntity.ok(purchaseOrderService.directOrder(order));
 	}
 
 	@PutMapping("/{orderId}/change-status/{status}")
 	public ResponseEntity<PurchaseOrder> updateOrderStatus(@PathVariable Long orderId, @PathVariable String status) {
-		return ResponseEntity.ok(porderService.updateOrderStatus(orderId, status));
+		return ResponseEntity.ok(purchaseOrderService.updateOrderStatus(orderId, status));
 	}
 
 	@GetMapping("/myorders")
 	public List<PurchaseOrder> findOrdersByLoggedInUser() {
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-		return porderService.getOrders(auth.getName());
+		return purchaseOrderService.getOrders(auth.getName());
 	}
 
 	@GetMapping("/search")
 	public List<PurchaseOrder> search(@RequestParam("dealerId") String dealerId) {
-		return porderService.search(dealerId);
+		return purchaseOrderService.search(dealerId);
 	}
 	
 	@PostMapping("/test-create")
 	public ResponseEntity<PurchaseOrder> directPorder() {
-		return ResponseEntity.ok(porderService.directPurchaseOrder());
+		return ResponseEntity.ok(purchaseOrderService.directPurchaseOrder());
 	}
 	
 	@GetMapping("/test-get/{orderId}")
 	public ResponseEntity<PurchaseOrder> getPorder(@PathVariable String orderId) {
-		return ResponseEntity.ok(porderService.getPorder(orderId));
+		return ResponseEntity.ok(purchaseOrderService.getPorder(orderId));
 	}
 	
 	@DeleteMapping("/test-delete/{orderId}")
 	public ResponseEntity<String> deleteOrder(@PathVariable String orderId) {
-		return ResponseEntity.ok(porderService.deletePorder(orderId));
+		return ResponseEntity.ok(purchaseOrderService.deletePorder(orderId));
 	}
 
 

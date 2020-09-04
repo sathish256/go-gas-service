@@ -2,37 +2,12 @@ package com.connectgas.app.model.order;
 
 import java.math.BigDecimal;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.Table;
-
-import org.hibernate.annotations.GenericGenerator;
-
-@Entity
-@Table(name = "quoteproduct")
 public class QuoteProduct {
-	
-	@Id
-	@GeneratedValue(generator = "op-uuid")
-	@GenericGenerator(name = "op-uuid", strategy = "uuid2")
-	@Column(name = "id", unique = true)
-	private String id;
 
-	@Column(name = "productId", nullable = false)
 	private String productId;
-
-	@Column(name = "minQty")
 	private Integer minQty;
-
-	@Column(name = "maxQty")
 	private Integer maxQty;
-	
-	@Column(name = "quantity")
 	private Integer quantity;
-
-	@Column(name = "quotePrice")
 	private BigDecimal quotePrice;
 
 	public String getProductId() {
@@ -75,14 +50,4 @@ public class QuoteProduct {
 		this.quantity = quantity;
 	}
 
-	public String getId() {
-		return id;
-	}
-
-	public void setId(String id) {
-		this.id = id;
-	}
-	
-	
-	
 }

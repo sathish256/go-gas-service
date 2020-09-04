@@ -6,7 +6,7 @@ import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Configuration
-public class GoGasConfig {
+public class ConnectGasConfig {
 
 	@Bean
 	public WebMvcConfigurer corsConfigurer() {

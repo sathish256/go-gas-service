@@ -1,7 +1,7 @@
 package com.connectgas.app.controller;
 
 import java.time.LocalDateTime;
-import java.util.UUID;
+import java.time.format.DateTimeFormatter;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -67,7 +67,6 @@ public class JwtAuthController {
 
 		User user = new User();
 		Address address = new Address();
-		address.setId(UUID.randomUUID().toString());
 		address.setCity("Bengaluru");
 		address.setGeoLat("12.3344");
 		address.setGeoLong("23.5555");
@@ -77,10 +76,10 @@ public class JwtAuthController {
 		address.setState("Karnataka");
 		address.setStreetName("MG Street");
 		user.setAddress(address);
-		user.setCreatedAt(LocalDateTime.now());
+		user.setCreatedAt(LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME));
 		user.setCreatedBy("ADMIN01");
 		user.setFirstName("Sathish");
-		user.setLastmodifiedAt(LocalDateTime.now());
+		user.setLastmodifiedAt(LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME));
 		user.setLastmodifiedBy("ADMIN01");
 		user.setLastName("K");
 		user.setRole(UserRole.ADMIN);

@@ -2,78 +2,38 @@ package com.connectgas.app.model.customer;
 
 import java.io.Serializable;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.OneToOne;
-import javax.persistence.Table;
-
-import org.hibernate.annotations.GenericGenerator;
-
 import com.connectgas.app.model.common.Address;
-import com.connectgas.app.model.common.GoGasEntity;
+import com.connectgas.app.model.common.ConnectGasEntity;
 import com.connectgas.app.model.common.IdentityProof;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-@Entity
-@Table(name = "customer")
-public class Customer extends GoGasEntity implements Serializable {
+public class Customer extends ConnectGasEntity implements Serializable {
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = -7178441752343638821L;
 
-	@Id
-	@GeneratedValue(generator = "customer-uuid")
-	@GenericGenerator(name = "customer-uuid", strategy = "uuid2")
-	@Column(name = "id", unique = true)
-	private String id;
-
-	@Column(name = "name")
 	private String name;
 
-	@Column(name = "type")
 	private CustomerType type;
 
-	@Column(name = "phone", unique = true, nullable = false)
 	private String phone;
 
-	@OneToOne
-	@JoinColumn(name = "addressId")
 	private Address address;
 
-	@OneToOne
-	@JoinColumn(name = "identityProofId")
 	private IdentityProof identityProof;
 
-	@OneToOne
-	@JoinColumn(name = "addressProofId")
 	private IdentityProof addressProofId;
 
-	@OneToOne
-	@JoinColumn(name = "orgInfo")
 	private Organization organization;
 
-	@Column(name = "dealerId")
 	private String dealerId;
 
 	@JsonIgnore
-	@Column(name = "password", nullable = false)
 	private String password;
 
-	@Column(name = "profileImage")
 	private String profileImage;
-
-	public String getId() {
-		return id;
-	}
-
-	public void setId(String id) {
-		this.id = id;
-	}
 
 	public String getName() {
 		return name;

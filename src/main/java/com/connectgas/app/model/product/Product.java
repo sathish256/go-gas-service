@@ -3,52 +3,21 @@ package com.connectgas.app.model.product;
 import java.io.Serializable;
 import java.util.List;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
+import com.connectgas.app.model.common.ConnectGasEntity;
 
-import org.hibernate.annotations.GenericGenerator;
-
-import com.connectgas.app.model.common.GoGasEntity;
-
-@Entity
-@Table(name = "product")
-public class Product extends GoGasEntity implements Serializable {
+public class Product extends ConnectGasEntity implements Serializable {
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 7541870822535152218L;
-	@Id
-	@GeneratedValue(generator = "product-uuid")
-	@GenericGenerator(name = "product-uuid", strategy = "uuid2")
-	@Column(name = "id", unique = true)
-	private String id;
-	@Column(name = "name")
 	private String name;
-	@Column(name = "type")
 	private String type;
-	@Column(name = "description")
 	private String description;
-	@Column(name = "specification")
 	private String specification;
 
-	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<CAndFPrice> candfPrice;
 
-	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<DealerPrice> dealerPrice;
-
-	public String getId() {
-		return id;
-	}
-
-	public void setId(String id) {
-		this.id = id;
-	}
 
 	public String getName() {
 		return name;

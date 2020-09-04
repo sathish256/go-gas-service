@@ -3,12 +3,10 @@ package com.connectgas.app.exception;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 
-import org.hibernate.exception.ConstraintViolationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -193,21 +191,21 @@ public class GoGasExceptionHandler extends ResponseEntityExceptionHandler {
 		return buildResponseEntity(apiError);
 	}
 
-	/**
+/*	*//**
 	 * Handle javax.persistence.EntityNotFoundException
-	 */
+	 *//*
 	@ExceptionHandler(javax.persistence.EntityNotFoundException.class)
 	protected ResponseEntity<Object> handleEntityNotFound(javax.persistence.EntityNotFoundException ex) {
 		return buildResponseEntity(new ConnectGasResponse(HttpStatus.NOT_FOUND, ex));
 	}
 
-	/**
+	*//**
 	 * Handle DataIntegrityViolationException, inspects the cause for different DB
 	 * causes.
 	 *
 	 * @param ex the DataIntegrityViolationException
 	 * @return the GoGasResponse object
-	 */
+	 *//*
 	@ExceptionHandler(DataIntegrityViolationException.class)
 	protected ResponseEntity<Object> handleDataIntegrityViolation(DataIntegrityViolationException ex,
 			WebRequest request) {
@@ -215,7 +213,7 @@ public class GoGasExceptionHandler extends ResponseEntityExceptionHandler {
 			return buildResponseEntity(new ConnectGasResponse(HttpStatus.CONFLICT, "Database error", ex.getCause()));
 		}
 		return buildResponseEntity(new ConnectGasResponse(HttpStatus.INTERNAL_SERVER_ERROR, ex));
-	}
+	}*/
 
 	/**
 	 * Handle Exception, handle generic Exception.class

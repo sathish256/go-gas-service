@@ -1,36 +1,10 @@
 package com.connectgas.app.model.common;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.Table;
-
-import org.hibernate.annotations.GenericGenerator;
-
-@Entity
-@Table(name = "identityproof")
 public class IdentityProof {
 
-	@Id
-	@GeneratedValue(generator = "idproof-uuid")
-	@GenericGenerator(name = "idproof-uuid", strategy = "uuid2")
-	@Column(name = "id", unique = true)
-	private String id;
-	@Column(name = "name")
 	private String name;
-	@Column(name = "type")
 	private String type;
-	@Column(name = "filepath")
 	private String filepath;
-
-	public String getId() {
-		return id;
-	}
-
-	public void setId(String id) {
-		this.id = id;
-	}
 
 	public String getName() {
 		return name;

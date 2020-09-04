@@ -18,7 +18,6 @@ import org.springframework.web.bind.annotation.RestController;
 import com.connectgas.app.model.customer.Customer;
 import com.connectgas.app.model.dto.ConnectGasResponse;
 import com.connectgas.app.model.dto.CredentialsDTO;
-import com.connectgas.app.repository.CustomerRepository;
 import com.connectgas.app.service.CustomerService;
 
 @RestController
@@ -27,9 +26,6 @@ public class CustomerController {
 
 	@Autowired
 	private CustomerService customerService;
-
-	@Autowired
-	private CustomerRepository customerRepository;
 
 	@GetMapping("/{uid}")
 	public ResponseEntity<Customer> getCustomer(@PathVariable String uid) {
@@ -46,17 +42,10 @@ public class CustomerController {
 		return ResponseEntity.ok(customerService.updateCustomer(customer));
 	}
 
-	@GetMapping("/findall")
-	public List<Customer> findAll() {
-		return customerRepository.findAll();
-	}
-	
 	@GetMapping("/search")
 	public List<Customer> search(@RequestParam("dealerId") String dealerId) {
 		return customerService.search(dealerId);
 	}
-	
-	
 
 	@PostMapping("/change-password")
 	public ResponseEntity<ConnectGasResponse> changePassword(@RequestBody @Valid CredentialsDTO credentialsDTO) {

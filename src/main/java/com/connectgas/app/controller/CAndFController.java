@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.connectgas.app.model.CAndF;
-import com.connectgas.app.repository.CAndFRepository;
+import com.connectgas.app.repository.SimpleFirestoreRepository;
 import com.connectgas.app.service.CAndFService;
 
 @RestController
@@ -28,7 +28,7 @@ public class CAndFController {
 	private CAndFService candFService;
 
 	@Autowired
-	private CAndFRepository candFRepository;
+	private SimpleFirestoreRepository<CAndF, String> candFRepository;
 
 	@GetMapping("/{uid}")
 	public ResponseEntity<CAndF> getCAndF(@PathVariable String uid) {
@@ -50,6 +50,6 @@ public class CAndFController {
 
 	@GetMapping("/findall")
 	public List<CAndF> findAll() {
-		return candFRepository.findAll();
+		return candFRepository.findAll(CAndF.class.getSimpleName().toLowerCase(), CAndF.class);
 	}
 }

@@ -1,6 +1,7 @@
 package com.connectgas.app.service;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,39 +11,38 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.connectgas.app.model.Dealership;
-import com.connectgas.app.repository.AddressRepository;
-import com.connectgas.app.repository.DealershipRepository;
+import com.connectgas.app.repository.SimpleFirestoreRepository;
 
 @Service
 public class DealershipService {
 
 	@Autowired
-	private DealershipRepository dealershipRepository;
-
-	@Autowired
-	private AddressRepository addressRepository;
+	private SimpleFirestoreRepository<Dealership, String> dealershipRepository;
 
 	public Dealership getDealership(String uid) {
-		return dealershipRepository.findById(uid).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
-				"Dealership id " + uid + " does not exists in the system"));
+		if (StringUtils.isEmpty(uid))
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Dealership id should not be empty");
+		return dealershipRepository.fetchById(uid, getCollectionName(), Dealership.class)
+				.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
+						"Dealership id " + uid + " does not exists in the system"));
+	}
+
+	private String getCollectionName() {
+		return Dealership.class.getSimpleName().toLowerCase();
 	}
 
 	public Dealership addDealership(Dealership dealership) {
 
-		if (!StringUtils.isEmpty(dealership.getId()) && dealershipRepository.existsById(dealership.getId()))
-			throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
-					"Dealership id " + dealership.getId() + " already exists in the system");
+		getDealership(dealership.getId());
+
 		Dealership savedDealership = null;
 		try {
-			dealership.setCreatedAt(LocalDateTime.now());
-			dealership.setLastmodifiedAt(LocalDateTime.now());
-			dealership.setAddress(addressRepository.save(dealership.getAddress()));
-			savedDealership = dealershipRepository.save(dealership);
+			dealership.setCreatedAt(LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME));
+			dealership.setLastmodifiedAt(LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME));
+			savedDealership = dealershipRepository.save(dealership, getCollectionName());
 
 		} catch (Exception pe) {
-			if (pe.getLocalizedMessage().contains("constraint"))
-				throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
-						"Contact number " + dealership.getPhone() + " already exists in the system");
+			throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, pe.getLocalizedMessage());
 		}
 
 		return savedDealership;
@@ -50,19 +50,15 @@ public class DealershipService {
 
 	public Dealership updateDealership(Dealership dealership) {
 
-		if (!dealershipRepository.existsById(dealership.getId()))
-			throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
-					"Dealership id " + dealership.getId() + " does not exists in the system");
+		getDealership(dealership.getId());
+
 		Dealership savedDealership = null;
 		try {
-			dealership.setLastmodifiedAt(LocalDateTime.now());
-			dealership.setAddress(addressRepository.save(dealership.getAddress()));
-			savedDealership = dealershipRepository.save(dealership);
+			dealership.setLastmodifiedAt(LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME));
+			savedDealership = dealershipRepository.save(dealership, getCollectionName());
 
 		} catch (Exception pe) {
-			if (pe.getLocalizedMessage().contains("Key (contact)"))
-				throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
-						"Contact number " + dealership.getPhone() + " already exists in the system");
+			throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, pe.getLocalizedMessage());
 		}
 
 		return savedDealership;
@@ -70,9 +66,9 @@ public class DealershipService {
 
 	public List<Dealership> search(String candfId) {
 		if (!StringUtils.isEmpty(candfId))
-			return dealershipRepository.findByCandfId(candfId);
+			return dealershipRepository.findByPathAndValue("candfId", candfId, getCollectionName(), Dealership.class);
 
-		return dealershipRepository.findAll();
+		return dealershipRepository.findAll(getCollectionName(), Dealership.class);
 	}
 
 }

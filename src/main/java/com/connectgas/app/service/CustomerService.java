@@ -1,26 +1,24 @@
 package com.connectgas.app.service;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
-import java.util.Optional;
+import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.connectgas.app.exception.EntityNotFoundException;
 import com.connectgas.app.model.customer.Customer;
-import com.connectgas.app.model.customer.Organization;
 import com.connectgas.app.model.dto.ConnectGasResponse;
 import com.connectgas.app.model.dto.CredentialsDTO;
-import com.connectgas.app.repository.AddressRepository;
-import com.connectgas.app.repository.CustomerRepository;
-import com.connectgas.app.repository.IdentityProofRepository;
-import com.connectgas.app.repository.OrganizationRepository;
+import com.connectgas.app.repository.SimpleFirestoreRepository;
 import com.connectgas.app.utils.PasswordUtil;
 import com.connectgas.app.utils.SMSUtil;
 
@@ -28,106 +26,73 @@ import com.connectgas.app.utils.SMSUtil;
 public class CustomerService {
 
 	@Autowired
-	private CustomerRepository customerRepository;
-
-	@Autowired
-	private AddressRepository addressRepository;
-
-	@Autowired
-	private IdentityProofRepository identityProofRepository;
-
-	@Autowired
-	private OrganizationRepository organizationRepository;
+	private SimpleFirestoreRepository<Customer, String> customerRepository;
 
 	@Autowired
 	@Qualifier("bCryptPasswordEncoder")
 	private BCryptPasswordEncoder bCryptPasswordEncoder;
 
 	public Customer getCustomer(String uid) {
-		return customerRepository.findById(uid)
+		return customerRepository.fetchById(uid, getCollectionName(), Customer.class)
 				.orElseThrow(() -> new EntityNotFoundException(Customer.class, "id", uid));
 	}
 
-	@Transactional
+	private String getCollectionName() {
+		return Customer.class.getSimpleName().toLowerCase();
+	}
+
 	public Customer addCustomer(Customer customer) {
 
-		if (customerRepository.existsByPhone(customer.getPhone()))
+		if (!CollectionUtils.isEmpty(customerRepository.findByPathAndValue("phone", customer.getPhone(),
+				getCollectionName(), Customer.class)))
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
 					"Customer id " + customer.getId() + " already exists in the system");
 		Customer savedCustomer = null;
 		try {
+			customer.setId(UUID.randomUUID().toString());
 			String generatedPwd = PasswordUtil.generateRandomPassword();
 			customer.setPassword(bCryptPasswordEncoder.encode(generatedPwd));
-			customer.setCreatedAt(LocalDateTime.now());
-			customer.setLastmodifiedAt(LocalDateTime.now());
-			customer.setAddress(addressRepository.save(customer.getAddress()));
-			if (customer.getIdentityProof() != null)
-				customer.setIdentityProof(identityProofRepository.save(customer.getIdentityProof()));
-
-			if (customer.getAddressProofId() != null)
-				customer.setAddressProofId(identityProofRepository.save(customer.getAddressProofId()));
-
-			if (customer.getOrganization() != null) {
-				Organization org = customer.getOrganization();
-				org.setOrgAddress(addressRepository.save(org.getOrgAddress()));
-				customer.setOrganization(organizationRepository.save(org));
-			}
-			savedCustomer = customerRepository.save(customer);
+			customer.setCreatedAt(LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME));
+			customer.setLastmodifiedAt(LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME));
+			savedCustomer = customerRepository.save(customer, getCollectionName());
 
 			SMSUtil.sendSMS(Long.parseLong(customer.getPhone()),
 					"GoGas - NewCustomer login Password : " + generatedPwd);
 
 		} catch (Exception pe) {
-			pe.printStackTrace();
-			if (pe.getLocalizedMessage().contains("constraint"))
-				throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
-						"Contact number " + customer.getPhone() + " already exists in the system");
+			throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, pe.getLocalizedMessage());
 		}
 
 		return savedCustomer;
 	}
 
-	@Transactional
 	public Customer updateCustomer(Customer customer) {
 
-		Customer dbCustomer = Optional.ofNullable(customerRepository.findByPhone(customer.getPhone()))
-				.orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST,
+		Customer dbCustomer = customerRepository
+				.findByPathAndValue("phone", customer.getPhone(), getCollectionName(), Customer.class).stream()
+				.findFirst().orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST,
 						"Customer id " + customer.getPhone() + " does not exists in the system"));
 
 		Customer savedCustomer = null;
 		try {
 			customer.setPassword(dbCustomer.getPassword());
-			customer.setLastmodifiedAt(LocalDateTime.now());
-			customer.setAddress(addressRepository.save(customer.getAddress()));
-			if (customer.getIdentityProof() != null)
-				customer.setIdentityProof(identityProofRepository.save(customer.getIdentityProof()));
-
-			if (customer.getAddressProofId() != null)
-				customer.setAddressProofId(identityProofRepository.save(customer.getAddressProofId()));
-
-			if (customer.getOrganization() != null) {
-				Organization org = customer.getOrganization();
-				org.setOrgAddress(addressRepository.save(org.getOrgAddress()));
-				customer.setOrganization(organizationRepository.save(org));
-			}
-			savedCustomer = customerRepository.save(customer);
+			customer.setLastmodifiedAt(LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME));
+			savedCustomer = customerRepository.save(customer, getCollectionName());
 
 		} catch (Exception pe) {
-			if (pe.getLocalizedMessage().contains("Key (contact)"))
-				throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
-						"Contact number " + customer.getPhone() + " already exists in the system");
+			throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, pe.getLocalizedMessage());
 		}
 
 		return savedCustomer;
 	}
 
-	@Transactional
 	public ConnectGasResponse changePassword(CredentialsDTO credentialsDTO, boolean isReset) {
 
 		String message = "Password changed successfully!";
 
-		Customer customer = Optional.ofNullable(customerRepository.findByPhone(credentialsDTO.getPhone()))
-				.orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST,
+		Customer customer = customerRepository
+				.findByPathAndValue("phone", credentialsDTO.getPhone(), getCollectionName(), Customer.class).stream()
+				.findFirst().orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST,
 						"Customer id " + credentialsDTO.getPhone() + " does not exists in the system"));
 
 		if (isReset) {
@@ -142,21 +107,35 @@ public class CustomerService {
 		}
 
 		customer.setPassword(bCryptPasswordEncoder.encode(credentialsDTO.getNewPassword()));
-		customer.setLastmodifiedAt(LocalDateTime.now());
-		customerRepository.save(customer);
+		customer.setLastmodifiedAt(LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME));
+		customerRepository.save(customer, getCollectionName());
 
 		return new ConnectGasResponse(HttpStatus.OK, message);
 	}
 
-	@Transactional
-	public Customer findCustomerByPhone(String name) {
-		return Optional.ofNullable(customerRepository.findByPhone(name))
-				.orElseThrow(() -> new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,
-						"Could not retrive Logged in Customer Infomation"));
+	public List<Customer> search(String dealerId) {
+
+		if (StringUtils.hasText(dealerId))
+			return customerRepository.findByPathAndValue("dealerId", dealerId, getCollectionName(), Customer.class);
+
+		throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Customer Search requires either dealerId");
 	}
 
-	public List<Customer> search(String dealerId) {
-		return customerRepository.findByDealerId(dealerId);
+	public Customer findCustomerByPhone(String phone) {
+		return customerRepository.findByPathAndValue("phone", phone, getCollectionName(), Customer.class).stream()
+				.findFirst().orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST,
+						"Customer id " + phone + " does not exists in the system"));
+	}
+
+	public List<Customer> findAll() {
+		return customerRepository.findAll(getCollectionName(), Customer.class);
+	}
+
+	public Customer deleteCustomer(String phone) {
+
+		Customer customer = findCustomerByPhone(phone);
+		customerRepository.deleteById(customer.getId(), getCollectionName());
+		return customer;
 	}
 
 }

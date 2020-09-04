@@ -1,22 +1,23 @@
 package com.connectgas.app.service;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.UUID;
-import java.util.concurrent.ExecutionException;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
-import com.connectgas.app.fb.service.PurchaseOrderFbService;
 import com.connectgas.app.model.order.PurchaseOrder;
-import com.connectgas.app.model.order.dto.OrderDTO;
+import com.connectgas.app.repository.SimpleFirestoreRepository;
 
 @Service
-public class PorderService {
+public class PurchaseOrderService {
 
 	@Autowired
-	private PurchaseOrderFbService purchaseOrderFbService;
+	private SimpleFirestoreRepository<PurchaseOrder, String> purchaseOrderRepository;
 
 	public PurchaseOrder getOrder(String id) {
 		// TODO Auto-generated method stub
@@ -28,7 +29,7 @@ public class PorderService {
 		return null;
 	}
 
-	public PurchaseOrder directOrder(OrderDTO order) {
+	public PurchaseOrder directOrder(PurchaseOrder order) {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -54,32 +55,25 @@ public class PorderService {
 
 		purchaseOrder.setId(UUID.randomUUID().toString());
 		purchaseOrder.setDealerId("asdf");
-		purchaseOrder.setLastmodifiedAt(LocalDateTime.now().toString());
-		purchaseOrder.setCreatedAt(LocalDateTime.now().toString());
+		purchaseOrder.setLastmodifiedAt(LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME));
+		purchaseOrder.setCreatedAt(LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME));
 
-		return purchaseOrderFbService.save(purchaseOrder);
+		return purchaseOrderRepository.save(purchaseOrder, getCollectionName());
+	}
+
+	private String getCollectionName() {
+		return PurchaseOrder.class.getSimpleName().toLowerCase();
 	}
 
 	public PurchaseOrder getPorder(String orderId) {
-		try {
-			return purchaseOrderFbService.fetchById(orderId);
-		} catch (InterruptedException | ExecutionException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return null;
+		return purchaseOrderRepository.fetchById(orderId, getCollectionName(), PurchaseOrder.class)
+				.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
+						"CAndF id " + orderId + " does not exists in the system"));
 	}
 
 	public String deletePorder(String orderId) {
 		String status = "successfully deleted!!!";
-
-		try {
-			purchaseOrderFbService.deleteById(orderId);
-		} catch (InterruptedException | ExecutionException e) {
-			status = "Error while deleting!!!";
-
-			e.printStackTrace();
-		}
+		purchaseOrderRepository.deleteById(orderId, getCollectionName());
 		return status;
 	}
 
