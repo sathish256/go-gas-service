@@ -6,7 +6,6 @@ import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 
 import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Repository;
 
@@ -22,17 +21,17 @@ import com.google.cloud.firestore.QuerySnapshot;
 @Repository
 public class SimpleFirestoreRepository<E extends ConnectGasEntity, ID> implements FirestoreRepository<E, ID> {
 
-
 	@Override
-	@CachePut
+	@Cacheable(value = "#collection")
 	public E save(E entity, String collection) {
 		getFirestore().collection(entity.getClass().getSimpleName().toLowerCase()).document(entity.getId()).set(entity);
 		return entity;
 	}
 
 	@Override
-	@Cacheable
-	public Optional<E> fetchById(ID id, String collection,Class<E> persistentClass) throws ConnectGasDataAccessException {
+	@Cacheable(value = "#collection")
+	public Optional<E> fetchById(ID id, String collection, Class<E> persistentClass)
+			throws ConnectGasDataAccessException {
 		DocumentReference docRef = getFirestore().collection(collection).document((String) id);
 		// asynchronously retrieve the document
 		ApiFuture<DocumentSnapshot> future = docRef.get();
@@ -53,7 +52,7 @@ public class SimpleFirestoreRepository<E extends ConnectGasEntity, ID> implement
 	}
 
 	@Override
-	@CacheEvict
+	@CacheEvict(value = "#collection")
 	public void deleteById(ID id, String collection) throws ConnectGasDataAccessException {
 
 		try {
@@ -65,7 +64,7 @@ public class SimpleFirestoreRepository<E extends ConnectGasEntity, ID> implement
 	}
 
 	@Override
-	@Cacheable
+	@Cacheable(value = "#collection")
 	public List<E> findAll(String collection, Class<E> persistentClass) {
 		List<E> data = new ArrayList<>();
 		ApiFuture<QuerySnapshot> future = getFirestore().collection(collection).get();
@@ -81,7 +80,7 @@ public class SimpleFirestoreRepository<E extends ConnectGasEntity, ID> implement
 	}
 
 	@Override
-	@Cacheable
+	@Cacheable(value = "#collection")
 	public List<E> findByPathAndValue(String path, String value, String collection, Class<E> persistentClass) {
 		List<E> data = new ArrayList<>();
 		CollectionReference cities = getFirestore().collection(collection);
