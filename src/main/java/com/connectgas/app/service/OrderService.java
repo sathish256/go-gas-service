@@ -170,12 +170,14 @@ public class OrderService {
 						"User id " + phone + " does not exists in the system"));
 
 		if (user.getRole().equals(UserRole.DELIVERY))
-			return orderRepository.findAll(Order.class).stream()
-					.filter(o -> o.getDeliveryPersonId().equals(user.getId())).collect(Collectors.toList());
+			return orderRepository.findAll(Order.class).stream().filter(
+					o -> StringUtils.hasText(o.getDeliveryPersonId()) && o.getDeliveryPersonId().equals(user.getId()))
+					.collect(Collectors.toList());
 
 		if (user.getRole().equals(UserRole.DEALER))
-			return orderRepository.findAll(Order.class).stream()
-					.filter(o -> o.getDealerId().equals(user.getDealershipId())).collect(Collectors.toList());
+			return orderRepository.findAll(Order.class).stream().filter(
+					o -> StringUtils.hasText(o.getDealerId()) && o.getDealerId().equals(user.getDealershipId()))
+					.collect(Collectors.toList());
 
 		return null;
 	}

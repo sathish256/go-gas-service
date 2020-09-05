@@ -8,7 +8,6 @@ public class OrderProduct implements Serializable {
 	 * 
 	 */
 	private static final long serialVersionUID = -4562297863054986443L;
-	private String id;
 	private String productId;
 	private Integer quantity;
 	private Double orderedPrice;
@@ -35,14 +34,6 @@ public class OrderProduct implements Serializable {
 
 	public void setOrderedPrice(Double orderedPrice) {
 		this.orderedPrice = orderedPrice;
-	}
-
-	public String getId() {
-		return id;
-	}
-
-	public void setId(String id) {
-		this.id = id;
 	}
 
 }
