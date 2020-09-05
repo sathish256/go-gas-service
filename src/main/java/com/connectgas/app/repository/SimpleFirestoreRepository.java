@@ -48,7 +48,7 @@ public class SimpleFirestoreRepository<E extends ConnectGasEntity, ID> implement
 			throw new ConnectGasDataAccessException("Exception while fetch from firestore", e);
 		}
 
-		return Optional.of(entity);
+		return Optional.ofNullable(entity);
 	}
 
 	@Override
