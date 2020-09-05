@@ -1,6 +1,7 @@
 package com.connectgas.app.repository;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import com.connectgas.app.exception.ConnectGasDataAccessException;
@@ -19,7 +20,9 @@ public interface FirestoreRepository<E extends ConnectGasEntity, ID> {
 	public List<E> findAll(Class<E> persistentClass);
 
 	@Deprecated
-	public List<E> findByPathAndValue1(String path, String value, Class<E> persistentClass);
+	public List<E> findByPathAndValue(String path, String value, Class<E> persistentClass);
+	
+	public List<E> findByPathAndValue(Map<String, String> criteriaMap, Class<E> persistentClass);
 
 	default Firestore getFirestore() {
 		return FirestoreClient.getFirestore();

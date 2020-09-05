@@ -3,6 +3,7 @@ package com.connectgas.app.repository;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 
@@ -102,10 +103,30 @@ public class SimpleFirestoreRepository<E extends ConnectGasEntity, ID> implement
 
 	@Override
 	@Deprecated
-	public List<E> findByPathAndValue1(String path, String value, Class<E> persistentClass) {
+	public List<E> findByPathAndValue(String path, String value, Class<E> persistentClass) {
 		List<E> data = new ArrayList<>();
 		CollectionReference cities = getFirestore().collection(persistentClass.getSimpleName());
 		Query query = cities.whereEqualTo(path, value);
+		ApiFuture<QuerySnapshot> querySnapshot = query.get();
+		try {
+			for (DocumentSnapshot document : querySnapshot.get().getDocuments()) {
+				data.add(document.toObject(persistentClass));
+			}
+		} catch (InterruptedException | ExecutionException e) {
+			throw new ConnectGasDataAccessException("Exception while fetch from firestore", e);
+		}
+		return data;
+	}
+
+	@Override
+	public List<E> findByPathAndValue(Map<String, String> criteriaMap, Class<E> persistentClass) {
+		List<E> data = new ArrayList<>();
+		CollectionReference cities = getFirestore().collection(persistentClass.getSimpleName());
+		Query query = cities.orderBy("id");
+		for (Entry<String, String> es : criteriaMap.entrySet()) {
+			query.whereEqualTo(es.getKey(), es.getValue());
+		}
+
 		ApiFuture<QuerySnapshot> querySnapshot = query.get();
 		try {
 			for (DocumentSnapshot document : querySnapshot.get().getDocuments()) {

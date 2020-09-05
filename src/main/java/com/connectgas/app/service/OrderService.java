@@ -4,28 +4,36 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.connectgas.app.model.Dealership;
+import com.connectgas.app.model.common.State;
 import com.connectgas.app.model.customer.Customer;
 import com.connectgas.app.model.customer.CustomerType;
 import com.connectgas.app.model.order.ConnectGasQuote;
 import com.connectgas.app.model.order.Order;
 import com.connectgas.app.model.order.OrderProduct;
 import com.connectgas.app.model.order.OrderStatus;
+import com.connectgas.app.model.order.PaidDetails;
 import com.connectgas.app.model.order.PaymentInfo;
+import com.connectgas.app.model.order.PaymentStatus;
 import com.connectgas.app.model.order.QuoteProduct;
 import com.connectgas.app.model.order.QuoteStatus;
 import com.connectgas.app.model.order.dto.OrderCustomer;
 import com.connectgas.app.model.order.dto.OrderType;
+import com.connectgas.app.model.payment.AccountHolderType;
+import com.connectgas.app.model.payment.PaymentBacklog;
 import com.connectgas.app.model.user.User;
 import com.connectgas.app.model.user.UserRole;
 import com.connectgas.app.repository.SimpleFirestoreRepository;
@@ -48,6 +56,9 @@ public class OrderService {
 
 	@Autowired
 	private SimpleFirestoreRepository<User, String> userRepository;
+
+	@Autowired
+	private SimpleFirestoreRepository<PaymentBacklog, String> paymentRepository;
 
 	public Order getOrder(String id) {
 		return orderRepository.fetchById(id, Order.class)
@@ -147,20 +158,66 @@ public class OrderService {
 		return saveOrUpdateOrder(order, null, loggedInUser);
 	}
 
-	public Order updateOrderStatus(String orderId, String status) {
-		String loggedInUser = SecurityContextHolder.getContext().getAuthentication().getName();
+	public Order updateOrderStatus(String orderId, String status, String userId) {
 
 		Order dbOrder = orderRepository.fetchById(orderId, Order.class)
 				.orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST,
 						"Error while updating order id " + orderId + " not available in the system"));
 		dbOrder.setLastmodifiedAt(LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME));
-		dbOrder.setLastmodifiedBy(loggedInUser);
+		dbOrder.setLastmodifiedBy(userId);
 		dbOrder.setOrderStatus(OrderStatus.valueOf(status));
 
-		if (OrderStatus.DELIVERED.toString().equals(status))
+		if (OrderStatus.DELIVERED.toString().equals(status)) {
+			updatePaymentInfoAndPaymentBacklog(dbOrder);
 			dbOrder.setDeliveredTimestamp(LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME));
+		}
+		return orderRepository.save(dbOrder, Order.class);
+	}
+
+	public Order updatePaymentInfo(String orderId, PaymentInfo paymentInfo, String userId) {
+
+		Order dbOrder = orderRepository.fetchById(orderId, Order.class)
+				.orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST,
+						"Error while updating order id " + orderId + " not available in the system"));
+		dbOrder.setLastmodifiedAt(LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME));
+		dbOrder.setLastmodifiedBy(userId);
+		dbOrder.setPaymentInfo(paymentInfo);
 
 		return orderRepository.save(dbOrder, Order.class);
+	}
+
+	private void updatePaymentInfoAndPaymentBacklog(Order dbOrder) {
+
+		if (dbOrder.getPaymentInfo().getPaymentStatus().equals(PaymentStatus.PARTIAL)) {
+
+			Double totalPaid = 0.0;
+			for (PaidDetails pd : dbOrder.getPaymentInfo().getPaidDetails()) {
+				totalPaid = totalPaid + pd.getAmount();
+			}
+			Double backlogAmount = dbOrder.getPaymentInfo().getBillAmount() - totalPaid;
+			Map<String, String> criteria = new HashMap<>();
+			criteria.put("accountHolderType", AccountHolderType.CUSTOMER.toString());
+			criteria.put("id", dbOrder.getCustomer().getId());
+			List<PaymentBacklog> pbs = paymentRepository.findByPathAndValue(criteria, PaymentBacklog.class);
+			PaymentBacklog pb = null;
+			if (CollectionUtils.isEmpty(pbs)) {
+				pb = new PaymentBacklog();
+				pb.setAccountHolderType(AccountHolderType.CUSTOMER);
+				pb.setId(dbOrder.getCustomer().getId());
+				pb.setCreatedAt(LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME));
+				pb.setStatus(State.ACTIVE);
+				pb.setLastmodifiedBy("SYSTEM");
+				pb.setCreatedBy("SYSTEM");
+				pb.setBacklogAmount(backlogAmount);
+			} else {
+				pb = pbs.get(0);
+				pb.setBacklogAmount(pb.getBacklogAmount() + backlogAmount);
+			}
+			pb.setLastmodifiedAt(LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME));
+			paymentRepository.save(pb, PaymentBacklog.class);
+
+		}
+
 	}
 
 	public List<Order> getOrders(String phone) {
@@ -175,20 +232,20 @@ public class OrderService {
 					.collect(Collectors.toList());
 
 		if (user.getRole().equals(UserRole.DEALER))
-			return orderRepository.findAll(Order.class).stream().filter(
-					o -> StringUtils.hasText(o.getDealerId()) && o.getDealerId().equals(user.getDealershipId()))
+			return orderRepository.findAll(Order.class).stream()
+					.filter(o -> StringUtils.hasText(o.getDealerId()) && o.getDealerId().equals(user.getDealershipId()))
 					.collect(Collectors.toList());
 
 		return null;
 	}
 
-	public Order assignDeliveryPerson(String name, String orderid, String userid) {
+	public Order assignDeliveryPerson(String orderid, String userid, String modifiedBy) {
 		Order dbOrder = orderRepository.fetchById(orderid, Order.class)
 				.orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST,
 						"Error while updating order id " + orderid + " not available in the system"));
 		dbOrder.setDeliveryPersonId(userid);
 		dbOrder.setLastmodifiedAt(LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME));
-		dbOrder.setLastmodifiedBy(name);
+		dbOrder.setLastmodifiedBy(modifiedBy);
 		dbOrder.setOrderStatus(OrderStatus.ASSIGNED);
 
 		orderRepository.save(dbOrder, Order.class);

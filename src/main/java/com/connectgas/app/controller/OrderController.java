@@ -11,11 +11,13 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.connectgas.app.model.order.Order;
+import com.connectgas.app.model.order.PaymentInfo;
 import com.connectgas.app.service.OrderService;
 
 @RestController
@@ -41,8 +43,15 @@ public class OrderController {
 	}
 
 	@PutMapping("/{orderId}/change-status/{status}")
-	public ResponseEntity<Order> updateOrderStatus(@PathVariable String orderId, @PathVariable String status) {
-		return ResponseEntity.ok(orderService.updateOrderStatus(orderId, status));
+	public ResponseEntity<Order> updateOrderStatus(@PathVariable String orderId, @PathVariable String status,
+			@RequestHeader("modifiedBy") String modifiedBy) {
+		return ResponseEntity.ok(orderService.updateOrderStatus(orderId, status, modifiedBy));
+	}
+
+	@PutMapping("/{orderId}/payment-info")
+	public ResponseEntity<Order> updatePaymentInfo(@PathVariable String orderId, @RequestBody PaymentInfo paymentInfo,
+			@RequestHeader("modifiedBy") String modifiedBy) {
+		return ResponseEntity.ok(orderService.updatePaymentInfo(orderId, paymentInfo, modifiedBy));
 	}
 
 	@GetMapping("/myorders")
@@ -57,9 +66,9 @@ public class OrderController {
 	}
 
 	@PutMapping("/{orderId}/assign/{userId}")
-	public ResponseEntity<Order> assignDeliveryPerson(@PathVariable String orderId, @PathVariable String userId) {
-		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-		return ResponseEntity.ok(orderService.assignDeliveryPerson(auth.getName(), orderId, userId));
+	public ResponseEntity<Order> assignDeliveryPerson(@PathVariable String orderId, @PathVariable String userId,
+			@RequestHeader("modifiedBy") String modifiedBy) {
+		return ResponseEntity.ok(orderService.assignDeliveryPerson(orderId, userId, modifiedBy));
 	}
 
 }
