@@ -1,7 +1,9 @@
 package com.connectgas.app.fb.config;
 
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.io.InputStream;
+import java.util.Arrays;
 
 import javax.annotation.PostConstruct;
 
@@ -11,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.google.api.client.googleapis.auth.oauth2.GoogleCredential;
 import com.google.auth.oauth2.GoogleCredentials;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.FirebaseOptions;
@@ -36,6 +39,13 @@ public class FirebaseInitialize {
 		}
 	}
 
+	public String getRefreshToken() throws JsonProcessingException, IOException {
+		GoogleCredential scoped = GoogleCredential.fromStream(getServiceAccount()).createScoped(Arrays.asList(
+				"https://www.googleapis.com/auth/firebase.database", "https://www.googleapis.com/auth/userinfo.email"));
+		scoped.refreshToken();
+		return scoped.getAccessToken();
+	}
+
 	private InputStream getServiceAccount() throws JsonProcessingException {
 
 		StringBuilder sb = new StringBuilder();
@@ -53,13 +63,6 @@ public class FirebaseInitialize {
 		sb.append("\"client_x509_cert_url\": \"").append(serviceAccountConfig.getClientX509CertUrl()).append("\"");
 		sb.append("\n}");
 
-		/*
-		 * ObjectMapper objectMapper = new ObjectMapper();
-		 * objectMapper.setVisibility(PropertyAccessor.FIELD, Visibility.ANY);
-		 * objectMapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
-		 * objectMapper.configure(
-		 * JsonReadFeature.ALLOW_UNESCAPED_CONTROL_CHARS.mappedFeature(), true );
-		 */
 		return new ByteArrayInputStream(sb.toString().getBytes());
 	}
 

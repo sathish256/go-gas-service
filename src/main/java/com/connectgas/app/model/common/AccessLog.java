@@ -1,10 +1,10 @@
 package com.connectgas.app.model.common;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.UUID;
 
-public class AccessLog extends ConnectGasEntity {
+public class AccessLog implements Serializable {
 
 	/**
 	 * 
@@ -12,17 +12,15 @@ public class AccessLog extends ConnectGasEntity {
 	private static final long serialVersionUID = 4196287064172212481L;
 
 	private String phone;
+	private String lastLoginTimeStamp;
 
 	public AccessLog() {
 		// DefaultConstructor
 	}
 
 	public AccessLog(String phone) {
-
 		this.phone = phone;
-		this.setCreatedAt(LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME));
-		this.setLastmodifiedAt(LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME));
-		this.setId(UUID.randomUUID().toString());
+		this.lastLoginTimeStamp = LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME);
 	}
 
 	public String getPhone() {
@@ -31,6 +29,14 @@ public class AccessLog extends ConnectGasEntity {
 
 	public void setPhone(String phone) {
 		this.phone = phone;
+	}
+
+	public String getLastLoginTimeStamp() {
+		return lastLoginTimeStamp;
+	}
+
+	public void setLastLoginTimeStamp(String lastLoginTimeStamp) {
+		this.lastLoginTimeStamp = lastLoginTimeStamp;
 	}
 
 }

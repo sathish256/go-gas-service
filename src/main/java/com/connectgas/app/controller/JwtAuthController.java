@@ -26,7 +26,7 @@ import com.connectgas.app.model.dto.AuthRequest;
 import com.connectgas.app.model.dto.AuthResponse;
 import com.connectgas.app.model.user.User;
 import com.connectgas.app.model.user.UserRole;
-import com.connectgas.app.repository.SimpleFirestoreRepository;
+import com.connectgas.app.repository.FirebaseRealtimeDatabase;
 import com.connectgas.app.service.JwtUserDetailsService;
 import com.connectgas.app.service.UserService;
 
@@ -46,7 +46,7 @@ public class JwtAuthController {
 	private UserService userService;
 
 	@Autowired
-	private SimpleFirestoreRepository<AccessLog, String> accessLogRepository;
+	private FirebaseRealtimeDatabase firebaseRealtimeDatabase;
 
 	@RequestMapping(value = "/authenticate", method = RequestMethod.POST)
 	public ResponseEntity<?> createAuthenticationToken(@RequestBody AuthRequest authenticationRequest)
@@ -58,7 +58,7 @@ public class JwtAuthController {
 
 		final String token = jwtTokenUtil.generateToken(userDetails);
 
-		accessLogRepository.save(new AccessLog(userDetails.getUsername()), AccessLog.class);
+		firebaseRealtimeDatabase.save(new AccessLog(userDetails.getUsername()), AccessLog.class);
 
 		return ResponseEntity.ok(new AuthResponse(token));
 	}
