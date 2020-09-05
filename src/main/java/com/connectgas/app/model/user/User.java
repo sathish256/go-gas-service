@@ -18,7 +18,6 @@ public class User extends ConnectGasEntity {
 	private Address address;
 	private IdentityProof identityProof;
 	private String password;
-	private String lastLoginTimestamp;
 	private String candfId;
 	private String dealershipId;
 	private boolean hasFullAccess;
@@ -102,14 +101,6 @@ public class User extends ConnectGasEntity {
 
 	public void setPassword(String password) {
 		this.password = password;
-	}
-
-	public String getLastLoginTimestamp() {
-		return lastLoginTimestamp;
-	}
-
-	public void setLastLoginTimestamp(String lastLoginTimestamp) {
-		this.lastLoginTimestamp = lastLoginTimestamp;
 	}
 
 	public String getCandfId() {

@@ -19,12 +19,14 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.connectgas.app.config.JwtTokenUtil;
+import com.connectgas.app.model.common.AccessLog;
 import com.connectgas.app.model.common.Address;
 import com.connectgas.app.model.common.IdentityProof;
 import com.connectgas.app.model.dto.AuthRequest;
 import com.connectgas.app.model.dto.AuthResponse;
 import com.connectgas.app.model.user.User;
 import com.connectgas.app.model.user.UserRole;
+import com.connectgas.app.repository.SimpleFirestoreRepository;
 import com.connectgas.app.service.JwtUserDetailsService;
 import com.connectgas.app.service.UserService;
 
@@ -43,6 +45,9 @@ public class JwtAuthController {
 	@Autowired
 	private UserService userService;
 
+	@Autowired
+	private SimpleFirestoreRepository<AccessLog, String> accessLogRepository;
+
 	@RequestMapping(value = "/authenticate", method = RequestMethod.POST)
 	public ResponseEntity<?> createAuthenticationToken(@RequestBody AuthRequest authenticationRequest)
 			throws Exception {
@@ -52,6 +57,8 @@ public class JwtAuthController {
 		final UserDetails userDetails = userDetailsService.loadUserByUsername(authenticationRequest.getPhone());
 
 		final String token = jwtTokenUtil.generateToken(userDetails);
+
+		accessLogRepository.save(new AccessLog(userDetails.getUsername()), AccessLog.class);
 
 		return ResponseEntity.ok(new AuthResponse(token));
 	}

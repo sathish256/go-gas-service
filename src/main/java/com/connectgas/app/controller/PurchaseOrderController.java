@@ -6,7 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -31,18 +30,13 @@ public class PurchaseOrderController {
 		return ResponseEntity.ok(purchaseOrderService.getOrder(id));
 	}
 
-	@PostMapping("/{quoteid}")
-	public ResponseEntity<PurchaseOrder> generateOrderbyQuote(@PathVariable String quoteid) {
-		return ResponseEntity.ok(purchaseOrderService.generateOrderbyQuote(quoteid));
-	}
-
 	@PostMapping("/new")
 	public ResponseEntity<PurchaseOrder> directOrder(@RequestBody PurchaseOrder order) {
 		return ResponseEntity.ok(purchaseOrderService.directOrder(order));
 	}
 
 	@PutMapping("/{orderId}/change-status/{status}")
-	public ResponseEntity<PurchaseOrder> updateOrderStatus(@PathVariable Long orderId, @PathVariable String status) {
+	public ResponseEntity<PurchaseOrder> updateOrderStatus(@PathVariable String orderId, @PathVariable String status) {
 		return ResponseEntity.ok(purchaseOrderService.updateOrderStatus(orderId, status));
 	}
 
@@ -53,24 +47,8 @@ public class PurchaseOrderController {
 	}
 
 	@GetMapping("/search")
-	public List<PurchaseOrder> search(@RequestParam("dealerId") String dealerId) {
-		return purchaseOrderService.search(dealerId);
+	public List<PurchaseOrder> search(@RequestParam("candfId") String candfId) {
+		return purchaseOrderService.search(candfId);
 	}
-	
-	@PostMapping("/test-create")
-	public ResponseEntity<PurchaseOrder> directPorder() {
-		return ResponseEntity.ok(purchaseOrderService.directPurchaseOrder());
-	}
-	
-	@GetMapping("/test-get/{orderId}")
-	public ResponseEntity<PurchaseOrder> getPorder(@PathVariable String orderId) {
-		return ResponseEntity.ok(purchaseOrderService.getPorder(orderId));
-	}
-	
-	@DeleteMapping("/test-delete/{orderId}")
-	public ResponseEntity<String> deleteOrder(@PathVariable String orderId) {
-		return ResponseEntity.ok(purchaseOrderService.deletePorder(orderId));
-	}
-
 
 }

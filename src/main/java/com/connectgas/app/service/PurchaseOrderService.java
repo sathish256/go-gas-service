@@ -1,16 +1,21 @@
 package com.connectgas.app.service;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
-import java.util.UUID;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.connectgas.app.model.order.PurchaseOrder;
+import com.connectgas.app.model.order.PurchaseOrderStatus;
+import com.connectgas.app.model.user.User;
+import com.connectgas.app.model.user.UserRole;
 import com.connectgas.app.repository.SimpleFirestoreRepository;
 
 @Service
@@ -19,46 +24,57 @@ public class PurchaseOrderService {
 	@Autowired
 	private SimpleFirestoreRepository<PurchaseOrder, String> purchaseOrderRepository;
 
+	@Autowired
+	private SimpleFirestoreRepository<User, String> userRepository;
+
 	public PurchaseOrder getOrder(String id) {
-		// TODO Auto-generated method stub
-		return null;
+		return purchaseOrderRepository.fetchById(id, PurchaseOrder.class)
+				.orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST,
+						"Order id " + id + " not available in the system"));
 	}
 
-	public PurchaseOrder generateOrderbyQuote(String quoteid) {
-		// TODO Auto-generated method stub
-		return null;
+	private PurchaseOrder saveOrUpdateOrder(PurchaseOrder order, String loggedInUser) {
+		return purchaseOrderRepository.save(order, PurchaseOrder.class);
+
 	}
 
 	public PurchaseOrder directOrder(PurchaseOrder order) {
-		// TODO Auto-generated method stub
-		return null;
+		String loggedInUser = SecurityContextHolder.getContext().getAuthentication().getName();
+		order.setId("PO" + Instant.now().getEpochSecond());
+		order.setCreatedAt(LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME));
+		order.setLastmodifiedAt(LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME));
+		return saveOrUpdateOrder(order, loggedInUser);
 	}
 
-	public PurchaseOrder updateOrderStatus(Long orderId, String status) {
-		// TODO Auto-generated method stub
-		return null;
+	public PurchaseOrder updateOrderStatus(String orderId, String status) {
+
+		String loggedInUser = SecurityContextHolder.getContext().getAuthentication().getName();
+
+		PurchaseOrder dbOrder = purchaseOrderRepository.fetchById(orderId, PurchaseOrder.class)
+				.orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST,
+						"Error while updating order id " + orderId + " not available in the system"));
+		dbOrder.setLastmodifiedAt(LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME));
+		dbOrder.setLastmodifiedBy(loggedInUser);
+		dbOrder.setPurchaseOrderStatus(PurchaseOrderStatus.valueOf(status));
+
+		return purchaseOrderRepository.save(dbOrder, PurchaseOrder.class);
 	}
 
-	public List<PurchaseOrder> getOrders(String name) {
-		// TODO Auto-generated method stub
+	public List<PurchaseOrder> getOrders(String phone) {
+
+		User user = userRepository.findAll(User.class).stream().filter(u -> u.getPhone().equals(phone)).findFirst()
+				.orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST,
+						"User id " + phone + " does not exists in the system"));
+
+		if (user.getRole().equals(UserRole.CANDF))
+			return purchaseOrderRepository.findAll(PurchaseOrder.class).stream()
+					.filter(o -> o.getCandfId().equals(user.getId())).collect(Collectors.toList());
+
+		if (user.getRole().equals(UserRole.DEALER))
+			return purchaseOrderRepository.findAll(PurchaseOrder.class).stream()
+					.filter(o -> o.getDealerId().equals(user.getDealershipId())).collect(Collectors.toList());
+
 		return null;
-	}
-
-	public List<PurchaseOrder> search(String dealerId) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	public PurchaseOrder directPurchaseOrder() {
-
-		PurchaseOrder purchaseOrder = new PurchaseOrder();
-
-		purchaseOrder.setId(UUID.randomUUID().toString());
-		purchaseOrder.setDealerId("asdf");
-		purchaseOrder.setLastmodifiedAt(LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME));
-		purchaseOrder.setCreatedAt(LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME));
-
-		return purchaseOrderRepository.save(purchaseOrder, getCollectionName());
 	}
 
 	private Class<PurchaseOrder> getCollectionName() {
@@ -75,6 +91,11 @@ public class PurchaseOrderService {
 		String status = "successfully deleted!!!";
 		purchaseOrderRepository.deleteById(orderId, getCollectionName());
 		return status;
+	}
+
+	public List<PurchaseOrder> search(String candfId) {
+		return purchaseOrderRepository.findAll(PurchaseOrder.class).stream().filter(o -> o.getCandfId().equals(candfId))
+				.collect(Collectors.toList());
 	}
 
 }

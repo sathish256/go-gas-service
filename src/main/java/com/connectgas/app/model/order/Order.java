@@ -1,6 +1,5 @@
 package com.connectgas.app.model.order;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 import com.connectgas.app.model.common.ConnectGasEntity;
@@ -23,13 +22,13 @@ public class Order extends ConnectGasEntity {
 	private String deliveredTimestamp;
 	private List<OrderProduct> orderedProducts;
 	private List<OrderProduct> returnProducts;
-	private LocalDateTime scheduledAt;
+	private String scheduledAt;
 
-	public LocalDateTime getScheduledAt() {
+	public String getScheduledAt() {
 		return scheduledAt;
 	}
 
-	public void setScheduledAt(LocalDateTime scheduledAt) {
+	public void setScheduledAt(String scheduledAt) {
 		this.scheduledAt = scheduledAt;
 	}
 

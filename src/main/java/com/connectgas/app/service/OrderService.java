@@ -111,7 +111,7 @@ public class OrderService {
 		order.setPaymentInfo(null);
 		order.setReturnProducts(null);
 
-		order.setScheduledAt(LocalDateTime.now().plusHours(2));
+		order.setScheduledAt(LocalDateTime.now().plusHours(2).format(DateTimeFormatter.ISO_DATE_TIME));
 		return saveOrUpdateOrder(order, quote, loggedInUser);
 	}
 

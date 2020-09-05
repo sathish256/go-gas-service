@@ -1,9 +1,6 @@
 package com.connectgas.app.service;
 
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,13 +22,10 @@ public class JwtUserDetailsService implements UserDetailsService {
 
 	@Override
 	public UserDetails loadUserByUsername(String phone) {
-		
-		List<User> users = userRepository.findAll(User.class);
+
 		User user = userRepository.findAll(User.class).stream().filter(u -> u.getPhone().equals(phone)).findFirst()
 				.orElseThrow(() -> new UsernameNotFoundException(phone));
 
-		user.setLastLoginTimestamp(LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME));
-		userRepository.save(user, User.class);
 		Set<GrantedAuthority> grantedAuthorities = new HashSet<>();
 		grantedAuthorities.add(new SimpleGrantedAuthority(user.getRole().toString()));
 

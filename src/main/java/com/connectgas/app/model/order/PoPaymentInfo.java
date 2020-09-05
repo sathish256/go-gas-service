@@ -1,7 +1,6 @@
 package com.connectgas.app.model.order;
 
 import java.io.Serializable;
-import java.time.LocalDateTime;
 
 public class PoPaymentInfo implements Serializable {
 
@@ -16,7 +15,7 @@ public class PoPaymentInfo implements Serializable {
 
 	private String transactionReference;
 
-	private LocalDateTime transactionDateTime;
+	private String transactionDateTime;
 
 	public Double getAmount() {
 		return amount;
@@ -42,11 +41,11 @@ public class PoPaymentInfo implements Serializable {
 		this.transactionReference = transactionReference;
 	}
 
-	public LocalDateTime getTransactionDateTime() {
+	public String getTransactionDateTime() {
 		return transactionDateTime;
 	}
 
-	public void setTransactionDateTime(LocalDateTime transactionDateTime) {
+	public void setTransactionDateTime(String transactionDateTime) {
 		this.transactionDateTime = transactionDateTime;
 	}
 

@@ -29,7 +29,7 @@ public class FirebaseInitialize {
 		try {
 			FirebaseOptions options = new FirebaseOptions.Builder()
 					.setCredentials(GoogleCredentials.fromStream(getServiceAccount()))
-					.setDatabaseUrl("https://fir-demo-8920f.firebaseio.com").build();
+					.setDatabaseUrl("https://connect-gas-in.firebaseio.com").build();
 			FirebaseApp.initializeApp(options);
 		} catch (Exception e) {
 			e.printStackTrace();

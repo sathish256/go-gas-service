@@ -32,6 +32,8 @@ public class Customer extends ConnectGasEntity {
 	private String password;
 
 	private String profileImage;
+	
+	private Double securityDeposit;
 
 	public String getName() {
 		return name;
@@ -111,6 +113,14 @@ public class Customer extends ConnectGasEntity {
 
 	public void setProfileImage(String profileImage) {
 		this.profileImage = profileImage;
+	}
+
+	public Double getSecurityDeposit() {
+		return securityDeposit;
+	}
+
+	public void setSecurityDeposit(Double securityDeposit) {
+		this.securityDeposit = securityDeposit;
 	}
 
 }
