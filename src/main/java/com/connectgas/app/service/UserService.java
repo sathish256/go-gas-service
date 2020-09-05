@@ -57,7 +57,7 @@ public class UserService {
 			user.setLastmodifiedAt(LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME));
 			savedUser = userRepository.save(user, getCollectionName());
 
-			SMSUtil.sendSMS(Long.parseLong(user.getPhone()), "GoGas - NewUser login Password : " + generatedPwd);
+			SMSUtil.sendSMS(Long.parseLong(user.getPhone()), "ConnectGas - NewUser login Password : " + generatedPwd);
 
 		} catch (Exception pe) {
 			throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, pe.getLocalizedMessage());

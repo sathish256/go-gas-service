@@ -3,6 +3,7 @@ package com.connectgas.app.service;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -33,10 +34,10 @@ public class DealershipService {
 
 	public Dealership addDealership(Dealership dealership) {
 
-		getDealership(dealership.getId());
 
 		Dealership savedDealership = null;
 		try {
+			dealership.setId(UUID.randomUUID().toString());
 			dealership.setCreatedAt(LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME));
 			dealership.setLastmodifiedAt(LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME));
 			savedDealership = dealershipRepository.save(dealership, getCollectionName());

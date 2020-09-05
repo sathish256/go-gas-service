@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -30,23 +31,25 @@ public class QuoteService {
 		return ConnectGasQuote.class.getSimpleName().toLowerCase();
 	}
 
-	public ConnectGasQuote addConnectGasQuote(ConnectGasQuote ConnectGasQuote) {
+	public ConnectGasQuote addConnectGasQuote(ConnectGasQuote connectGasQuote) {
+		
+		connectGasQuote.setId(UUID.randomUUID().toString());
 
-		ConnectGasQuote.setCreatedAt(LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME));
-		ConnectGasQuote.setLastmodifiedAt(LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME));
+		connectGasQuote.setCreatedAt(LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME));
+		connectGasQuote.setLastmodifiedAt(LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME));
 
-		return connectGasQuoteRepository.save(ConnectGasQuote, getCollectionName());
+		return connectGasQuoteRepository.save(connectGasQuote, getCollectionName());
 	}
 
-	public ConnectGasQuote updateConnectGasQuote(ConnectGasQuote ConnectGasQuote) {
+	public ConnectGasQuote updateConnectGasQuote(ConnectGasQuote connectGasQuote) {
 
-		connectGasQuoteRepository.fetchById(ConnectGasQuote.getId(), getCollectionName(), ConnectGasQuote.class)
+		connectGasQuoteRepository.fetchById(connectGasQuote.getId(), getCollectionName(), ConnectGasQuote.class)
 				.orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST,
-						"ConnectGasQuote id " + ConnectGasQuote.getId() + " does not exists in the system"));
+						"ConnectGasQuote id " + connectGasQuote.getId() + " does not exists in the system"));
 
-		ConnectGasQuote.setLastmodifiedAt(LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME));
+		connectGasQuote.setLastmodifiedAt(LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME));
 
-		return connectGasQuoteRepository.save(ConnectGasQuote, getCollectionName());
+		return connectGasQuoteRepository.save(connectGasQuote, getCollectionName());
 	}
 
 	public List<ConnectGasQuote> findConnectGasQuoteByCutomerId(String customerId) {
