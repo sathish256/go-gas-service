@@ -18,7 +18,7 @@ public class Order extends ConnectGasEntity {
 	private OrderType orderType;
 	private String deliveryPersonId;
 	private OrderStatus orderStatus;
-	private List<PaymentInfo> paymentInfo;
+	private PaymentInfo paymentInfo;
 	private String deliveredTimestamp;
 	private List<OrderProduct> orderedProducts;
 	private List<OrderProduct> returnProducts;
@@ -72,11 +72,11 @@ public class Order extends ConnectGasEntity {
 		this.orderStatus = orderStatus;
 	}
 
-	public List<PaymentInfo> getPaymentInfo() {
+	public PaymentInfo getPaymentInfo() {
 		return paymentInfo;
 	}
 
-	public void setPaymentInfo(List<PaymentInfo> paymentInfo) {
+	public void setPaymentInfo(PaymentInfo paymentInfo) {
 		this.paymentInfo = paymentInfo;
 	}
 

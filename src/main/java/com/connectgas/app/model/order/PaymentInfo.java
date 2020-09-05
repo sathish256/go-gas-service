@@ -1,6 +1,7 @@
 package com.connectgas.app.model.order;
 
 import java.io.Serializable;
+import java.util.List;
 
 public class PaymentInfo implements Serializable {
 	/**
@@ -9,7 +10,7 @@ public class PaymentInfo implements Serializable {
 	private static final long serialVersionUID = -164205329727066976L;
 	private Double arrearAmount;
 	private Double billAmount;
-	private PaidDetails paidDetails;
+	private List<PaidDetails> paidDetails;
 	private PaymentStatus paymentStatus;
 
 	public Double getBillAmount() {
@@ -28,11 +29,12 @@ public class PaymentInfo implements Serializable {
 		this.arrearAmount = arrearAmount;
 	}
 
-	public PaidDetails getPaidDetails() {
+
+	public List<PaidDetails> getPaidDetails() {
 		return paidDetails;
 	}
 
-	public void setPaidDetails(PaidDetails paidDetails) {
+	public void setPaidDetails(List<PaidDetails> paidDetails) {
 		this.paidDetails = paidDetails;
 	}
 
