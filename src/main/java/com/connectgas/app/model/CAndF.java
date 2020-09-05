@@ -5,6 +5,10 @@ import com.connectgas.app.model.common.ConnectGasEntity;
 
 public class CAndF extends ConnectGasEntity {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 2336187197788379024L;
 	private String name;
 	private String phone;
 	private Address address;

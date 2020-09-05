@@ -43,6 +43,6 @@ public class ProductController {
 
 	@GetMapping("/findall")
 	public List<Product> findAll() {
-		return productRepository.findAll(Product.class.getSimpleName().toLowerCase(), Product.class);
+		return productRepository.findAll(Product.class);
 	}
 }

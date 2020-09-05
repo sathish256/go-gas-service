@@ -22,13 +22,13 @@ public class ProductService {
 	public Product getProduct(String uid) {
 		if (StringUtils.isEmpty(uid))
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Product id should not be empty");
-		return productRepository.fetchById(uid, getCollectionName(), Product.class)
+		return productRepository.fetchById(uid, Product.class)
 				.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
 						"Product id " + uid + " does not exists in the system"));
 	}
 
-	private String getCollectionName() {
-		return Product.class.getSimpleName().toLowerCase();
+	private Class<Product> getCollectionName() {
+		return Product.class;
 	}
 
 	public Product addProduct(Product product) {

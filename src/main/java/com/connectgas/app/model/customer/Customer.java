@@ -1,13 +1,11 @@
 package com.connectgas.app.model.customer;
 
-import java.io.Serializable;
-
 import com.connectgas.app.model.common.Address;
 import com.connectgas.app.model.common.ConnectGasEntity;
 import com.connectgas.app.model.common.IdentityProof;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-public class Customer extends ConnectGasEntity implements Serializable {
+public class Customer extends ConnectGasEntity {
 
 	/**
 	 * 

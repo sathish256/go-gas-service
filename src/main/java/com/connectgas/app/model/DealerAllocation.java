@@ -1,7 +1,13 @@
 package com.connectgas.app.model;
 
-public class DealerAllocation {
+import java.io.Serializable;
 
+public class DealerAllocation implements Serializable {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -6608322129804398404L;
 	private String productId;
 	private Integer quantity;
 

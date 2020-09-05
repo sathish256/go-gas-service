@@ -1,11 +1,10 @@
 package com.connectgas.app.model.order;
 
-import java.io.Serializable;
 import java.util.List;
 
 import com.connectgas.app.model.common.ConnectGasEntity;
 
-public class ConnectGasQuote extends ConnectGasEntity implements Serializable {
+public class ConnectGasQuote extends ConnectGasEntity {
 	/**
 	 * 
 	 */
@@ -47,5 +46,4 @@ public class ConnectGasQuote extends ConnectGasEntity implements Serializable {
 		this.quoteStatus = quoteStatus;
 	}
 
-	
 }

@@ -1,12 +1,11 @@
 package com.connectgas.app.model.order;
 
-import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.List;
 
 import com.connectgas.app.model.common.ConnectGasEntity;
 
-public class PurchaseOrder extends ConnectGasEntity implements Serializable {
+public class PurchaseOrder extends ConnectGasEntity {
 	/**
 	 * 
 	 */

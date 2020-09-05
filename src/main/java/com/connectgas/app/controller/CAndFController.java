@@ -50,6 +50,6 @@ public class CAndFController {
 
 	@GetMapping("/findall")
 	public List<CAndF> findAll() {
-		return candFRepository.findAll(CAndF.class.getSimpleName().toLowerCase(), CAndF.class);
+		return candFRepository.findAll(CAndF.class);
 	}
 }

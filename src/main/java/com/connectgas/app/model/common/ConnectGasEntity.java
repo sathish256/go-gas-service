@@ -1,7 +1,13 @@
 package com.connectgas.app.model.common;
 
-public class ConnectGasEntity {
+import java.io.Serializable;
 
+public class ConnectGasEntity implements Serializable {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -354026790629000246L;
 	private String id;
 	private String createdAt;
 	private String createdBy;

@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -23,17 +24,16 @@ public class DealershipService {
 	public Dealership getDealership(String uid) {
 		if (StringUtils.isEmpty(uid))
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Dealership id should not be empty");
-		return dealershipRepository.fetchById(uid, getCollectionName(), Dealership.class)
+		return dealershipRepository.fetchById(uid, Dealership.class)
 				.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
 						"Dealership id " + uid + " does not exists in the system"));
 	}
 
-	private String getCollectionName() {
-		return Dealership.class.getSimpleName().toLowerCase();
+	private Class<Dealership> getCollectionName() {
+		return Dealership.class;
 	}
 
 	public Dealership addDealership(Dealership dealership) {
-
 
 		Dealership savedDealership = null;
 		try {
@@ -67,9 +67,10 @@ public class DealershipService {
 
 	public List<Dealership> search(String candfId) {
 		if (!StringUtils.isEmpty(candfId))
-			return dealershipRepository.findByPathAndValue("candfId", candfId, getCollectionName(), Dealership.class);
+			return dealershipRepository.findAll(getCollectionName()).stream()
+					.filter(d -> d.getCandfId().equals(candfId)).collect(Collectors.toList());
 
-		return dealershipRepository.findAll(getCollectionName(), Dealership.class);
+		return dealershipRepository.findAll(getCollectionName());
 	}
 
 }

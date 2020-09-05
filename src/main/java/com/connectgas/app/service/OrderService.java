@@ -6,6 +6,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -50,21 +51,16 @@ public class OrderService {
 	private SimpleFirestoreRepository<User, String> userRepository;
 
 	public Order getOrder(String id) {
-		return orderRepository.fetchById(id, getCollectionName(Order.class), Order.class)
+		return orderRepository.fetchById(id, Order.class)
 				.orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST,
 						"Order id " + id + " not available in the system"));
-	}
-
-	private String getCollectionName(Class clazz) {
-		return clazz.getSimpleName().toLowerCase();
 	}
 
 	public Order generateOrderbyQuote(String quoteId) {
 
 		String loggedInUser = SecurityContextHolder.getContext().getAuthentication().getName();
 
-		ConnectGasQuote quote = quoteRepository
-				.fetchById(quoteId, getCollectionName(ConnectGasQuote.class), ConnectGasQuote.class)
+		ConnectGasQuote quote = quoteRepository.fetchById(quoteId, ConnectGasQuote.class)
 				.orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST,
 						"Error while placing order for Quote id " + quoteId + " not available in the system"));
 
@@ -79,11 +75,9 @@ public class OrderService {
 		order.setQuoteId(quoteId);
 		order.setDealerId(quote.getDealerId());
 
-		Customer customer = customerRepository
-				.fetchById(quote.getCustomerId(), getCollectionName(Customer.class), Customer.class)
-				.orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST,
-						"Error while placing order for Customer id " + quote.getCustomerId()
-								+ " not available in the system"));
+		Customer customer = customerRepository.fetchById(quote.getCustomerId(), Customer.class).orElseThrow(
+				() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Error while placing order for Customer id "
+						+ quote.getCustomerId() + " not available in the system"));
 
 		OrderCustomer orderCustomer = new OrderCustomer();
 		orderCustomer.setId(quote.getCustomerId());
@@ -123,13 +117,11 @@ public class OrderService {
 	}
 
 	private Order saveOrUpdateOrder(Order order, ConnectGasQuote quote, String loggedInUser) {
-		Dealership dealer = dealershipRepository
-				.fetchById(order.getDealerId(), getCollectionName(Dealership.class), Dealership.class)
-				.orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST,
-						"Error while placing order to dealer id " + order.getDealerId()
-								+ " not available in the system"));
+		Dealership dealer = dealershipRepository.fetchById(order.getDealerId(), Dealership.class).orElseThrow(
+				() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Error while placing order to dealer id "
+						+ order.getDealerId() + " not available in the system"));
 
-		orderRepository.save(order, getCollectionName(Order.class));
+		orderRepository.save(order, Order.class);
 
 		if (StringUtils.hasText(order.getCustomer().getPhone()))
 			SMSUtil.sendSMS(Long.parseLong(order.getCustomer().getPhone()),
@@ -139,7 +131,7 @@ public class OrderService {
 			quote.setQuoteStatus(QuoteStatus.ORDERED);
 			quote.setLastmodifiedAt(LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME));
 			quote.setLastmodifiedBy(loggedInUser);
-			quoteRepository.save(quote, getCollectionName(ConnectGasQuote.class));
+			quoteRepository.save(quote, ConnectGasQuote.class);
 		}
 
 		return order;
@@ -159,7 +151,7 @@ public class OrderService {
 	public Order updateOrderStatus(String orderId, String status) {
 		String loggedInUser = SecurityContextHolder.getContext().getAuthentication().getName();
 
-		Order dbOrder = orderRepository.fetchById(orderId, getCollectionName(Order.class), Order.class)
+		Order dbOrder = orderRepository.fetchById(orderId, Order.class)
 				.orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST,
 						"Error while updating order id " + orderId + " not available in the system"));
 		dbOrder.setLastmodifiedAt(LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME));
@@ -169,28 +161,28 @@ public class OrderService {
 		if (OrderStatus.DELIVERED.toString().equals(status))
 			dbOrder.setDeliveredTimestamp(LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME));
 
-		return orderRepository.save(dbOrder, getCollectionName(Order.class));
+		return orderRepository.save(dbOrder, Order.class);
 	}
 
 	public List<Order> getOrders(String phone) {
 
-		User user = userRepository.findByPathAndValue("phone", phone, getCollectionName(User.class), User.class)
-				.stream().findFirst().orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST,
+		User user = userRepository.findAll(User.class).stream().filter(u -> u.getPhone().equals(phone)).findFirst()
+				.orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST,
 						"User id " + phone + " does not exists in the system"));
 
 		if (user.getRole().equals(UserRole.DELIVERY))
-			return orderRepository.findByPathAndValue("deliveryPersonId", user.getId(), getCollectionName(Order.class),
-					Order.class);
+			return orderRepository.findAll(Order.class).stream()
+					.filter(o -> o.getDeliveryPersonId().equals(user.getId())).collect(Collectors.toList());
 
 		if (user.getRole().equals(UserRole.DEALER))
-			return orderRepository.findByPathAndValue("dealerId", user.getDealershipId(),
-					getCollectionName(Order.class), Order.class);
+			return orderRepository.findAll(Order.class).stream()
+					.filter(o -> o.getDealerId().equals(user.getDealershipId())).collect(Collectors.toList());
 
 		return null;
 	}
 
 	public Order assignDeliveryPerson(String name, String orderid, String userid) {
-		Order dbOrder = orderRepository.fetchById(orderid, getCollectionName(Order.class), Order.class)
+		Order dbOrder = orderRepository.fetchById(orderid, Order.class)
 				.orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST,
 						"Error while updating order id " + orderid + " not available in the system"));
 		dbOrder.setDeliveryPersonId(userid);
@@ -198,13 +190,14 @@ public class OrderService {
 		dbOrder.setLastmodifiedBy(name);
 		dbOrder.setOrderStatus(OrderStatus.ASSIGNED);
 
-		orderRepository.save(dbOrder, getCollectionName(Order.class));
+		orderRepository.save(dbOrder, Order.class);
 
 		return dbOrder;
 	}
 
 	public List<Order> search(String dealerId) {
-		return orderRepository.findByPathAndValue("dealerId", dealerId, getCollectionName(Order.class), Order.class);
+		return orderRepository.findAll(Order.class).stream()
+				.filter(o -> o.getDealerId().equals(dealerId)).collect(Collectors.toList());
 	}
 
 }

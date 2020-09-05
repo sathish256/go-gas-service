@@ -1,7 +1,13 @@
 package com.connectgas.app.model.common;
 
-public class IdentityProof {
+import java.io.Serializable;
 
+public class IdentityProof implements Serializable {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -1694682620342419031L;
 	private String name;
 	private String type;
 	private String filepath;

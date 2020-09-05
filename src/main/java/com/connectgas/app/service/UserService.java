@@ -4,13 +4,13 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -34,18 +34,17 @@ public class UserService {
 	private BCryptPasswordEncoder bCryptPasswordEncoder;
 
 	public User getUser(String uid) {
-		return userRepository.fetchById(uid, getCollectionName(), User.class)
+		return userRepository.fetchById(uid, getCollectionName())
 				.orElseThrow(() -> new EntityNotFoundException(User.class, "id", uid));
 	}
 
-	private String getCollectionName() {
-		return User.class.getSimpleName().toLowerCase();
+	private Class<User> getCollectionName() {
+		return User.class;
 	}
 
 	public User addUser(User user) {
 
-		if (!CollectionUtils
-				.isEmpty(userRepository.findByPathAndValue("phone", user.getPhone(), getCollectionName(), User.class)))
+		if (userRepository.findAll(User.class).stream().anyMatch(u -> u.getPhone().equals(user.getPhone())))
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
 					"User id " + user.getId() + " already exists in the system");
 		User savedUser = null;
@@ -68,8 +67,8 @@ public class UserService {
 
 	public User updateUser(User user) {
 
-		User dbUser = userRepository.findByPathAndValue("phone", user.getPhone(), getCollectionName(), User.class)
-				.stream().findFirst().orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST,
+		User dbUser = userRepository.findAll(User.class).stream().filter(u -> u.getPhone().equals(user.getPhone()))
+				.findFirst().orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST,
 						"User id " + user.getPhone() + " does not exists in the system"));
 
 		User savedUser = null;
@@ -89,9 +88,9 @@ public class UserService {
 
 		String message = "Password changed successfully!";
 
-		User user = userRepository
-				.findByPathAndValue("phone", credentialsDTO.getPhone(), getCollectionName(), User.class).stream()
-				.findFirst().orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST,
+		User user = userRepository.findAll(User.class).stream()
+				.filter(u -> u.getPhone().equals(credentialsDTO.getPhone())).findFirst()
+				.orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST,
 						"User id " + credentialsDTO.getPhone() + " does not exists in the system"));
 
 		if (isReset) {
@@ -113,17 +112,16 @@ public class UserService {
 	}
 
 	public User findUserByPhone(String phone) {
-		return userRepository.findByPathAndValue("phone", phone, getCollectionName(), User.class).stream().findFirst()
+		return userRepository.findAll(User.class).stream().filter(u -> u.getPhone().equals(phone)).findFirst()
 				.orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST,
 						"User id " + phone + " does not exists in the system"));
 	}
 
 	public List<User> findAll() {
-		return userRepository.findAll(getCollectionName(),User.class);
+		return userRepository.findAll(User.class);
 	}
 
 	public User deleteUser(String phone) {
-
 		User user = findUserByPhone(phone);
 		userRepository.deleteById(user.getId(), getCollectionName());
 		return user;
@@ -133,22 +131,25 @@ public class UserService {
 
 		User user = findUserByPhone(phone);
 		if (user.getRole().equals(UserRole.ADMIN)) {
-			userRepository.findAll(getCollectionName(), User.class);
+			userRepository.findAll(getCollectionName());
 		} else if (user.getRole().equals(UserRole.CANDF))
-			return userRepository.findByPathAndValue("candfId", user.getCandfId(), getCollectionName(), User.class);
+			return userRepository.findAll(getCollectionName()).stream()
+					.filter(u -> u.getCandfId().equals(user.getCandfId())).collect(Collectors.toList());
 		else if (user.getRole().equals(UserRole.DEALER))
-			return userRepository.findByPathAndValue("dealershipId", user.getCandfId(), getCollectionName(),
-					User.class);
+			return userRepository.findAll(getCollectionName()).stream()
+					.filter(u -> u.getDealershipId().equals(user.getDealershipId())).collect(Collectors.toList());
 
-		return userRepository.findAll(getCollectionName(), User.class);
+		return userRepository.findAll(getCollectionName());
 	}
 
 	public List<User> search(String candfId, String dealerId) {
 
 		if (StringUtils.hasText(candfId))
-			return userRepository.findByPathAndValue("candfId", candfId, getCollectionName(), User.class);
+			return userRepository.findAll(getCollectionName()).stream().filter(u -> u.getCandfId().equals(candfId))
+					.collect(Collectors.toList());
 		else if (StringUtils.hasText(dealerId))
-			return userRepository.findByPathAndValue("dealershipId", dealerId, getCollectionName(), User.class);
+			return userRepository.findAll(getCollectionName()).stream()
+					.filter(u -> u.getDealershipId().equals(dealerId)).collect(Collectors.toList());
 
 		throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "User Search requires either candfId or dealerId");
 	}

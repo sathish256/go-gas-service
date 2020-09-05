@@ -4,13 +4,13 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -33,18 +33,19 @@ public class CustomerService {
 	private BCryptPasswordEncoder bCryptPasswordEncoder;
 
 	public Customer getCustomer(String uid) {
-		return customerRepository.fetchById(uid, getCollectionName(), Customer.class)
+		return customerRepository.fetchById(uid, getCollectionName())
 				.orElseThrow(() -> new EntityNotFoundException(Customer.class, "id", uid));
 	}
 
-	private String getCollectionName() {
-		return Customer.class.getSimpleName().toLowerCase();
+	private Class<Customer> getCollectionName() {
+		return Customer.class;
 	}
 
 	public Customer addCustomer(Customer customer) {
 
-		if (!CollectionUtils.isEmpty(customerRepository.findByPathAndValue("phone", customer.getPhone(),
-				getCollectionName(), Customer.class)))
+		List<Customer> customers = customerRepository.findAll(getCollectionName());
+
+		if (customers.stream().anyMatch(c -> c.getPhone().equals(customer.getPhone())))
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
 					"Customer id " + customer.getId() + " already exists in the system");
 		Customer savedCustomer = null;
@@ -68,11 +69,11 @@ public class CustomerService {
 
 	public Customer updateCustomer(Customer customer) {
 
-		Customer dbCustomer = customerRepository
-				.findByPathAndValue("phone", customer.getPhone(), getCollectionName(), Customer.class).stream()
-				.findFirst().orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST,
-						"Customer id " + customer.getPhone() + " does not exists in the system"));
+		List<Customer> customers = customerRepository.findAll(getCollectionName());
 
+		Customer dbCustomer = customers.stream().filter(c -> c.getPhone().equals(customer.getPhone())).findFirst()
+				.orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST,
+						"Customer id " + customer.getPhone() + " does not exists in the system"));
 		Customer savedCustomer = null;
 		try {
 			customer.setPassword(dbCustomer.getPassword());
@@ -89,10 +90,10 @@ public class CustomerService {
 	public ConnectGasResponse changePassword(CredentialsDTO credentialsDTO, boolean isReset) {
 
 		String message = "Password changed successfully!";
+		List<Customer> customers = customerRepository.findAll(getCollectionName());
 
-		Customer customer = customerRepository
-				.findByPathAndValue("phone", credentialsDTO.getPhone(), getCollectionName(), Customer.class).stream()
-				.findFirst().orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST,
+		Customer customer = customers.stream().filter(c -> c.getPhone().equals(credentialsDTO.getPhone())).findFirst()
+				.orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST,
 						"Customer id " + credentialsDTO.getPhone() + " does not exists in the system"));
 
 		if (isReset) {
@@ -115,20 +116,22 @@ public class CustomerService {
 
 	public List<Customer> search(String dealerId) {
 
-		if (StringUtils.hasText(dealerId))
-			return customerRepository.findByPathAndValue("dealerId", dealerId, getCollectionName(), Customer.class);
+		if (StringUtils.hasText(dealerId)) {
+			return customerRepository.findAll(getCollectionName()).stream()
+					.filter(c -> c.getDealerId().equals(dealerId)).collect(Collectors.toList());
+		}
 
 		throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Customer Search requires either dealerId");
 	}
 
 	public Customer findCustomerByPhone(String phone) {
-		return customerRepository.findByPathAndValue("phone", phone, getCollectionName(), Customer.class).stream()
+		return customerRepository.findAll(getCollectionName()).stream().filter(c -> c.getPhone().equals(phone))
 				.findFirst().orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST,
 						"Customer id " + phone + " does not exists in the system"));
 	}
 
 	public List<Customer> findAll() {
-		return customerRepository.findAll(getCollectionName(), Customer.class);
+		return customerRepository.findAll(Customer.class);
 	}
 
 	public Customer deleteCustomer(String phone) {

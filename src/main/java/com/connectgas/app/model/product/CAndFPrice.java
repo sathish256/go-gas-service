@@ -1,8 +1,14 @@
 package com.connectgas.app.model.product;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 
-public class CAndFPrice {
+public class CAndFPrice implements Serializable {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -6714145480641094900L;
 
 	private String candfId;
 

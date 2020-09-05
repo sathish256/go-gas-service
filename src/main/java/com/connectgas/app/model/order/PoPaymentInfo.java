@@ -1,9 +1,15 @@
 package com.connectgas.app.model.order;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
-public class PoPaymentInfo {
+public class PoPaymentInfo implements Serializable {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -1261520107117083210L;
 
 	private BigDecimal amount;
 

@@ -20,12 +20,13 @@ public class CAndFService {
 	private SimpleFirestoreRepository<CAndF, String> candFRepository;
 
 	public CAndF getCAndF(String uid) {
-		return candFRepository.fetchById(uid, getCollectionName(), CAndF.class).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
-				"CAndF id " + uid + " does not exists in the system"));
+		return candFRepository.fetchById(uid, CAndF.class)
+				.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
+						"CAndF id " + uid + " does not exists in the system"));
 	}
 
-	private String getCollectionName() {
-		return CAndF.class.getSimpleName().toLowerCase();
+	private Class<CAndF> getCollectionName() {
+		return CAndF.class;
 	}
 
 	public CAndF addCAndF(CAndF candF) {
@@ -35,7 +36,7 @@ public class CAndFService {
 			candF.setId(UUID.randomUUID().toString());
 			candF.setCreatedAt(LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME));
 			candF.setLastmodifiedAt(LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME));
-			savedCAndF = candFRepository.save(candF,getCollectionName());
+			savedCAndF = candFRepository.save(candF, getCollectionName());
 
 		} catch (Exception pe) {
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, pe.getLocalizedMessage());
@@ -51,7 +52,7 @@ public class CAndFService {
 		CAndF savedCAndF = null;
 		try {
 			candF.setLastmodifiedAt(LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME));
-			savedCAndF = candFRepository.save(candF,getCollectionName());
+			savedCAndF = candFRepository.save(candF, getCollectionName());
 		} catch (Exception pe) {
 			if (pe.getLocalizedMessage().contains("Key (contact)"))
 				throw new ResponseStatusException(HttpStatus.BAD_REQUEST,

@@ -1,8 +1,15 @@
 package com.connectgas.app.model.customer;
 
+import java.io.Serializable;
+
 import com.connectgas.app.model.common.Address;
 
-public class Organization {
+public class Organization implements Serializable {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 3549273289404735482L;
 
 	private String orgName;
 

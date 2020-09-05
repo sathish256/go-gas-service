@@ -1,9 +1,14 @@
 package com.connectgas.app.model.order;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 
-public class OrderProduct {
+public class OrderProduct implements Serializable {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -4562297863054986443L;
 	private String id;
 	private String productId;
 	private Integer quantity;

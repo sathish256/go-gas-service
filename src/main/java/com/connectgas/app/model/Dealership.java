@@ -7,6 +7,10 @@ import com.connectgas.app.model.common.ConnectGasEntity;
 
 public class Dealership extends ConnectGasEntity {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 8458120800268095652L;
 	private String id;
 	private String name;
 	private String phone;

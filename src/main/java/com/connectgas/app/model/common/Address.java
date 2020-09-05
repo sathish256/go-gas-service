@@ -1,6 +1,13 @@
 package com.connectgas.app.model.common;
 
-public class Address {
+import java.io.Serializable;
+
+public class Address implements Serializable {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 2265109554358282202L;
 
 	private String doorNo;
 	private String streetName;

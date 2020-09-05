@@ -1,9 +1,16 @@
 package com.connectgas.app.model.order.dto;
 
+import java.io.Serializable;
+
 import com.connectgas.app.model.common.Address;
 import com.connectgas.app.model.customer.CustomerType;
 
-public class OrderCustomer {
+public class OrderCustomer implements Serializable {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -1129571266466160362L;
 
 	private String id;
 

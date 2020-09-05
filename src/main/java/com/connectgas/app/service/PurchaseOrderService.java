@@ -61,12 +61,12 @@ public class PurchaseOrderService {
 		return purchaseOrderRepository.save(purchaseOrder, getCollectionName());
 	}
 
-	private String getCollectionName() {
-		return PurchaseOrder.class.getSimpleName().toLowerCase();
+	private Class<PurchaseOrder> getCollectionName() {
+		return PurchaseOrder.class;
 	}
 
 	public PurchaseOrder getPorder(String orderId) {
-		return purchaseOrderRepository.fetchById(orderId, getCollectionName(), PurchaseOrder.class)
+		return purchaseOrderRepository.fetchById(orderId, getCollectionName())
 				.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
 						"CAndF id " + orderId + " does not exists in the system"));
 	}

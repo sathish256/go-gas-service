@@ -1,8 +1,13 @@
 package com.connectgas.app.model.order;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 
-public class PaymentInfo {
+public class PaymentInfo implements Serializable{
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -164205329727066976L;
 	private BigDecimal billAmount;
 	private BigDecimal paidAmount;
 	private boolean partialPay;

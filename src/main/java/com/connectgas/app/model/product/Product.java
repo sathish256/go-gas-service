@@ -1,11 +1,10 @@
 package com.connectgas.app.model.product;
 
-import java.io.Serializable;
 import java.util.List;
 
 import com.connectgas.app.model.common.ConnectGasEntity;
 
-public class Product extends ConnectGasEntity implements Serializable {
+public class Product extends ConnectGasEntity {
 	/**
 	 * 
 	 */

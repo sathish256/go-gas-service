@@ -1,6 +1,5 @@
 package com.connectgas.app.model.order;
 
-import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -8,7 +7,7 @@ import com.connectgas.app.model.common.ConnectGasEntity;
 import com.connectgas.app.model.order.dto.OrderCustomer;
 import com.connectgas.app.model.order.dto.OrderType;
 
-public class Order extends ConnectGasEntity implements Serializable {
+public class Order extends ConnectGasEntity {
 	/**
 	 * 
 	 */

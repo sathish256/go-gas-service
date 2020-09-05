@@ -10,16 +10,16 @@ import com.google.firebase.cloud.FirestoreClient;
 
 public interface FirestoreRepository<E extends ConnectGasEntity, ID> {
 
-	public E save(E entity, String collection);
+	public E save(E entity, Class<E> persistentClass);
 
-	public Optional<E> fetchById(ID id, String collection, Class<E> persistentClass)
-			throws ConnectGasDataAccessException;
+	public Optional<E> fetchById(ID id, Class<E> persistentClass) throws ConnectGasDataAccessException;
 
-	public void deleteById(ID id, String collection) throws ConnectGasDataAccessException;
+	public void deleteById(ID id, Class<E> persistentClass) throws ConnectGasDataAccessException;
 
-	public List<E> findAll(String collection, Class<E> persistentClass);
+	public List<E> findAll(Class<E> persistentClass);
 
-	public List<E> findByPathAndValue(String path, String value, String collection, Class<E> persistentClass);
+	@Deprecated
+	public List<E> findByPathAndValue1(String path, String value, Class<E> persistentClass);
 
 	default Firestore getFirestore() {
 		return FirestoreClient.getFirestore();
