@@ -136,8 +136,9 @@ public class UserService {
 			return userRepository.findAll(getCollectionName()).stream()
 					.filter(u -> u.getCandfId().equals(user.getCandfId())).collect(Collectors.toList());
 		else if (user.getRole().equals(UserRole.DEALER))
-			return userRepository.findAll(getCollectionName()).stream()
-					.filter(u -> u.getDealershipId().equals(user.getDealershipId())).collect(Collectors.toList());
+			return userRepository.findAll(getCollectionName()).stream().filter(
+					u -> StringUtils.hasText(u.getDealershipId()) && u.getDealershipId().equals(user.getDealershipId()))
+					.collect(Collectors.toList());
 
 		return userRepository.findAll(getCollectionName());
 	}
@@ -145,11 +146,13 @@ public class UserService {
 	public List<User> search(String candfId, String dealerId) {
 
 		if (StringUtils.hasText(candfId))
-			return userRepository.findAll(getCollectionName()).stream().filter(u -> u.getCandfId().equals(candfId))
+			return userRepository.findAll(getCollectionName()).stream()
+					.filter(u -> StringUtils.hasText(u.getCandfId()) && u.getCandfId().equals(candfId))
 					.collect(Collectors.toList());
 		else if (StringUtils.hasText(dealerId))
 			return userRepository.findAll(getCollectionName()).stream()
-					.filter(u -> u.getDealershipId().equals(dealerId)).collect(Collectors.toList());
+					.filter(u -> StringUtils.hasText(u.getDealershipId()) && u.getDealershipId().equals(dealerId))
+					.collect(Collectors.toList());
 
 		throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "User Search requires either candfId or dealerId");
 	}
