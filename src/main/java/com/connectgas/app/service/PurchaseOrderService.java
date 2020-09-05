@@ -68,7 +68,7 @@ public class PurchaseOrderService {
 
 		if (user.getRole().equals(UserRole.CANDF))
 			return purchaseOrderRepository.findAll(PurchaseOrder.class).stream()
-					.filter(o -> o.getCandfId().equals(user.getId())).collect(Collectors.toList());
+					.filter(o -> o.getCandfId().equals(user.getCandfId())).collect(Collectors.toList());
 
 		if (user.getRole().equals(UserRole.DEALER))
 			return purchaseOrderRepository.findAll(PurchaseOrder.class).stream()
