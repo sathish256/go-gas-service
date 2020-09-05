@@ -1,7 +1,6 @@
 package com.connectgas.app.model.order;
 
 import java.io.Serializable;
-import java.math.BigDecimal;
 
 public class OrderProduct implements Serializable {
 
@@ -12,7 +11,7 @@ public class OrderProduct implements Serializable {
 	private String id;
 	private String productId;
 	private Integer quantity;
-	private BigDecimal orderedPrice;
+	private Double orderedPrice;
 
 	public String getProductId() {
 		return productId;
@@ -30,11 +29,11 @@ public class OrderProduct implements Serializable {
 		this.quantity = quantity;
 	}
 
-	public BigDecimal getOrderedPrice() {
+	public Double getOrderedPrice() {
 		return orderedPrice;
 	}
 
-	public void setOrderedPrice(BigDecimal orderedPrice) {
+	public void setOrderedPrice(Double orderedPrice) {
 		this.orderedPrice = orderedPrice;
 	}
 

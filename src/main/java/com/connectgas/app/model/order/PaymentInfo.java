@@ -1,34 +1,33 @@
 package com.connectgas.app.model.order;
 
 import java.io.Serializable;
-import java.math.BigDecimal;
 
 public class PaymentInfo implements Serializable{
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = -164205329727066976L;
-	private BigDecimal billAmount;
-	private BigDecimal paidAmount;
+	private Double billAmount;
+	private Double paidAmount;
 	private boolean partialPay;
-	private BigDecimal arrearAmount;
+	private Double arrearAmount;
 	private String paymentType;
 	private String paymentStatus;
 
 
-	public BigDecimal getBillAmount() {
+	public Double getBillAmount() {
 		return billAmount;
 	}
 
-	public void setBillAmount(BigDecimal billAmount) {
+	public void setBillAmount(Double billAmount) {
 		this.billAmount = billAmount;
 	}
 
-	public BigDecimal getPaidAmount() {
+	public Double getPaidAmount() {
 		return paidAmount;
 	}
 
-	public void setPaidAmount(BigDecimal paidAmount) {
+	public void setPaidAmount(Double paidAmount) {
 		this.paidAmount = paidAmount;
 	}
 
@@ -40,11 +39,11 @@ public class PaymentInfo implements Serializable{
 		this.partialPay = partialPay;
 	}
 
-	public BigDecimal getArrearAmount() {
+	public Double getArrearAmount() {
 		return arrearAmount;
 	}
 
-	public void setArrearAmount(BigDecimal arrearAmount) {
+	public void setArrearAmount(Double arrearAmount) {
 		this.arrearAmount = arrearAmount;
 	}
 

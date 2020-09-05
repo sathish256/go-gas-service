@@ -1,6 +1,5 @@
 package com.connectgas.app.service;
 
-import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -90,14 +89,14 @@ public class OrderService {
 		order.setLastmodifiedBy(loggedInUser);
 
 		List<OrderProduct> orderedProducts = new ArrayList<>();
-		BigDecimal billAmount = new BigDecimal(0.0);
+		Double billAmount = new Double(0.0);
 		for (QuoteProduct qp : quote.getQuoteProducts()) {
 			OrderProduct product = new OrderProduct();
 			product.setOrderedPrice(qp.getQuotePrice());
 			product.setQuantity(qp.getQuantity());
 			product.setProductId(qp.getProductId());
 
-			billAmount = billAmount.add(qp.getQuotePrice().multiply(new BigDecimal(qp.getQuantity())));
+			billAmount = billAmount + (qp.getQuotePrice() * qp.getQuantity());
 			orderedProducts.add(product);
 		}
 
@@ -196,8 +195,8 @@ public class OrderService {
 	}
 
 	public List<Order> search(String dealerId) {
-		return orderRepository.findAll(Order.class).stream()
-				.filter(o -> o.getDealerId().equals(dealerId)).collect(Collectors.toList());
+		return orderRepository.findAll(Order.class).stream().filter(o -> o.getDealerId().equals(dealerId))
+				.collect(Collectors.toList());
 	}
 
 }

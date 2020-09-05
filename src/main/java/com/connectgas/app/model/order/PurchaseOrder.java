@@ -1,6 +1,5 @@
 package com.connectgas.app.model.order;
 
-import java.math.BigDecimal;
 import java.util.List;
 
 import com.connectgas.app.model.common.ConnectGasEntity;
@@ -21,7 +20,7 @@ public class PurchaseOrder extends ConnectGasEntity {
 
 	private List<OrderProduct> returnProducts;
 
-	private BigDecimal poAmount;
+	private Double poAmount;
 
 	private List<PoPaymentInfo> paymentInfo;
 
@@ -65,11 +64,11 @@ public class PurchaseOrder extends ConnectGasEntity {
 		this.returnProducts = returnProducts;
 	}
 
-	public BigDecimal getPoAmount() {
+	public Double getPoAmount() {
 		return poAmount;
 	}
 
-	public void setPoAmount(BigDecimal poAmount) {
+	public void setPoAmount(Double poAmount) {
 		this.poAmount = poAmount;
 	}
 

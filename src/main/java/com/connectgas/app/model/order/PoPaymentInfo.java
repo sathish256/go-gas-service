@@ -1,7 +1,6 @@
 package com.connectgas.app.model.order;
 
 import java.io.Serializable;
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 public class PoPaymentInfo implements Serializable {
@@ -11,7 +10,7 @@ public class PoPaymentInfo implements Serializable {
 	 */
 	private static final long serialVersionUID = -1261520107117083210L;
 
-	private BigDecimal amount;
+	private Double amount;
 
 	private String paymentType; // CARD / ONLINE / CHEQUE/ CREDIT
 
@@ -19,11 +18,11 @@ public class PoPaymentInfo implements Serializable {
 
 	private LocalDateTime transactionDateTime;
 
-	public BigDecimal getAmount() {
+	public Double getAmount() {
 		return amount;
 	}
 
-	public void setAmount(BigDecimal amount) {
+	public void setAmount(Double amount) {
 		this.amount = amount;
 	}
 

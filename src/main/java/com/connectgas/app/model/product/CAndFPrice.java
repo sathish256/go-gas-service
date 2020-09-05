@@ -1,7 +1,6 @@
 package com.connectgas.app.model.product;
 
 import java.io.Serializable;
-import java.math.BigDecimal;
 
 public class CAndFPrice implements Serializable {
 
@@ -12,13 +11,13 @@ public class CAndFPrice implements Serializable {
 
 	private String candfId;
 
-	private BigDecimal price;
+	private Double price;
 
-	public BigDecimal getPrice() {
+	public Double getPrice() {
 		return price;
 	}
 
-	public void setPrice(BigDecimal price) {
+	public void setPrice(Double price) {
 		this.price = price;
 	}
 

@@ -1,7 +1,6 @@
 package com.connectgas.app.model.product;
 
 import java.io.Serializable;
-import java.math.BigDecimal;
 
 public class DealerPrice implements Serializable {
 	/**
@@ -9,7 +8,7 @@ public class DealerPrice implements Serializable {
 	 */
 	private static final long serialVersionUID = 141250380383410245L;
 	private String dealerId;
-	private BigDecimal price;
+	private Double price;
 
 	public String getDealerId() {
 		return dealerId;
@@ -19,11 +18,11 @@ public class DealerPrice implements Serializable {
 		this.dealerId = dealerId;
 	}
 
-	public BigDecimal getPrice() {
+	public Double getPrice() {
 		return price;
 	}
 
-	public void setPrice(BigDecimal price) {
+	public void setPrice(Double price) {
 		this.price = price;
 	}
 
