@@ -7,6 +7,7 @@ public class ConnectGasEntity {
 	private String createdBy;
 	private String lastmodifiedAt;
 	private String lastmodifiedBy;
+	private State status;
 
 	public String getCreatedAt() {
 		return createdAt;
@@ -46,6 +47,14 @@ public class ConnectGasEntity {
 
 	public void setId(String id) {
 		this.id = id;
+	}
+
+	public State getStatus() {
+		return status;
+	}
+
+	public void setStatus(State status) {
+		this.status = status;
 	}
 
 }
