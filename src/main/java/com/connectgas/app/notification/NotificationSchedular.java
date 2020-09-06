@@ -33,4 +33,11 @@ public class NotificationSchedular {
 		notification.setTimeStamp(LocalDateTime.now().toString());
 		messagingTemplate.convertAndSendToUser(userPhone, "/queue/notify", notification);
 	}
+	
+	@Scheduled(fixedDelay = 60000)
+	public void publishUpdatesToAll() {
+		Notification notification = new Notification("New Notification No " + notificationCount);
+		notification.setTimeStamp(LocalDateTime.now().toString());
+		messagingTemplate.convertAndSend("/queue/notify", notification);
+	}
 }
