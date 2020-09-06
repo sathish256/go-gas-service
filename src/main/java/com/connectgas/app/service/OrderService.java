@@ -27,7 +27,6 @@ import com.connectgas.app.model.order.OrderProduct;
 import com.connectgas.app.model.order.OrderStatus;
 import com.connectgas.app.model.order.PaidDetails;
 import com.connectgas.app.model.order.PaymentInfo;
-import com.connectgas.app.model.order.PaymentStatus;
 import com.connectgas.app.model.order.QuoteProduct;
 import com.connectgas.app.model.order.QuoteStatus;
 import com.connectgas.app.model.order.dto.OrderCustomer;
@@ -160,7 +159,7 @@ public class OrderService {
 		if (!order.getOrderStatus().equals(OrderStatus.DELIVERED)
 				&& !order.getOrderStatus().equals(OrderStatus.ASSIGNED))
 			order.setOrderStatus(OrderStatus.PLACED);
-		
+
 		if (order.getOrderStatus().equals(OrderStatus.DELIVERED)) {
 			updatePaymentInfoAndPaymentBacklog(order);
 			order.setDeliveredTimestamp(LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME));
@@ -201,36 +200,33 @@ public class OrderService {
 
 	private void updatePaymentInfoAndPaymentBacklog(Order dbOrder) {
 
-		if (!dbOrder.getPaymentInfo().getPaymentStatus().equals(PaymentStatus.COMPLETED)) {
-			Double totalPaid = 0.0;
-			for (PaidDetails pd : dbOrder.getPaymentInfo().getPaidDetails()) {
-				totalPaid = totalPaid + pd.getAmount();
-			}
-			Double backlogAmount = dbOrder.getPaymentInfo().getBillAmount() - totalPaid;
-			Map<String, String> criteria = new HashMap<>();
-			criteria.put("accountHolderType", AccountHolderType.CUSTOMER.toString());
-			criteria.put("id", dbOrder.getCustomer().getId());
-			List<PaymentBacklog> pbs = paymentRepository.findByPathAndValue(criteria, PaymentBacklog.class);
-			PaymentBacklog pb = null;
-			if (CollectionUtils.isEmpty(pbs)) {
-				pb = new PaymentBacklog();
-				pb.setAccountHolderType(AccountHolderType.CUSTOMER);
-				pb.setId(dbOrder.getCustomer().getId());
-				pb.setCreatedAt(LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME));
-				pb.setStatus(State.ACTIVE);
-				pb.setLastmodifiedBy("SYSTEM");
-				pb.setCreatedBy("SYSTEM");
-				pb.setAuditLogMsg("New Payment Backlog Created");
-				pb.setBacklogAmount(backlogAmount);
-			} else {
-				pb = pbs.get(0);
-				pb.setAuditLogMsg("Payment Backlog updated, Previous balance " + pb.getBacklogAmount());
-				pb.setBacklogAmount(pb.getBacklogAmount() + backlogAmount);
-			}
-			pb.setLastmodifiedAt(LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME));
-			paymentRepository.save(pb, PaymentBacklog.class);
-
+		Double totalPaid = 0.0;
+		for (PaidDetails pd : dbOrder.getPaymentInfo().getPaidDetails()) {
+			totalPaid = totalPaid + pd.getAmount();
 		}
+		Double backlogAmount = dbOrder.getPaymentInfo().getBillAmount() - totalPaid;
+		Map<String, String> criteria = new HashMap<>();
+		criteria.put("accountHolderType", AccountHolderType.CUSTOMER.toString());
+		criteria.put("id", dbOrder.getCustomer().getId());
+		List<PaymentBacklog> pbs = paymentRepository.findByPathAndValue(criteria, PaymentBacklog.class);
+		PaymentBacklog pb = null;
+		if (CollectionUtils.isEmpty(pbs)) {
+			pb = new PaymentBacklog();
+			pb.setAccountHolderType(AccountHolderType.CUSTOMER);
+			pb.setId(dbOrder.getCustomer().getId());
+			pb.setCreatedAt(LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME));
+			pb.setStatus(State.ACTIVE);
+			pb.setLastmodifiedBy("SYSTEM");
+			pb.setCreatedBy("SYSTEM");
+			pb.setAuditLogMsg("New Payment Backlog Created");
+			pb.setBacklogAmount(backlogAmount);
+		} else {
+			pb = pbs.get(0);
+			pb.setAuditLogMsg("Payment Backlog updated, Previous balance " + pb.getBacklogAmount());
+			pb.setBacklogAmount(pb.getBacklogAmount() + backlogAmount);
+		}
+		pb.setLastmodifiedAt(LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME));
+		paymentRepository.save(pb, PaymentBacklog.class);
 
 	}
 
