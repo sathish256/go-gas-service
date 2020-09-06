@@ -33,17 +33,16 @@ public class PurchaseOrderService {
 						"Order id " + id + " not available in the system"));
 	}
 
-	private PurchaseOrder saveOrUpdateOrder(PurchaseOrder order, String loggedInUser) {
+	private PurchaseOrder saveOrUpdateOrder(PurchaseOrder order) {
 		return purchaseOrderRepository.save(order, PurchaseOrder.class);
 
 	}
 
-	public PurchaseOrder directOrder(PurchaseOrder order) {
-		String loggedInUser = SecurityContextHolder.getContext().getAuthentication().getName();
+	public PurchaseOrder directOrder(PurchaseOrder order, String modifiedBy) {
 		order.setId("PO" + Instant.now().getEpochSecond());
 		order.setCreatedAt(LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME));
 		order.setLastmodifiedAt(LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME));
-		return saveOrUpdateOrder(order, loggedInUser);
+		return saveOrUpdateOrder(order);
 	}
 
 	public PurchaseOrder updateOrderStatus(String orderId, String status) {
@@ -96,6 +95,13 @@ public class PurchaseOrderService {
 	public List<PurchaseOrder> search(String candfId) {
 		return purchaseOrderRepository.findAll(PurchaseOrder.class).stream().filter(o -> o.getCandfId().equals(candfId))
 				.collect(Collectors.toList());
+	}
+
+	public PurchaseOrder udpateOrder(PurchaseOrder order, String userId) {
+
+		order.setLastmodifiedAt(LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME));
+		order.setLastmodifiedBy(userId);
+		return saveOrUpdateOrder(order);
 	}
 
 }

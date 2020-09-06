@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -31,8 +32,15 @@ public class PurchaseOrderController {
 	}
 
 	@PostMapping("/new")
-	public ResponseEntity<PurchaseOrder> directOrder(@RequestBody PurchaseOrder order) {
-		return ResponseEntity.ok(purchaseOrderService.directOrder(order));
+	public ResponseEntity<PurchaseOrder> directOrder(@RequestBody PurchaseOrder order,
+			@RequestHeader("modifiedBy") String modifiedBy) {
+		return ResponseEntity.ok(purchaseOrderService.directOrder(order, modifiedBy));
+	}
+
+	@PutMapping("/{orderId}")
+	public ResponseEntity<PurchaseOrder> udpateOrder(@RequestBody PurchaseOrder order,
+			@RequestHeader("modifiedBy") String modifiedBy) {
+		return ResponseEntity.ok(purchaseOrderService.udpateOrder(order, modifiedBy));
 	}
 
 	@PutMapping("/{orderId}/change-status/{status}")
