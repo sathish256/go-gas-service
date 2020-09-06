@@ -160,6 +160,13 @@ public class OrderService {
 		if (!order.getOrderStatus().equals(OrderStatus.DELIVERED)
 				&& !order.getOrderStatus().equals(OrderStatus.ASSIGNED))
 			order.setOrderStatus(OrderStatus.PLACED);
+		
+		if (order.getOrderStatus().equals(OrderStatus.DELIVERED)) {
+			updatePaymentInfoAndPaymentBacklog(order);
+			order.setDeliveredTimestamp(LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME));
+			dealerInventoryProcessor.processDelivery(order);
+		}
+
 		return saveOrUpdateOrder(order, null, loggedInUser);
 	}
 
@@ -217,7 +224,7 @@ public class OrderService {
 				pb.setBacklogAmount(backlogAmount);
 			} else {
 				pb = pbs.get(0);
-				pb.setAuditLogMsg("Payment Backlog updated, Previous balance "+pb.getBacklogAmount());
+				pb.setAuditLogMsg("Payment Backlog updated, Previous balance " + pb.getBacklogAmount());
 				pb.setBacklogAmount(pb.getBacklogAmount() + backlogAmount);
 			}
 			pb.setLastmodifiedAt(LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME));
