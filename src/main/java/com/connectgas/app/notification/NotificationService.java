@@ -22,8 +22,8 @@ public class NotificationService {
 	 * @param notification The notification message.
 	 * @param username     The userPhone for the user to send notification.
 	 */
-	public void notify(Notification notification, String userPhone) {
-		messagingTemplate.convertAndSendToUser(userPhone, "/queue/notify", notification);
+	public void notify(Notification notification, String user) {
+		messagingTemplate.convertAndSendToUser(user, "/queue/notify", notification);
 		return;
 	}
 

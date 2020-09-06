@@ -5,9 +5,12 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Controller;
+import org.threeten.bp.LocalDateTime;
 
 @Configuration
 @EnableScheduling
+@Controller
 public class NotificationSchedular {
 
 	@Autowired
@@ -15,14 +18,19 @@ public class NotificationSchedular {
 
 	int notificationCount;
 
-	@Scheduled(fixedDelay = 6000)
+	@Scheduled(fixedDelay = 60000)
 	public void publishUpdates() {
-		if (notificationCount < 20) {
-			String userPhone = "9886333900";
-			notificationCount++;
-			Notification notification = new Notification("New Notification No " + notificationCount);
-			messagingTemplate.convertAndSendToUser(userPhone, "/queue/notify", notification);
-		}
+		String userPhone = "9886333900";
+		Notification notification = new Notification("New Notification No " + notificationCount);
+		notification.setTimeStamp(LocalDateTime.now().toString());
+		messagingTemplate.convertAndSendToUser(userPhone, "/queue/notify", notification);
 	}
 
+	@Scheduled(fixedDelay = 60000)
+	public void publishUpdatesToNaseer() {
+		String userPhone = "9738521186";
+		Notification notification = new Notification("New Notification No " + notificationCount);
+		notification.setTimeStamp(LocalDateTime.now().toString());
+		messagingTemplate.convertAndSendToUser(userPhone, "/queue/notify", notification);
+	}
 }

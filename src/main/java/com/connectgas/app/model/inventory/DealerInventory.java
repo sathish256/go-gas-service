@@ -1,5 +1,7 @@
 package com.connectgas.app.model.inventory;
 
+import java.util.List;
+
 import com.connectgas.app.model.common.ConnectGasEntity;
 
 public class DealerInventory extends ConnectGasEntity {
@@ -11,13 +13,13 @@ public class DealerInventory extends ConnectGasEntity {
 
 	private String dealerId;
 
-	private Stock availableStock;
+	private List<StockProduct> availableStock;
 
-	private Stock inTransitStock;
+	private List<StockProduct> inTransitStock;
 
-	private Stock customerHoldings;
+	private List<StockProduct> customerHoldings;
 
-	private Stock emptyStock;
+	private List<StockProduct> emptyStock;
 
 	public String getDealerId() {
 		return dealerId;
@@ -27,35 +29,35 @@ public class DealerInventory extends ConnectGasEntity {
 		this.dealerId = dealerId;
 	}
 
-	public Stock getAvailableStock() {
+	public List<StockProduct> getAvailableStock() {
 		return availableStock;
 	}
 
-	public void setAvailableStock(Stock availableStock) {
+	public void setAvailableStock(List<StockProduct> availableStock) {
 		this.availableStock = availableStock;
 	}
 
-	public Stock getInTransitStock() {
+	public List<StockProduct> getInTransitStock() {
 		return inTransitStock;
 	}
 
-	public void setInTransitStock(Stock inTransitStock) {
+	public void setInTransitStock(List<StockProduct> inTransitStock) {
 		this.inTransitStock = inTransitStock;
 	}
 
-	public Stock getCustomerHoldings() {
+	public List<StockProduct> getCustomerHoldings() {
 		return customerHoldings;
 	}
 
-	public void setCustomerHoldings(Stock customerHoldings) {
+	public void setCustomerHoldings(List<StockProduct> customerHoldings) {
 		this.customerHoldings = customerHoldings;
 	}
 
-	public Stock getEmptyStock() {
+	public List<StockProduct> getEmptyStock() {
 		return emptyStock;
 	}
 
-	public void setEmptyStock(Stock emptyStock) {
+	public void setEmptyStock(List<StockProduct> emptyStock) {
 		this.emptyStock = emptyStock;
 	}
 
