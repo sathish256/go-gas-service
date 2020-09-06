@@ -18,26 +18,21 @@ public class NotificationSchedular {
 
 	int notificationCount;
 
-	@Scheduled(fixedDelay = 60000)
+	@Scheduled(fixedDelay = 30000)
 	public void publishUpdates() {
 		String userPhone = "9886333900";
-		Notification notification = new Notification("New Notification No " + notificationCount);
+		Notification notification = new Notification("New Notification"+notificationCount+" Pushed for  Sathish" + notificationCount);
 		notification.setTimeStamp(LocalDateTime.now().toString());
 		messagingTemplate.convertAndSendToUser(userPhone, "/queue/notify", notification);
 	}
 
-	@Scheduled(fixedDelay = 60000)
+	@Scheduled(fixedDelay = 30000)
 	public void publishUpdatesToNaseer() {
+		notificationCount++;
 		String userPhone = "9738521186";
-		Notification notification = new Notification("New Notification No " + notificationCount);
+		Notification notification = new Notification("New Notification"+notificationCount+" Pushed for  Naseer" + notificationCount);
 		notification.setTimeStamp(LocalDateTime.now().toString());
 		messagingTemplate.convertAndSendToUser(userPhone, "/queue/notify", notification);
 	}
 	
-	@Scheduled(fixedDelay = 60000)
-	public void publishUpdatesToAll() {
-		Notification notification = new Notification("New Notification No " + notificationCount);
-		notification.setTimeStamp(LocalDateTime.now().toString());
-		messagingTemplate.convertAndSend("/queue/notify", notification);
-	}
 }
