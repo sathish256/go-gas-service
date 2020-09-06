@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.connectgas.app.model.order.Order;
+import com.connectgas.app.model.order.OrderProduct;
 import com.connectgas.app.model.order.PaymentInfo;
 import com.connectgas.app.service.OrderService;
 
@@ -52,6 +53,12 @@ public class OrderController {
 	public ResponseEntity<Order> updatePaymentInfo(@PathVariable String orderId, @RequestBody PaymentInfo paymentInfo,
 			@RequestHeader("modifiedBy") String modifiedBy) {
 		return ResponseEntity.ok(orderService.updatePaymentInfo(orderId, paymentInfo, modifiedBy));
+	}
+
+	@PutMapping("/{orderId}/return-products")
+	public ResponseEntity<Order> updateReturnProducts(@PathVariable String orderId,
+			@RequestBody List<OrderProduct> returnProducts, @RequestHeader("modifiedBy") String modifiedBy) {
+		return ResponseEntity.ok(orderService.updateReturnProducts(orderId, returnProducts, modifiedBy));
 	}
 
 	@GetMapping("/myorders")

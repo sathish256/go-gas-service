@@ -60,6 +60,9 @@ public class OrderService {
 	@Autowired
 	private SimpleFirestoreRepository<PaymentBacklog, String> paymentRepository;
 
+	@Autowired
+	private DealerInventoryProcessor dealerInventoryProcessor;
+
 	public Order getOrder(String id) {
 		return orderRepository.fetchById(id, Order.class)
 				.orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST,
@@ -137,6 +140,8 @@ public class OrderService {
 			SMSUtil.sendSMS(Long.parseLong(order.getCustomer().getPhone()),
 					"Order ID " + order.getId() + " placed to " + dealer.getName());
 
+		dealerInventoryProcessor.processNewOrder(order);
+
 		if (quote != null) {
 			quote.setQuoteStatus(QuoteStatus.ORDERED);
 			quote.setLastmodifiedAt(LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME));
@@ -170,6 +175,7 @@ public class OrderService {
 		if (OrderStatus.DELIVERED.toString().equals(status)) {
 			updatePaymentInfoAndPaymentBacklog(dbOrder);
 			dbOrder.setDeliveredTimestamp(LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME));
+			dealerInventoryProcessor.processDelivery(dbOrder);
 		}
 		return orderRepository.save(dbOrder, Order.class);
 	}
@@ -256,6 +262,17 @@ public class OrderService {
 	public List<Order> search(String dealerId) {
 		return orderRepository.findAll(Order.class).stream().filter(o -> o.getDealerId().equals(dealerId))
 				.collect(Collectors.toList());
+	}
+
+	public Order updateReturnProducts(String orderId, List<OrderProduct> returnProducts, String modifiedBy) {
+		Order dbOrder = orderRepository.fetchById(orderId, Order.class)
+				.orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST,
+						"Error while updating order id " + orderId + " not available in the system"));
+		dbOrder.setLastmodifiedAt(LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME));
+		dbOrder.setLastmodifiedBy(modifiedBy);
+		dbOrder.setReturnProducts(returnProducts);
+
+		return orderRepository.save(dbOrder, Order.class);
 	}
 
 }
