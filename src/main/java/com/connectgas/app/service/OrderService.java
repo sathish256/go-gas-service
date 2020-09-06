@@ -194,8 +194,7 @@ public class OrderService {
 
 	private void updatePaymentInfoAndPaymentBacklog(Order dbOrder) {
 
-		if (dbOrder.getPaymentInfo().getPaymentStatus().equals(PaymentStatus.PARTIAL)) {
-
+		if (!dbOrder.getPaymentInfo().getPaymentStatus().equals(PaymentStatus.COMPLETED)) {
 			Double totalPaid = 0.0;
 			for (PaidDetails pd : dbOrder.getPaymentInfo().getPaidDetails()) {
 				totalPaid = totalPaid + pd.getAmount();
@@ -214,9 +213,11 @@ public class OrderService {
 				pb.setStatus(State.ACTIVE);
 				pb.setLastmodifiedBy("SYSTEM");
 				pb.setCreatedBy("SYSTEM");
+				pb.setAuditLogMsg("New Payment Backlog Created");
 				pb.setBacklogAmount(backlogAmount);
 			} else {
 				pb = pbs.get(0);
+				pb.setAuditLogMsg("Payment Backlog updated, Previous balance "+pb.getBacklogAmount());
 				pb.setBacklogAmount(pb.getBacklogAmount() + backlogAmount);
 			}
 			pb.setLastmodifiedAt(LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME));
