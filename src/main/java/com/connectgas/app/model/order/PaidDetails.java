@@ -11,6 +11,7 @@ public class PaidDetails implements Serializable {
 	private String paymentType;
 	private Double amount;
 	private String paidOn;
+	private String reference;
 
 	public String getPaymentType() {
 		return paymentType;
@@ -34,6 +35,14 @@ public class PaidDetails implements Serializable {
 
 	public void setPaidOn(String paidOn) {
 		this.paidOn = paidOn;
+	}
+
+	public String getReference() {
+		return reference;
+	}
+
+	public void setReference(String reference) {
+		this.reference = reference;
 	}
 
 }
