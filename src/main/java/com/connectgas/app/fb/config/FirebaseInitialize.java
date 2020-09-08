@@ -30,7 +30,7 @@ public class FirebaseInitialize {
 	@PostConstruct
 	public void initialize() {
 
-		TimeZone.setDefault(TimeZone.getTimeZone("IST"));
+		TimeZone.setDefault(TimeZone.getTimeZone("Asia/Kolkata"));
 
 		try {
 			FirebaseOptions options = new FirebaseOptions.Builder()
