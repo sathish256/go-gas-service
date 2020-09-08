@@ -1,5 +1,8 @@
 package com.connectgas.app.notification;
 
+import org.threeten.bp.LocalDateTime;
+import org.threeten.bp.format.DateTimeFormatter;
+
 public class Notification {
 
 	private String message;
@@ -8,6 +11,7 @@ public class Notification {
 
 	public Notification(String content) {
 		this.message = content;
+		this.timeStamp = LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_TIME);
 	}
 
 	public String getContent() {
