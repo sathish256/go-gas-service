@@ -4,6 +4,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
+import java.util.TimeZone;
 
 import javax.annotation.PostConstruct;
 
@@ -28,6 +29,8 @@ public class FirebaseInitialize {
 
 	@PostConstruct
 	public void initialize() {
+
+		TimeZone.setDefault(TimeZone.getTimeZone("IST"));
 
 		try {
 			FirebaseOptions options = new FirebaseOptions.Builder()
