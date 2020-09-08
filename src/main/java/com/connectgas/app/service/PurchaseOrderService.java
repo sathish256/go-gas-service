@@ -23,6 +23,8 @@ import com.connectgas.app.model.payment.AccountHolderType;
 import com.connectgas.app.model.payment.PaymentBacklog;
 import com.connectgas.app.model.user.User;
 import com.connectgas.app.model.user.UserRole;
+import com.connectgas.app.notification.Notification;
+import com.connectgas.app.notification.NotificationService;
 import com.connectgas.app.repository.SimpleFirestoreRepository;
 
 @Service
@@ -37,6 +39,12 @@ public class PurchaseOrderService {
 	@Autowired
 	private SimpleFirestoreRepository<PaymentBacklog, String> paymentRepository;
 
+	@Autowired
+	private NotificationService notificationService;
+
+	@Autowired
+	private DealerInventoryProcessor dealerInventoryProcessor;
+
 	public PurchaseOrder getOrder(String id) {
 		return purchaseOrderRepository.fetchById(id, PurchaseOrder.class)
 				.orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST,
@@ -47,6 +55,18 @@ public class PurchaseOrderService {
 		if (order.getPurchaseOrderStatus().equals(PurchaseOrderStatus.PAYMENT_INFO_UPDATED)) {
 			updatePaymentInfoAndPaymentBacklog(order);
 		}
+		Notification notification = new Notification(
+				"Purchase Order Id " + order.getId() + " status updated to " + order.getPurchaseOrderStatus());
+
+		if ("Dealer".equalsIgnoreCase(order.getPurchaseOrderStatus().getRole())) {
+			notificationService.notify(notification, order.getDealerId());
+		} else if ("Candf".equalsIgnoreCase(order.getPurchaseOrderStatus().getRole())) {
+			notificationService.notify(notification, order.getCandfId());
+		}
+
+		if (PurchaseOrderStatus.DELIVERED.equals(order.getPurchaseOrderStatus()))
+			dealerInventoryProcessor.updateDealerInventory(order);
+
 		return purchaseOrderRepository.save(order, PurchaseOrder.class);
 
 	}

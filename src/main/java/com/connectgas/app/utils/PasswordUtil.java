@@ -4,6 +4,7 @@ import java.util.Random;
 
 public class PasswordUtil {
 
+	@SuppressWarnings("unused")
 	public static String generateRandomPassword() {
 		int length = 8;
 		String symbol = "&*_!@%";

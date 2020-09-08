@@ -1,6 +1,6 @@
 package com.connectgas.app.model.inventory;
 
-import java.util.List;
+import java.util.Map;
 
 import com.connectgas.app.model.common.ConnectGasEntity;
 
@@ -11,53 +11,43 @@ public class DealerInventory extends ConnectGasEntity {
 	 */
 	private static final long serialVersionUID = -1814805152714164637L;
 
-	private String dealerId;
+	private Map<String, Integer> availableStock;
 
-	private List<StockProduct> availableStock;
+	private Map<String, Integer> inTransitStock;
 
-	private List<StockProduct> inTransitStock;
+	private Map<String, Integer> customerHoldings;
 
-	private List<StockProduct> customerHoldings;
+	private Map<String, Integer> emptyStock;
 
-	private List<StockProduct> emptyStock;
-
-	public String getDealerId() {
-		return dealerId;
-	}
-
-	public void setDealerId(String dealerId) {
-		this.dealerId = dealerId;
-	}
-
-	public List<StockProduct> getAvailableStock() {
+	public Map<String, Integer> getAvailableStock() {
 		return availableStock;
 	}
 
-	public void setAvailableStock(List<StockProduct> availableStock) {
+	public void setAvailableStock(Map<String, Integer> availableStock) {
 		this.availableStock = availableStock;
 	}
 
-	public List<StockProduct> getInTransitStock() {
+	public Map<String, Integer> getInTransitStock() {
 		return inTransitStock;
 	}
 
-	public void setInTransitStock(List<StockProduct> inTransitStock) {
+	public void setInTransitStock(Map<String, Integer> inTransitStock) {
 		this.inTransitStock = inTransitStock;
 	}
 
-	public List<StockProduct> getCustomerHoldings() {
+	public Map<String, Integer> getCustomerHoldings() {
 		return customerHoldings;
 	}
 
-	public void setCustomerHoldings(List<StockProduct> customerHoldings) {
+	public void setCustomerHoldings(Map<String, Integer> customerHoldings) {
 		this.customerHoldings = customerHoldings;
 	}
 
-	public List<StockProduct> getEmptyStock() {
+	public Map<String, Integer> getEmptyStock() {
 		return emptyStock;
 	}
 
-	public void setEmptyStock(List<StockProduct> emptyStock) {
+	public void setEmptyStock(Map<String, Integer> emptyStock) {
 		this.emptyStock = emptyStock;
 	}
 

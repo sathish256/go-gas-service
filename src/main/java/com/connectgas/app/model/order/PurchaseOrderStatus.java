@@ -2,19 +2,28 @@ package com.connectgas.app.model.order;
 
 public enum PurchaseOrderStatus {
 
-	INITIATED,
+	INITIATED("Dealer"),
 
-	QUOTE_REQUEST, QUOTE_UPDATED, QUOTE_ACCEPTED,
+	QUOTE_REQUEST("Candf"), QUOTE_UPDATED("Dealer"), QUOTE_ACCEPTED("Dealer"),
 
-	REQUEST_PAYMENT_INFO, PAYMENT_INFO_UPDATED, PAYMENT_REVIEW, CANDF_REJECT,
+	REQUEST_PAYMENT_INFO("Dealer"), PAYMENT_INFO_UPDATED("Candf"), PAYMENT_REVIEW("Candf"), CANDF_REJECT("Dealer"),
 
-	ORDER_PROCESSED,
+	ORDER_PROCESSED("Dealer"),
 
 	// Future states
-	DISPATCHED, IN_TRANSIT, DELIVERED,
+	DISPATCHED("Dealer"), IN_TRANSIT("Dealer"), DELIVERED("Dealer"),
 
-	ARCHIVED;
+	ARCHIVED("Candf");
 
+	public final String role;
+
+	private PurchaseOrderStatus(String role) {
+		this.role = role;
+	}
+
+	public String getRole() {
+		return role;
+	}
 }
 
 // Dealer will initiate PO

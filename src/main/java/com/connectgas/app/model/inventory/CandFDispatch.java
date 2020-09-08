@@ -1,6 +1,6 @@
 package com.connectgas.app.model.inventory;
 
-import java.util.List;
+import java.util.Map;
 
 import com.connectgas.app.model.common.ConnectGasEntity;
 
@@ -15,7 +15,7 @@ public class CandFDispatch extends ConnectGasEntity {
 
 	private String candfId;
 
-	private List<StockProduct> products;
+	private Map<String, Integer> products;
 
 	private DispatchStatus dispatchStatus;
 
@@ -35,20 +35,20 @@ public class CandFDispatch extends ConnectGasEntity {
 		this.candfId = candfId;
 	}
 
-	public List<StockProduct> getProducts() {
-		return products;
-	}
-
-	public void setProducts(List<StockProduct> products) {
-		this.products = products;
-	}
-
 	public DispatchStatus getDispatchStatus() {
 		return dispatchStatus;
 	}
 
 	public void setDispatchStatus(DispatchStatus dispatchStatus) {
 		this.dispatchStatus = dispatchStatus;
+	}
+
+	public Map<String, Integer> getProducts() {
+		return products;
+	}
+
+	public void setProducts(Map<String, Integer> products) {
+		this.products = products;
 	}
 
 }
