@@ -20,8 +20,6 @@ public class PurchaseOrder extends ConnectGasEntity {
 
 	private List<OrderProduct> returnProducts;
 
-	private Double poAmount;
-
 	private PaymentInfo paymentInfo;
 
 	public String getCandfId() {
@@ -62,14 +60,6 @@ public class PurchaseOrder extends ConnectGasEntity {
 
 	public void setReturnProducts(List<OrderProduct> returnProducts) {
 		this.returnProducts = returnProducts;
-	}
-
-	public Double getPoAmount() {
-		return poAmount;
-	}
-
-	public void setPoAmount(Double poAmount) {
-		this.poAmount = poAmount;
 	}
 
 	public PaymentInfo getPaymentInfo() {
