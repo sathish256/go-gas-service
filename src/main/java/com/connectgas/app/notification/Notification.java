@@ -11,7 +11,7 @@ public class Notification {
 
 	public Notification(String content) {
 		this.message = content;
-		this.timeStamp = LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_TIME);
+		this.timeStamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("HH:mm"));
 	}
 
 	public String getContent() {
