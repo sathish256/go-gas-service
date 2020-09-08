@@ -35,6 +35,8 @@ import com.connectgas.app.model.payment.AccountHolderType;
 import com.connectgas.app.model.payment.PaymentBacklog;
 import com.connectgas.app.model.user.User;
 import com.connectgas.app.model.user.UserRole;
+import com.connectgas.app.notification.Notification;
+import com.connectgas.app.notification.NotificationService;
 import com.connectgas.app.repository.SimpleFirestoreRepository;
 import com.connectgas.app.utils.SMSUtil;
 
@@ -61,6 +63,9 @@ public class OrderService {
 
 	@Autowired
 	private DealerInventoryProcessor dealerInventoryProcessor;
+
+	@Autowired
+	private NotificationService notificationService;
 
 	public Order getOrder(String id) {
 		return orderRepository.fetchById(id, Order.class)
@@ -182,6 +187,12 @@ public class OrderService {
 			updatePaymentInfoAndPaymentBacklog(dbOrder);
 			dbOrder.setDeliveredTimestamp(LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME));
 			dealerInventoryProcessor.processDelivery(dbOrder);
+			Notification notification = new Notification(
+					"Order Id " + orderId + " has been delivered to " + dbOrder.getCustomer().getName());
+			notificationService.notify(notification, dbOrder.getDealerId());
+		} else {
+			Notification notification = new Notification("Order Id " + orderId + " status changed to " + status);
+			notificationService.notify(notification, dbOrder.getDealerId());
 		}
 		return orderRepository.save(dbOrder, Order.class);
 	}
@@ -249,16 +260,19 @@ public class OrderService {
 		return null;
 	}
 
-	public Order assignDeliveryPerson(String orderid, String userid, String modifiedBy) {
-		Order dbOrder = orderRepository.fetchById(orderid, Order.class)
+	public Order assignDeliveryPerson(String orderId, String userid, String modifiedBy) {
+		Order dbOrder = orderRepository.fetchById(orderId, Order.class)
 				.orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST,
-						"Error while updating order id " + orderid + " not available in the system"));
+						"Error while updating order id " + orderId + " not available in the system"));
 		dbOrder.setDeliveryPersonId(userid);
 		dbOrder.setLastmodifiedAt(LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME));
 		dbOrder.setLastmodifiedBy(modifiedBy);
 		dbOrder.setOrderStatus(OrderStatus.ASSIGNED);
 
 		orderRepository.save(dbOrder, Order.class);
+
+		Notification notification = new Notification("New Delivery assigned with Order Id " + orderId);
+		notificationService.notify(notification, userid);
 
 		return dbOrder;
 	}

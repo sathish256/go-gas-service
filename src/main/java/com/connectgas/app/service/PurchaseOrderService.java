@@ -3,17 +3,24 @@ package com.connectgas.app.service;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.server.ResponseStatusException;
 
+import com.connectgas.app.model.common.State;
+import com.connectgas.app.model.order.PaidDetails;
 import com.connectgas.app.model.order.PurchaseOrder;
 import com.connectgas.app.model.order.PurchaseOrderStatus;
+import com.connectgas.app.model.payment.AccountHolderType;
+import com.connectgas.app.model.payment.PaymentBacklog;
 import com.connectgas.app.model.user.User;
 import com.connectgas.app.model.user.UserRole;
 import com.connectgas.app.repository.SimpleFirestoreRepository;
@@ -27,6 +34,9 @@ public class PurchaseOrderService {
 	@Autowired
 	private SimpleFirestoreRepository<User, String> userRepository;
 
+	@Autowired
+	private SimpleFirestoreRepository<PaymentBacklog, String> paymentRepository;
+
 	public PurchaseOrder getOrder(String id) {
 		return purchaseOrderRepository.fetchById(id, PurchaseOrder.class)
 				.orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST,
@@ -34,6 +44,9 @@ public class PurchaseOrderService {
 	}
 
 	private PurchaseOrder saveOrUpdateOrder(PurchaseOrder order) {
+		if (order.getPurchaseOrderStatus().equals(PurchaseOrderStatus.PAYMENT_INFO_UPDATED)) {
+			updatePaymentInfoAndPaymentBacklog(order);
+		}
 		return purchaseOrderRepository.save(order, PurchaseOrder.class);
 
 	}
@@ -104,4 +117,35 @@ public class PurchaseOrderService {
 		return saveOrUpdateOrder(order);
 	}
 
+	private void updatePaymentInfoAndPaymentBacklog(PurchaseOrder dbOrder) {
+
+		Double totalPaid = 0.0;
+		for (PaidDetails pd : dbOrder.getPaymentInfo().getPaidDetails()) {
+			totalPaid = totalPaid + pd.getAmount();
+		}
+		Double backlogAmount = dbOrder.getPaymentInfo().getBillAmount() - totalPaid;
+		Map<String, String> criteria = new HashMap<>();
+		criteria.put("accountHolderType", AccountHolderType.DEALER.toString());
+		criteria.put("id", dbOrder.getDealerId());
+		List<PaymentBacklog> pbs = paymentRepository.findByPathAndValue(criteria, PaymentBacklog.class);
+		PaymentBacklog pb = null;
+		if (CollectionUtils.isEmpty(pbs)) {
+			pb = new PaymentBacklog();
+			pb.setAccountHolderType(AccountHolderType.CUSTOMER);
+			pb.setId(dbOrder.getDealerId());
+			pb.setCreatedAt(LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME));
+			pb.setStatus(State.ACTIVE);
+			pb.setLastmodifiedBy("SYSTEM");
+			pb.setCreatedBy("SYSTEM");
+			pb.setAuditLogMsg("New Payment Backlog Created");
+			pb.setBacklogAmount(backlogAmount);
+		} else {
+			pb = pbs.get(0);
+			pb.setAuditLogMsg("Payment Backlog updated, Previous balance " + pb.getBacklogAmount());
+			pb.setBacklogAmount(pb.getBacklogAmount() + backlogAmount);
+		}
+		pb.setLastmodifiedAt(LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME));
+		paymentRepository.save(pb, PaymentBacklog.class);
+
+	}
 }
