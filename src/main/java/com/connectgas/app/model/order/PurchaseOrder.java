@@ -22,7 +22,7 @@ public class PurchaseOrder extends ConnectGasEntity {
 
 	private Double poAmount;
 
-	private List<PaymentInfo> paymentInfo;
+	private PaymentInfo paymentInfo;
 
 	public String getCandfId() {
 		return candfId;
@@ -72,11 +72,11 @@ public class PurchaseOrder extends ConnectGasEntity {
 		this.poAmount = poAmount;
 	}
 
-	public List<PaymentInfo> getPaymentInfo() {
+	public PaymentInfo getPaymentInfo() {
 		return paymentInfo;
 	}
 
-	public void setPaymentInfo(List<PaymentInfo> paymentInfo) {
+	public void setPaymentInfo(PaymentInfo paymentInfo) {
 		this.paymentInfo = paymentInfo;
 	}
 
