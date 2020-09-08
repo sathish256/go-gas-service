@@ -12,7 +12,7 @@ public class Notification {
 
 	public Notification(String content) {
 		this.message = content;
-		this.timeStamp = LocalDateTime.now(ZoneId.of("Asia/Kolkata")).format(DateTimeFormatter.ofPattern("HH:mm"));
+		this.timeStamp = LocalDateTime.now(ZoneId.of("Asia/Kolkata")).format(DateTimeFormatter.ofPattern("HH:mm:ss"));
 	}
 
 	public String getContent() {
