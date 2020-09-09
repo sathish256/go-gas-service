@@ -2,6 +2,8 @@ package com.connectgas.app.controller;
 
 import java.util.Collection;
 
+import javax.validation.Valid;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -54,7 +56,7 @@ public class JwtAuthController {
 	private FirebaseRealtimeDatabase firebaseRealtimeDatabase;
 
 	@RequestMapping(value = "/authenticate", method = RequestMethod.POST)
-	public ResponseEntity<?> createAuthenticationToken(@RequestBody AuthRequest authRequest) throws Exception {
+	public ResponseEntity<?> createAuthenticationToken(@Valid @RequestBody AuthRequest authRequest) throws Exception {
 
 		authenticate(authRequest.getPhone() + "|" + authRequest.getAuthScope().toString(), authRequest.getPassword());
 

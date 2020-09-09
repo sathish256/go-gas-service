@@ -16,9 +16,11 @@ public class AuthRequest implements Serializable {
 	@Size(min = 10, max = 10)
 	@Pattern(regexp = "^\\d{10}$")
 	private String phone;
+	@NotBlank
 	private String password;
+	@NotBlank
 	private AuthScope authScope;
-	
+
 	// need default constructor for JSON Parsing
 	public AuthRequest() {
 
