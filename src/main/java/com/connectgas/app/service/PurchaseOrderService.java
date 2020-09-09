@@ -3,6 +3,8 @@ package com.connectgas.app.service;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -94,16 +96,19 @@ public class PurchaseOrderService {
 		User user = userRepository.findAll(User.class).stream().filter(u -> u.getPhone().equals(phone)).findFirst()
 				.orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST,
 						"User id " + phone + " does not exists in the system"));
-
+		List<PurchaseOrder> orders = new ArrayList<>();
 		if (user.getRole().equals(UserRole.CANDF))
-			return purchaseOrderRepository.findAll(PurchaseOrder.class).stream()
+			orders = purchaseOrderRepository.findAll(PurchaseOrder.class).stream()
 					.filter(o -> o.getCandfId().equals(user.getCandfId())).collect(Collectors.toList());
 
 		if (user.getRole().equals(UserRole.DEALER))
-			return purchaseOrderRepository.findAll(PurchaseOrder.class).stream()
+			orders = purchaseOrderRepository.findAll(PurchaseOrder.class).stream()
 					.filter(o -> o.getDealerId().equals(user.getDealershipId())).collect(Collectors.toList());
 
-		return null;
+		Comparator<PurchaseOrder> comparator = Comparator.comparing(c -> LocalDateTime.parse(c.getLastmodifiedAt()));
+		orders.sort(comparator);
+		
+		return orders;
 	}
 
 	private Class<PurchaseOrder> getCollectionName() {

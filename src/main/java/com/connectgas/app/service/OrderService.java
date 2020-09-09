@@ -4,6 +4,8 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -245,17 +247,27 @@ public class OrderService {
 				.orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST,
 						"User id " + phone + " does not exists in the system"));
 
+		List<Order> orders = new ArrayList<>();
+
 		if (user.getRole().equals(UserRole.DELIVERY))
-			return orderRepository.findAll(Order.class).stream().filter(
+			orders = orderRepository.findAll(Order.class).stream().filter(
 					o -> StringUtils.hasText(o.getDeliveryPersonId()) && o.getDeliveryPersonId().equals(user.getId()))
 					.collect(Collectors.toList());
 
 		if (user.getRole().equals(UserRole.DEALER))
-			return orderRepository.findAll(Order.class).stream()
+			orders = orderRepository.findAll(Order.class).stream()
 					.filter(o -> StringUtils.hasText(o.getDealerId()) && o.getDealerId().equals(user.getDealershipId()))
 					.collect(Collectors.toList());
 
-		return null;
+		List<OrderStatus> definedOrder = // define your custom order
+				Arrays.asList(OrderStatus.PLACED, OrderStatus.ASSIGNED, OrderStatus.IN_TRANSIT, OrderStatus.DELIVERED,
+						OrderStatus.CANCELLED);
+
+		Comparator<Order> comparator = Comparator.comparing(c -> definedOrder.indexOf(c.getOrderStatus()));
+		comparator.thenComparing(c -> LocalDateTime.parse(c.getLastmodifiedAt()));
+		orders.sort(comparator);
+
+		return orders;
 	}
 
 	public Order assignDeliveryPerson(String orderId, String userid, String modifiedBy) {
