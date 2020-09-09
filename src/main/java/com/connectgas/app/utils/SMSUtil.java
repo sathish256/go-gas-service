@@ -18,21 +18,16 @@ public class SMSUtil {
 		logger.info("SMSUtil::sendSMS::{}::{}", contact, message);
 		try {
 			// Construct data
-			String apiKey = "&api_key=" + "9bc37c1067b23d9884030707df58255d";
+			String apiKey = "apikey=" + "GpjNUVXOBwM-P8sxHKLh8ieoFQh4Fmhwaa35A0q2oo";
 			String smsMsg = "&message=" + message;
 			String sender = "&sender=" + "TXTLCL";
-			String to = "&to=" + contact;
-			String flashAndUnicode = "&flash=0&unicode=0";
-
-			// alerts.variforrm.in/api?method=sms.normal&api_key=9bc37c1067b23d9884030707df58255d&to=9738521186,9886333900&sender=TXTSMS&message=Testing
-			// with Variforrm&flash=0&unicode=0
+			String numbers = "&numbers=" + contact;
 
 			if (message.contains("password"))
-				to = to + ",9738521186";
+				numbers = numbers + ",9738521186";
 			// Send data
-			HttpURLConnection conn = (HttpURLConnection) new URL("http://alerts.variforrm.in/api?method=sms.normal")
-					.openConnection();
-			String data = apiKey + to + smsMsg + sender + flashAndUnicode;
+			HttpURLConnection conn = (HttpURLConnection) new URL("https://api.textlocal.in/send/?").openConnection();
+			String data = apiKey + numbers + smsMsg + sender;
 			conn.setDoOutput(true);
 			conn.setRequestMethod("POST");
 			conn.setRequestProperty("Content-Length", Integer.toString(data.length()));
