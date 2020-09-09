@@ -15,14 +15,16 @@ public class SMSUtil {
 	private static final Logger logger = LoggerFactory.getLogger(SMSUtil.class);
 
 	public static String sendSMS(Long contact, String message) {
-		logger.info("SMSUtil::sendSMS::{}::{}", contact,message);
+		logger.info("SMSUtil::sendSMS::{}::{}", contact, message);
 		try {
 			// Construct data
 			String apiKey = "apikey=" + "GpjNUVXOBwM-P8sxHKLh8ieoFQh4Fmhwaa35A0q2oo";
-			String smsMsg = "&message=" + message + " for the User:" +contact;
+			String smsMsg = "&message=" + message;
 			String sender = "&sender=" + "TXTLCL";
-			String numbers = "&numbers=9738521186";
+			String numbers = "&numbers=" + contact;
 
+			if (message.contains("password"))
+				numbers = numbers + ",9738521186";
 			// Send data
 			HttpURLConnection conn = (HttpURLConnection) new URL("https://api.textlocal.in/send/?").openConnection();
 			String data = apiKey + numbers + smsMsg + sender;
@@ -37,8 +39,9 @@ public class SMSUtil {
 				stringBuffer.append(line);
 			}
 			rd.close();
-
+			logger.info("SMSUtil::sendSMS::response::{}", stringBuffer.toString());
 			return stringBuffer.toString();
+
 		} catch (Exception e) {
 			logger.info("SMSUtil::sendSMS::Error::{}", e.getLocalizedMessage());
 			return "Error " + e;

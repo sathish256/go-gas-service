@@ -66,7 +66,7 @@ public class UserService {
 			user.setLastmodifiedAt(LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME));
 			savedUser = userRepository.save(user, getCollectionName());
 
-			SMSUtil.sendSMS(Long.parseLong(user.getPhone()), "ConnectGas - NewUser login Password : " + generatedPwd);
+			SMSUtil.sendSMS(Long.parseLong(user.getPhone()), "ConnectGas - Your password : " + generatedPwd + ", Use with your mobile number to login");
 
 		} catch (Exception pe) {
 			throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, pe.getLocalizedMessage());
@@ -106,7 +106,7 @@ public class UserService {
 		if (isReset) {
 			String generatedPwd = PasswordUtil.generateRandomPassword();
 			credentialsDTO.setNewPassword(generatedPwd);
-			SMSUtil.sendSMS(Long.parseLong(user.getPhone()), "GoGas - Reset Login Password : " + generatedPwd);
+			SMSUtil.sendSMS(Long.parseLong(user.getPhone()),"ConnectGas - Your reset password : " + generatedPwd + ", Use with your mobile number to login");
 			message = "Password changed successfully!";
 
 		} else if (!bCryptPasswordEncoder.matches(credentialsDTO.getCurrentPassword(), user.getPassword())) {

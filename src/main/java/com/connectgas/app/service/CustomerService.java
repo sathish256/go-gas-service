@@ -58,7 +58,7 @@ public class CustomerService {
 			savedCustomer = customerRepository.save(customer, getCollectionName());
 
 			SMSUtil.sendSMS(Long.parseLong(customer.getPhone()),
-					"GoGas - NewCustomer login Password : " + generatedPwd);
+					"ConnectGas - Your password : " + generatedPwd + ", Use with your mobile number to login");
 
 		} catch (Exception pe) {
 			throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, pe.getLocalizedMessage());
@@ -99,7 +99,7 @@ public class CustomerService {
 		if (isReset) {
 			String generatedPwd = PasswordUtil.generateRandomPassword();
 			credentialsDTO.setNewPassword(generatedPwd);
-			SMSUtil.sendSMS(Long.parseLong(customer.getPhone()), "ConnectGas Password reset : " + generatedPwd);
+			SMSUtil.sendSMS(Long.parseLong(customer.getPhone()), "ConnectGas - Your reset password : " + generatedPwd + ", Use with your mobile number to login");
 			message = "Password changed successfully!";
 
 		} else if (!bCryptPasswordEncoder.matches(credentialsDTO.getCurrentPassword(), customer.getPassword())) {
