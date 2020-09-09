@@ -10,7 +10,6 @@ import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.server.ResponseStatusException;
@@ -78,15 +77,13 @@ public class PurchaseOrderService {
 		return saveOrUpdateOrder(order);
 	}
 
-	public PurchaseOrder updateOrderStatus(String orderId, String status) {
-
-		String loggedInUser = SecurityContextHolder.getContext().getAuthentication().getName();
+	public PurchaseOrder updateOrderStatus(String orderId, String status, String modifiedBy) {
 
 		PurchaseOrder dbOrder = purchaseOrderRepository.fetchById(orderId, PurchaseOrder.class)
 				.orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST,
 						"Error while updating order id " + orderId + " not available in the system"));
 		dbOrder.setLastmodifiedAt(LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME));
-		dbOrder.setLastmodifiedBy(loggedInUser);
+		dbOrder.setLastmodifiedBy(modifiedBy);
 		dbOrder.setPurchaseOrderStatus(PurchaseOrderStatus.valueOf(status));
 
 		return purchaseOrderRepository.save(dbOrder, PurchaseOrder.class);

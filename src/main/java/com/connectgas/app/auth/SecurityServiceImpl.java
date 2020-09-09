@@ -11,7 +11,9 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Service;
 
 @Service
+
 public class SecurityServiceImpl implements SecurityService {
+
 	@Autowired
 	private AuthenticationManager authenticationManager;
 
@@ -32,6 +34,7 @@ public class SecurityServiceImpl implements SecurityService {
 
 	@Override
 	public void autoLogin(String username, String password) {
+		logger.debug(String.format("Auto login request for user %s", username));
 		UserDetails userDetails = userDetailsService.loadUserByUsername(username);
 		UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(
 				userDetails, password, userDetails.getAuthorities());

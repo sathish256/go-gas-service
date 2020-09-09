@@ -6,15 +6,20 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import javax.annotation.PostConstruct;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.connectgas.app.exception.EntityNotFoundException;
+import com.connectgas.app.model.common.Address;
+import com.connectgas.app.model.common.IdentityProof;
 import com.connectgas.app.model.dto.ConnectGasResponse;
 import com.connectgas.app.model.dto.CredentialsDTO;
 import com.connectgas.app.model.user.User;
@@ -32,6 +37,11 @@ public class UserService {
 	@Autowired
 	@Qualifier("bCryptPasswordEncoder")
 	private BCryptPasswordEncoder bCryptPasswordEncoder;
+
+	@PostConstruct
+	public void initializeAppAdmin() {
+
+	}
 
 	public User getUser(String uid) {
 		return userRepository.fetchById(uid, getCollectionName())
@@ -155,6 +165,43 @@ public class UserService {
 					.collect(Collectors.toList());
 
 		throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "User Search requires either candfId or dealerId");
+	}
+
+	public void createAppAdmin() {
+		@SuppressWarnings("deprecation")
+		List<User> users = userRepository.findByPathAndValue("phone", "9886333900", User.class);
+		if (!CollectionUtils.isEmpty(users)) {
+			// Admin user Already exists in the system
+			return;
+		}
+		User user = new User();
+		Address address = new Address();
+		address.setCity("Bengaluru");
+		address.setGeoLat("12.3344");
+		address.setGeoLong("23.5555");
+		address.setDoorNo("No 7");
+		address.setLocality("RT Nagar");
+		address.setPincode("560069");
+		address.setState("Karnataka");
+		address.setStreetName("MG Street");
+		user.setAddress(address);
+		user.setCreatedAt(LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME));
+		user.setCreatedBy("SYSTEM");
+		user.setFirstName("Sathish");
+		user.setLastmodifiedAt(LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME));
+		user.setLastmodifiedBy("SYSTEM");
+		user.setLastName("K");
+		user.setRole(UserRole.ADMIN);
+		user.setPhone("9886333900");
+		user.setIdentityProof(new IdentityProof());
+		user.setCandfId("cnfid");
+		user.setDealershipId("dealerid");
+		user.setDealershipId("dealerid");
+		user.setPassword(bCryptPasswordEncoder.encode("qwerty123"));
+		user.setCreatedAt(LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME));
+		user.setLastmodifiedAt(LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME));
+		userRepository.save(user, User.class);
+
 	}
 
 }

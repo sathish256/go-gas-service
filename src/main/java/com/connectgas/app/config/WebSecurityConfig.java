@@ -56,7 +56,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 				// dont authenticate this particular request
 				.authorizeRequests()
 				.antMatchers("/authenticate", "/register", "/swagger-ui.html", "/v2/api-docs", "/webjars/**",
-						"/swagger-resources/**", "/v1/user/reset-password","/cgnotifications/**","/api/cgnotifications/**")
+						"/swagger-resources/**", "/v1/*/reset-password","/cgnotifications/**","/api/cgnotifications/**")
 				.permitAll()
 				// all other requests need to be authenticated
 				.anyRequest().authenticated().and().
@@ -72,6 +72,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 	@Override
 	public void configure(WebSecurity web) throws Exception {
 		web.ignoring().antMatchers("/authenticate", "/register", "/swagger-ui.html", "/v2/api-docs", "/webjars/**",
-				"/swagger-resources/**", "/v1/user/reset-password","/cgnotifications/**","/api/cgnotifications/**");
+				"/swagger-resources/**", "/v1/*/reset-password","/cgnotifications/**","/api/cgnotifications/**");
 	}
 }

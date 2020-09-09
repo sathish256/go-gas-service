@@ -73,9 +73,7 @@ public class OrderService {
 						"Order id " + id + " not available in the system"));
 	}
 
-	public Order generateOrderbyQuote(String quoteId) {
-
-		String loggedInUser = SecurityContextHolder.getContext().getAuthentication().getName();
+	public Order generateOrderbyQuote(String quoteId, String modifiedBy) {
 
 		ConnectGasQuote quote = quoteRepository.fetchById(quoteId, ConnectGasQuote.class)
 				.orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST,
@@ -86,7 +84,7 @@ public class OrderService {
 		order.setId("OD" + Instant.now().getEpochSecond());
 
 		order.setCreatedAt(LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME));
-		order.setCreatedBy(loggedInUser);
+		order.setCreatedBy(modifiedBy);
 
 		order.setOrderType(OrderType.COMMERCIAL);
 		order.setQuoteId(quoteId);
@@ -104,7 +102,7 @@ public class OrderService {
 		orderCustomer.setPhone(customer.getPhone());
 		order.setCustomer(orderCustomer);
 		order.setLastmodifiedAt(LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME));
-		order.setLastmodifiedBy(loggedInUser);
+		order.setLastmodifiedBy(modifiedBy);
 
 		List<OrderProduct> orderedProducts = new ArrayList<>();
 		Double billAmount = new Double(0.0);
@@ -130,7 +128,7 @@ public class OrderService {
 		order.setReturnProducts(null);
 
 		order.setScheduledAt(LocalDateTime.now().plusHours(2).format(DateTimeFormatter.ISO_DATE_TIME));
-		return saveOrUpdateOrder(order, quote, loggedInUser);
+		return saveOrUpdateOrder(order, quote, modifiedBy);
 	}
 
 	private Order saveOrUpdateOrder(Order order, ConnectGasQuote quote, String loggedInUser) {

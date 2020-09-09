@@ -99,7 +99,7 @@ public class CustomerService {
 		if (isReset) {
 			String generatedPwd = PasswordUtil.generateRandomPassword();
 			credentialsDTO.setNewPassword(generatedPwd);
-			SMSUtil.sendSMS(Long.parseLong(customer.getPhone()), "GoGas - Reset Login Password : " + generatedPwd);
+			SMSUtil.sendSMS(Long.parseLong(customer.getPhone()), "ConnectGas Password reset : " + generatedPwd);
 			message = "Password changed successfully!";
 
 		} else if (!bCryptPasswordEncoder.matches(credentialsDTO.getCurrentPassword(), customer.getPassword())) {

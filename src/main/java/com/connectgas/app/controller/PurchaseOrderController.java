@@ -44,8 +44,9 @@ public class PurchaseOrderController {
 	}
 
 	@PutMapping("/{orderId}/change-status/{status}")
-	public ResponseEntity<PurchaseOrder> updateOrderStatus(@PathVariable String orderId, @PathVariable String status) {
-		return ResponseEntity.ok(purchaseOrderService.updateOrderStatus(orderId, status));
+	public ResponseEntity<PurchaseOrder> updateOrderStatus(@PathVariable String orderId, @PathVariable String status,
+			@RequestHeader("modifiedBy") String modifiedBy) {
+		return ResponseEntity.ok(purchaseOrderService.updateOrderStatus(orderId, status, modifiedBy));
 	}
 
 	@GetMapping("/myorders")

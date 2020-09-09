@@ -17,7 +17,8 @@ public class AuthRequest implements Serializable {
 	@Pattern(regexp = "^\\d{10}$")
 	private String phone;
 	private String password;
-
+	private AuthScope authScope;
+	
 	// need default constructor for JSON Parsing
 	public AuthRequest() {
 
@@ -42,6 +43,14 @@ public class AuthRequest implements Serializable {
 
 	public void setPassword(String password) {
 		this.password = password;
+	}
+
+	public AuthScope getAuthScope() {
+		return authScope;
+	}
+
+	public void setAuthScope(AuthScope authScope) {
+		this.authScope = authScope;
 	}
 
 }

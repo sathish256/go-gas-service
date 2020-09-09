@@ -34,8 +34,9 @@ public class OrderController {
 	}
 
 	@PostMapping("/{quoteid}")
-	public ResponseEntity<Order> generateOrderbyQuote(@PathVariable String quoteid) {
-		return ResponseEntity.ok(orderService.generateOrderbyQuote(quoteid));
+	public ResponseEntity<Order> generateOrderbyQuote(@PathVariable String quoteid,
+			@RequestHeader("modifiedBy") String modifiedBy) {
+		return ResponseEntity.ok(orderService.generateOrderbyQuote(quoteid, modifiedBy));
 	}
 
 	@PostMapping("/new")
