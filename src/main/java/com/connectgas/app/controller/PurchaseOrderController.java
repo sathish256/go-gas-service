@@ -52,7 +52,8 @@ public class PurchaseOrderController {
 	@GetMapping("/myorders")
 	public List<PurchaseOrder> findOrdersByLoggedInUser() {
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-		return purchaseOrderService.getOrders(auth.getName());
+		String phone = auth.getName().substring(0, auth.getName().indexOf('|'));
+		return purchaseOrderService.getOrders(phone);
 	}
 
 	@GetMapping("/search")

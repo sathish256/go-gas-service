@@ -86,11 +86,7 @@ public class JwtAuthController {
 
 	@RequestMapping(value = "/register", method = RequestMethod.POST)
 	public ResponseEntity<Customer> registerCustomer() throws Exception {
-
-		// method to register customer
-
 		return null;
-
 	}
 
 	private void authenticate(String username, String password) throws Exception {
