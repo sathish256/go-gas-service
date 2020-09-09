@@ -3,6 +3,7 @@ package com.connectgas.app.model.dto;
 import java.io.Serializable;
 
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 
@@ -18,7 +19,7 @@ public class AuthRequest implements Serializable {
 	private String phone;
 	@NotBlank
 	private String password;
-	@NotBlank
+	@NotNull
 	private AuthScope authScope;
 
 	// need default constructor for JSON Parsing
