@@ -88,7 +88,7 @@ public class PurchaseOrderService {
 		dbOrder.setLastmodifiedBy(modifiedBy);
 		dbOrder.setPurchaseOrderStatus(PurchaseOrderStatus.valueOf(status));
 
-		return purchaseOrderRepository.save(dbOrder, PurchaseOrder.class);
+		return saveOrUpdateOrder(dbOrder);
 	}
 
 	public List<PurchaseOrder> getOrders(String phone) {
