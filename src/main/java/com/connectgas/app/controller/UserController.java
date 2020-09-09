@@ -49,13 +49,15 @@ public class UserController {
 	@GetMapping("/findall")
 	public List<User> findAll() {
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-		return userService.search(auth.getName());
+		String phone = auth.getName().substring(0, auth.getName().indexOf('|'));
+		return userService.search(phone);
 	}
 
 	@PostMapping("/change-password")
 	public ResponseEntity<ConnectGasResponse> changePassword(@RequestBody @Valid CredentialsDTO credentialsDTO) {
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-		if (auth != null && !auth.getName().equalsIgnoreCase(credentialsDTO.getPhone()))
+		String phone = auth.getName().substring(0, auth.getName().indexOf('|'));
+		if (auth != null && !phone.equalsIgnoreCase(credentialsDTO.getPhone()))
 			throw new AuthorizationServiceException("Cannot change other user password!");
 
 		return ResponseEntity.ok(userService.changePassword(credentialsDTO, false));
