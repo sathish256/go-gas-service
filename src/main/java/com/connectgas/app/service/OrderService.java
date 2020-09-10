@@ -9,6 +9,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,6 +32,7 @@ import com.connectgas.app.model.order.PaymentInfo;
 import com.connectgas.app.model.order.QuoteProduct;
 import com.connectgas.app.model.order.QuoteStatus;
 import com.connectgas.app.model.order.dto.OrderCustomer;
+import com.connectgas.app.model.order.dto.OrderLedger;
 import com.connectgas.app.model.order.dto.OrderType;
 import com.connectgas.app.model.payment.AccountHolderType;
 import com.connectgas.app.model.payment.PaymentBacklog;
@@ -307,6 +309,16 @@ public class OrderService {
 		dbOrder.setReturnProducts(returnProducts);
 
 		return saveOrUpdateOrder(dbOrder, null, modifiedBy);
+	}
+
+	public List<OrderLedger> getOrderLedgerByCustomer(String dealerId, String customerId, LocalDateTime fromDate,
+			LocalDateTime toDate) {
+		Predicate<Order> predicate = o -> o.getOrderStatus().equals(OrderStatus.DELIVERED)
+				&& o.getDealerId().equals(dealerId) && o.getCustomer().getId().equals(customerId)
+				&& LocalDateTime.parse(o.getCreatedAt()).isAfter(fromDate)
+				&& LocalDateTime.parse(o.getCreatedAt()).isBefore(toDate);
+		return orderRepository.findAll(Order.class).stream().filter(predicate).map(Order::getOrderLedger)
+				.collect(Collectors.toList());
 	}
 
 }

@@ -8,6 +8,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +21,7 @@ import com.connectgas.app.model.common.State;
 import com.connectgas.app.model.order.PaidDetails;
 import com.connectgas.app.model.order.PurchaseOrder;
 import com.connectgas.app.model.order.PurchaseOrderStatus;
+import com.connectgas.app.model.order.dto.OrderLedger;
 import com.connectgas.app.model.payment.AccountHolderType;
 import com.connectgas.app.model.payment.PaymentBacklog;
 import com.connectgas.app.model.user.User;
@@ -170,4 +172,15 @@ public class PurchaseOrderService {
 		paymentRepository.save(pb, PaymentBacklog.class);
 
 	}
+
+	public List<OrderLedger> getOrderLedgerByDealer(String candfId, String dealerId, LocalDateTime fromDate,
+			LocalDateTime toDate) {
+		Predicate<PurchaseOrder> predicate = o -> o.getPurchaseOrderStatus().equals(PurchaseOrderStatus.DELIVERED)
+				&& o.getDealerId().equals(dealerId) && o.getCandfId().equals(candfId)
+				&& LocalDateTime.parse(o.getCreatedAt()).isAfter(fromDate)
+				&& LocalDateTime.parse(o.getCreatedAt()).isBefore(toDate);
+		return purchaseOrderRepository.findAll(PurchaseOrder.class).stream().filter(predicate)
+				.map(PurchaseOrder::getOrderLedger).collect(Collectors.toList());
+	}
+
 }

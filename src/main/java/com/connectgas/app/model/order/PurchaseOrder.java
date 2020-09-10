@@ -1,8 +1,10 @@
 package com.connectgas.app.model.order;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import com.connectgas.app.model.common.ConnectGasEntity;
+import com.connectgas.app.model.order.dto.OrderLedger;
 
 public class PurchaseOrder extends ConnectGasEntity {
 	/**
@@ -68,6 +70,24 @@ public class PurchaseOrder extends ConnectGasEntity {
 
 	public void setPaymentInfo(PaymentInfo paymentInfo) {
 		this.paymentInfo = paymentInfo;
+	}
+
+	public OrderLedger getOrderLedger() {
+
+		OrderLedger ledger = new OrderLedger();
+		ledger.setBillAmount(this.paymentInfo.getBillAmount());
+		ledger.setDeliveredProducts(this.orderedProducts);
+		ledger.setReturnedProducts(this.returnProducts);
+		ledger.setOrderCreatedAt(this.getCreatedAt());
+		Double totalAmount = this.paymentInfo.getPaidDetails().stream().mapToDouble(pd -> pd.getAmount()).reduce(0,
+				Double::sum);
+		String paymentReference = this.paymentInfo.getPaidDetails().stream().map(pr -> pr.getReference())
+				.collect(Collectors.joining("|"));
+		ledger.setPaymentReference(paymentReference);
+		ledger.setPaidAmount(totalAmount);
+		ledger.setOrderId(this.getId());
+
+		return ledger;
 	}
 
 }

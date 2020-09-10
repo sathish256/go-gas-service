@@ -1,6 +1,9 @@
 package com.connectgas.app.controller;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -17,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.connectgas.app.model.order.PurchaseOrder;
+import com.connectgas.app.model.order.dto.OrderLedger;
 import com.connectgas.app.service.PurchaseOrderService;
 
 @RestController
@@ -61,4 +65,20 @@ public class PurchaseOrderController {
 		return purchaseOrderService.search(candfId);
 	}
 
+	@GetMapping("/ledger/{candfId}/{dealerId}")
+	public List<OrderLedger> getOrderLedgerByDealer(@PathVariable String candfId, @PathVariable String dealerId,
+			@RequestParam(value = "from", required = false) String from,
+			@RequestParam(value = "to", required = false) String to) {
+
+		LocalDateTime fromDate = Optional.ofNullable(from)
+				.map(s -> LocalDateTime.parse(s, DateTimeFormatter.ofPattern("dd-MM-YYYY")))
+				.orElse(LocalDateTime.now().minusDays(30));
+
+		LocalDateTime toDate = Optional.ofNullable(to)
+				.map(s -> LocalDateTime.parse(s, DateTimeFormatter.ofPattern("dd-MM-YYYY")))
+				.orElse(LocalDateTime.now());
+
+		return purchaseOrderService.getOrderLedgerByDealer(candfId, dealerId, fromDate, toDate);
+
+	}
 }

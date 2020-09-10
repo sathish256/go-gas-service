@@ -1,6 +1,9 @@
 package com.connectgas.app.controller;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -19,6 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.connectgas.app.model.order.Order;
 import com.connectgas.app.model.order.OrderProduct;
 import com.connectgas.app.model.order.PaymentInfo;
+import com.connectgas.app.model.order.dto.OrderLedger;
 import com.connectgas.app.service.OrderService;
 
 @RestController
@@ -78,6 +82,23 @@ public class OrderController {
 	public ResponseEntity<Order> assignDeliveryPerson(@PathVariable String orderId, @PathVariable String userId,
 			@RequestHeader("modifiedBy") String modifiedBy) {
 		return ResponseEntity.ok(orderService.assignDeliveryPerson(orderId, userId, modifiedBy));
+	}
+
+	@GetMapping("/ledger/{dealerId}/{customerId}")
+	public List<OrderLedger> getOrderLedgerByCustomer(@PathVariable String dealerId, @PathVariable String customerId,
+			@RequestParam(value = "from", required = false) String from,
+			@RequestParam(value = "to", required = false) String to) {
+
+		LocalDateTime fromDate = Optional.ofNullable(from)
+				.map(s -> LocalDateTime.parse(s, DateTimeFormatter.ofPattern("dd-MM-YYYY")))
+				.orElse(LocalDateTime.now().minusDays(30));
+
+		LocalDateTime toDate = Optional.ofNullable(to)
+				.map(s -> LocalDateTime.parse(s, DateTimeFormatter.ofPattern("dd-MM-YYYY")))
+				.orElse(LocalDateTime.now());
+
+		return orderService.getOrderLedgerByCustomer(dealerId, customerId, fromDate, toDate);
+
 	}
 
 }

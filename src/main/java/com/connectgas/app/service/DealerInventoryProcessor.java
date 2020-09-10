@@ -2,8 +2,10 @@ package com.connectgas.app.service;
 
 import java.time.LocalDateTime;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -13,6 +15,7 @@ import org.springframework.util.StringUtils;
 import com.connectgas.app.exception.ConnectGasDataAccessException;
 import com.connectgas.app.model.common.InventoryLog;
 import com.connectgas.app.model.common.State;
+import com.connectgas.app.model.inventory.CustomerHolding;
 import com.connectgas.app.model.inventory.DealerInventory;
 import com.connectgas.app.model.order.Order;
 import com.connectgas.app.model.order.PurchaseOrder;
@@ -70,16 +73,22 @@ public class DealerInventoryProcessor {
 		DealerInventory di = initializeDealerInventory(order.getDealerId());
 
 		Map<String, Integer> inTransit = Optional.ofNullable(di.getInTransitStock()).orElse(new HashMap<>());
-		Map<String, Integer> customerHoldings = Optional.ofNullable(di.getCustomerHoldings()).orElse(new HashMap<>());
+		Set<CustomerHolding> customerHoldings = Optional.ofNullable(di.getCustomerHoldings()).orElse(new HashSet<>());
 		Map<String, Integer> emptyStocks = Optional.ofNullable(di.getEmptyStock()).orElse(new HashMap<>());
+
+		CustomerHolding customerHldgs = customerHoldings.stream()
+				.filter(ch -> ch.getCustomerId().equals(order.getCustomer().getId())).findFirst()
+				.orElse(new CustomerHolding(order.getCustomer().getId(), order.getCustomer().getId(), new HashMap<>()));
+
+		Map<String, Integer> products = Optional.ofNullable(customerHldgs.getProducts()).orElse(new HashMap<>());
 
 		if (!CollectionUtils.isEmpty(order.getOrderedProducts())) {
 			order.getOrderedProducts().forEach((p) -> {
 				Integer updateQty = inTransit.getOrDefault(p.getProductId(), 0) - p.getQuantity();
 				inTransit.put(p.getProductId(), updateQty);
 
-				updateQty = customerHoldings.getOrDefault(p.getProductId(), 0) + p.getQuantity();
-				customerHoldings.put(p.getProductId(), updateQty);
+				updateQty = products.getOrDefault(p.getProductId(), 0) + p.getQuantity();
+				products.put(p.getProductId(), updateQty);
 			});
 
 		}
@@ -87,8 +96,8 @@ public class DealerInventoryProcessor {
 		if (!CollectionUtils.isEmpty(order.getReturnProducts())) {
 			order.getReturnProducts().forEach((p) -> {
 
-				Integer updateQty = customerHoldings.getOrDefault(p.getProductId(), 0) - p.getQuantity();
-				customerHoldings.put(p.getProductId(), updateQty);
+				Integer updateQty = products.getOrDefault(p.getProductId(), 0) + p.getQuantity();
+				products.put(p.getProductId(), updateQty);
 
 				updateQty = emptyStocks.getOrDefault(p.getProductId(), 0) + p.getQuantity();
 				emptyStocks.put(p.getProductId(), updateQty);
@@ -97,6 +106,8 @@ public class DealerInventoryProcessor {
 
 		}
 
+		customerHldgs.setProducts(products); // List of Products
+		customerHoldings.add(customerHldgs); // Set
 		di.setInTransitStock(inTransit);
 		di.setCustomerHoldings(customerHoldings);
 		di.setEmptyStock(emptyStocks);
