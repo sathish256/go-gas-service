@@ -1,7 +1,7 @@
 package com.connectgas.app.model.inventory;
 
+import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 
 import com.connectgas.app.model.common.ConnectGasEntity;
 
@@ -16,7 +16,7 @@ public class DealerInventory extends ConnectGasEntity {
 
 	private Map<String, Integer> inTransitStock;
 
-	private Set<CustomerHolding> customerHoldings;
+	private HashSet<CustomerHolding> customerHoldings;
 
 	private Map<String, Integer> emptyStock;
 
@@ -36,11 +36,11 @@ public class DealerInventory extends ConnectGasEntity {
 		this.inTransitStock = inTransitStock;
 	}
 
-	public Set<CustomerHolding> getCustomerHoldings() {
+	public HashSet<CustomerHolding> getCustomerHoldings() {
 		return customerHoldings;
 	}
 
-	public void setCustomerHoldings(Set<CustomerHolding> customerHoldings) {
+	public void setCustomerHoldings(HashSet<CustomerHolding> customerHoldings) {
 		this.customerHoldings = customerHoldings;
 	}
 
