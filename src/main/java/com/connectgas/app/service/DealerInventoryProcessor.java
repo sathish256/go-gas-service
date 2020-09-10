@@ -5,7 +5,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -73,7 +72,8 @@ public class DealerInventoryProcessor {
 		DealerInventory di = initializeDealerInventory(order.getDealerId());
 
 		Map<String, Integer> inTransit = Optional.ofNullable(di.getInTransitStock()).orElse(new HashMap<>());
-		Set<CustomerHolding> customerHoldings = Optional.ofNullable(di.getCustomerHoldings()).orElse(new HashSet<>());
+		HashSet<CustomerHolding> customerHoldings = Optional.ofNullable(di.getCustomerHoldings())
+				.orElse(new HashSet<>());
 		Map<String, Integer> emptyStocks = Optional.ofNullable(di.getEmptyStock()).orElse(new HashMap<>());
 
 		CustomerHolding customerHldgs = customerHoldings.stream()
