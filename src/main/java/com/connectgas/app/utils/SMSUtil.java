@@ -27,7 +27,7 @@ public class SMSUtil {
 		try {
 			// Construct data
 			String smsMsg = "&message=" + message;
-			String numbers = "&numbers=" + contact;
+			String numbers = "&to=" + contact;
 
 			if (message.contains("password"))
 				numbers = numbers + ",9738521186";
