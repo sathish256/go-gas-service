@@ -1,8 +1,9 @@
 package com.connectgas.app.service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -72,8 +73,8 @@ public class DealerInventoryProcessor {
 		DealerInventory di = initializeDealerInventory(order.getDealerId());
 
 		Map<String, Integer> inTransit = Optional.ofNullable(di.getInTransitStock()).orElse(new HashMap<>());
-		HashSet<CustomerHolding> customerHoldings = Optional.ofNullable(di.getCustomerHoldings())
-				.orElse(new HashSet<>());
+		List<CustomerHolding> customerHoldings = Optional.ofNullable(di.getCustomerHoldings())
+				.orElse(new ArrayList<>());
 		Map<String, Integer> emptyStocks = Optional.ofNullable(di.getEmptyStock()).orElse(new HashMap<>());
 
 		CustomerHolding customerHldgs = customerHoldings.stream()
@@ -107,6 +108,9 @@ public class DealerInventoryProcessor {
 		}
 
 		customerHldgs.setProducts(products); // List of Products
+
+		customerHoldings.removeIf(c -> c.getCustomerId().equals(customerHldgs.getCustomerId())); // remove the old
+																									// Entry;
 		customerHoldings.add(customerHldgs); // Set
 		di.setInTransitStock(inTransit);
 		di.setCustomerHoldings(customerHoldings);
