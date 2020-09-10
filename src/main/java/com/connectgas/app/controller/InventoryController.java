@@ -5,6 +5,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
@@ -26,6 +28,12 @@ public class InventoryController {
 				.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
 						"No Inventory details availble for the dealerId"));
 		return ResponseEntity.ok(di);
+	}
+
+	@PostMapping
+	public ResponseEntity<DealerInventory> updateInventory(@RequestBody DealerInventory dealerInventory) {
+
+		return ResponseEntity.ok(dealerInventoryRepository.save(dealerInventory, DealerInventory.class));
 	}
 
 }
