@@ -97,7 +97,7 @@ public class DealerInventoryProcessor {
 		if (!CollectionUtils.isEmpty(order.getReturnProducts())) {
 			order.getReturnProducts().forEach((p) -> {
 
-				Integer updateQty = products.getOrDefault(p.getProductId(), 0) + p.getQuantity();
+				Integer updateQty = products.getOrDefault(p.getProductId(), 0) - p.getQuantity();
 				products.put(p.getProductId(), updateQty);
 
 				updateQty = emptyStocks.getOrDefault(p.getProductId(), 0) + p.getQuantity();
