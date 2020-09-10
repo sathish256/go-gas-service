@@ -47,7 +47,7 @@ public class FirebaseRealtimeDatabase {
 				token = firebaseInitialize.getRefreshToken();
 				expriationTime = Instant.now().plusSeconds(3000).getEpochSecond();
 			}
-			restTemplate.postForObject("https://connect-gas-in.firebaseio.com/accesslogs.json?access_token=" + token,
+			restTemplate.postForObject("https://connect-gas-in.firebaseio.com/inventorylog.json?access_token=" + token,
 					inventoryLog, String.class);
 		} catch (Exception e) {
 			e.printStackTrace();

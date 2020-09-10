@@ -40,8 +40,8 @@ public class OrderController {
 	}
 
 	@PostMapping("/new")
-	public ResponseEntity<Order> directOrder(@RequestBody Order order) {
-		return ResponseEntity.ok(orderService.directOrder(order));
+	public ResponseEntity<Order> directOrder(@RequestBody Order order, @RequestHeader("modifiedBy") String modifiedBy) {
+		return ResponseEntity.ok(orderService.directOrder(order, modifiedBy));
 	}
 
 	@PutMapping("/{orderId}/change-status/{status}")

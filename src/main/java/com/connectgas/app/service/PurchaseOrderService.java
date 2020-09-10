@@ -107,7 +107,7 @@ public class PurchaseOrderService {
 
 		Comparator<PurchaseOrder> comparator = Comparator.comparing(c -> LocalDateTime.parse(c.getLastmodifiedAt()));
 		orders.sort(comparator);
-		
+
 		return orders;
 	}
 

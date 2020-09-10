@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
+import com.connectgas.app.exception.ConnectGasDataAccessException;
 import com.connectgas.app.model.common.InventoryLog;
 import com.connectgas.app.model.common.State;
 import com.connectgas.app.model.inventory.DealerInventory;
@@ -30,7 +31,7 @@ public class DealerInventoryProcessor {
 	@Autowired
 	private FirebaseRealtimeDatabase firebaseRealtimeDatabase;
 
-	public void processNewOrder(Order order) {
+	public void validateAndProcessNewOrder(Order order) {
 
 		DealerInventory di = initializeDealerInventory(order.getDealerId());
 
@@ -39,6 +40,10 @@ public class DealerInventoryProcessor {
 
 		if (!CollectionUtils.isEmpty(order.getOrderedProducts())) {
 			order.getOrderedProducts().forEach((p) -> {
+				Integer availableQty = availableStock.getOrDefault(p.getProductId(), 0);
+				if (availableQty < p.getQuantity())
+					throw new ConnectGasDataAccessException(
+							"No available stock at the moment to process your Order! Please contact dealer");
 				Integer updateQty = availableStock.getOrDefault(p.getProductId(), 0) - p.getQuantity();
 				availableStock.put(p.getProductId(), updateQty);
 
@@ -150,6 +155,36 @@ public class DealerInventoryProcessor {
 			di.setStatus(State.ACTIVE);
 		}
 		return di;
+	}
+
+	public void processCancellation(Order order) {
+
+		DealerInventory di = initializeDealerInventory(order.getDealerId());
+
+		Map<String, Integer> availableStock = Optional.ofNullable(di.getAvailableStock()).orElse(new HashMap<>());
+		Map<String, Integer> inTransit = Optional.ofNullable(di.getInTransitStock()).orElse(new HashMap<>());
+
+		if (!CollectionUtils.isEmpty(order.getOrderedProducts())) {
+			order.getOrderedProducts().forEach((p) -> {
+
+				Integer updateQty = availableStock.getOrDefault(p.getProductId(), 0) + p.getQuantity();
+				availableStock.put(p.getProductId(), updateQty);
+
+				updateQty = inTransit.getOrDefault(p.getProductId(), 0) - p.getQuantity();
+				inTransit.put(p.getProductId(), updateQty);
+
+			});
+
+		}
+
+		di.setAvailableStock(availableStock);
+		di.setInTransitStock(inTransit);
+		di.setLastmodifiedAt(LocalDateTime.now().toString());
+		di.setLastmodifiedBy("SYSTEM");
+		dealerInventoryRepository.save(di, DealerInventory.class);
+		InventoryLog inventoryLog = new InventoryLog(order.getId(), "In-Transit to AvailableStocks:: Order Cancelled",
+				CUSTOMER_ORDER);
+		firebaseRealtimeDatabase.save(inventoryLog, InventoryLog.class);
 	}
 
 }

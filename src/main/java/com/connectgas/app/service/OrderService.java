@@ -13,7 +13,6 @@ import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
@@ -120,44 +119,65 @@ public class OrderService {
 
 		order.setOrderedProducts(orderedProducts);
 		order.setOrderStatus(OrderStatus.PLACED);
-
-		List<PaymentInfo> paymentInfo = new ArrayList<>();
+		Map<String, String> criteria = new HashMap<>();
+		criteria.put("accountHolderType", AccountHolderType.CUSTOMER.toString());
+		criteria.put("id", order.getCustomer().getId());
+		List<PaymentBacklog> pb = paymentRepository.findByPathAndValue(criteria, PaymentBacklog.class);
 		PaymentInfo payment = new PaymentInfo();
-		payment.setBillAmount(billAmount);
-		paymentInfo.add(payment);
+		if (CollectionUtils.isEmpty(pb))
+			payment.setArrearAmount(0.0);
+		else
+			payment.setArrearAmount(pb.get(0).getBacklogAmount());
 
-		order.setPaymentInfo(null);
+		payment.setBillAmount(billAmount);
+
+		order.setPaymentInfo(payment);
 		order.setReturnProducts(null);
 
 		order.setScheduledAt(LocalDateTime.now().plusHours(2).format(DateTimeFormatter.ISO_DATE_TIME));
 		return saveOrUpdateOrder(order, quote, modifiedBy);
 	}
 
-	private Order saveOrUpdateOrder(Order order, ConnectGasQuote quote, String loggedInUser) {
+	private Order saveOrUpdateOrder(Order order, ConnectGasQuote quote, String modifiedBy) {
 		Dealership dealer = dealershipRepository.fetchById(order.getDealerId(), Dealership.class).orElseThrow(
 				() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Error while placing order to dealer id "
 						+ order.getDealerId() + " not available in the system"));
 
+		if (OrderStatus.PLACED.equals(order.getOrderStatus())) {
+			dealerInventoryProcessor.validateAndProcessNewOrder(order);
+			if (StringUtils.hasText(order.getCustomer().getPhone()))
+				SMSUtil.sendSMS(Long.parseLong(order.getCustomer().getPhone()),
+						"Order ID " + order.getId() + " placed to " + dealer.getName());
+		}
+		if (OrderStatus.CANCELLED.equals(order.getOrderStatus()))
+			dealerInventoryProcessor.processCancellation(order);
+
+		if (OrderStatus.DELIVERED.equals(order.getOrderStatus())) {
+			updatePaymentInfoAndPaymentBacklog(order);
+			order.setDeliveredTimestamp(LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME));
+			dealerInventoryProcessor.processDelivery(order);
+			Notification notification = new Notification(
+					"Order Id " + order.getId() + " has been delivered to " + order.getCustomer().getName());
+			notificationService.notify(notification, order.getDealerId());
+		} else {
+			Notification notification = new Notification(
+					"Order Id " + order.getId() + " status changed to " + order.getOrderStatus());
+			notificationService.notify(notification, order.getDealerId());
+		}
+
 		orderRepository.save(order, Order.class);
-
-		if (StringUtils.hasText(order.getCustomer().getPhone()))
-			SMSUtil.sendSMS(Long.parseLong(order.getCustomer().getPhone()),
-					"Order ID " + order.getId() + " placed to " + dealer.getName());
-
-		dealerInventoryProcessor.processNewOrder(order);
 
 		if (quote != null) {
 			quote.setQuoteStatus(QuoteStatus.ORDERED);
 			quote.setLastmodifiedAt(LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME));
-			quote.setLastmodifiedBy(loggedInUser);
+			quote.setLastmodifiedBy(modifiedBy);
 			quoteRepository.save(quote, ConnectGasQuote.class);
 		}
 
 		return order;
 	}
 
-	public Order directOrder(Order order) {
-		String loggedInUser = SecurityContextHolder.getContext().getAuthentication().getName();
+	public Order directOrder(Order order, String modifiedBy) {
 		order.setId("OD" + Instant.now().getEpochSecond());
 		order.setCreatedAt(LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME));
 		order.setLastmodifiedAt(LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME));
@@ -165,13 +185,10 @@ public class OrderService {
 				&& !order.getOrderStatus().equals(OrderStatus.ASSIGNED))
 			order.setOrderStatus(OrderStatus.PLACED);
 
-		if (order.getOrderStatus().equals(OrderStatus.DELIVERED)) {
-			updatePaymentInfoAndPaymentBacklog(order);
-			order.setDeliveredTimestamp(LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME));
-			dealerInventoryProcessor.processDelivery(order);
-		}
+		if (order.getOrderStatus().equals(OrderStatus.ASSIGNED))
+			dealerInventoryProcessor.validateAndProcessNewOrder(order);
 
-		return saveOrUpdateOrder(order, null, loggedInUser);
+		return saveOrUpdateOrder(order, null, modifiedBy);
 	}
 
 	public Order updateOrderStatus(String orderId, String status, String userId) {
@@ -183,18 +200,7 @@ public class OrderService {
 		dbOrder.setLastmodifiedBy(userId);
 		dbOrder.setOrderStatus(OrderStatus.valueOf(status));
 
-		if (OrderStatus.DELIVERED.toString().equals(status)) {
-			updatePaymentInfoAndPaymentBacklog(dbOrder);
-			dbOrder.setDeliveredTimestamp(LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME));
-			dealerInventoryProcessor.processDelivery(dbOrder);
-			Notification notification = new Notification(
-					"Order Id " + orderId + " has been delivered to " + dbOrder.getCustomer().getName());
-			notificationService.notify(notification, dbOrder.getDealerId());
-		} else {
-			Notification notification = new Notification("Order Id " + orderId + " status changed to " + status);
-			notificationService.notify(notification, dbOrder.getDealerId());
-		}
-		return orderRepository.save(dbOrder, Order.class);
+		return saveOrUpdateOrder(dbOrder, null, userId);
 	}
 
 	public Order updatePaymentInfo(String orderId, PaymentInfo paymentInfo, String userId) {
@@ -300,7 +306,7 @@ public class OrderService {
 		dbOrder.setLastmodifiedBy(modifiedBy);
 		dbOrder.setReturnProducts(returnProducts);
 
-		return orderRepository.save(dbOrder, Order.class);
+		return saveOrUpdateOrder(dbOrder, null, modifiedBy);
 	}
 
 }
