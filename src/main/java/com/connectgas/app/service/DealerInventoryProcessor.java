@@ -47,10 +47,11 @@ public class DealerInventoryProcessor {
 				if (availableQty < p.getQuantity())
 					throw new ConnectGasDataAccessException(
 							"No available stock at the moment to process your Order! Please contact dealer");
-				Integer updateQty = availableStock.getOrDefault(p.getProductId(), 0) - p.getQuantity();
+				Integer updateQty = availableStock.getOrDefault(p.getProductId(), 0)
+						- Optional.of(p.getQuantity()).orElse(0);
 				availableStock.put(p.getProductId(), updateQty);
 
-				updateQty = inTransit.getOrDefault(p.getProductId(), 0) + p.getQuantity();
+				updateQty = inTransit.getOrDefault(p.getProductId(), 0) + Optional.of(p.getQuantity()).orElse(0);
 				inTransit.put(p.getProductId(), updateQty);
 
 			});
@@ -85,10 +86,11 @@ public class DealerInventoryProcessor {
 
 		if (!CollectionUtils.isEmpty(order.getOrderedProducts())) {
 			order.getOrderedProducts().forEach((p) -> {
-				Integer updateQty = inTransit.getOrDefault(p.getProductId(), 0) - p.getQuantity();
+				Integer updateQty = inTransit.getOrDefault(p.getProductId(), 0)
+						- Optional.of(p.getQuantity()).orElse(0);
 				inTransit.put(p.getProductId(), updateQty);
 
-				updateQty = products.getOrDefault(p.getProductId(), 0) + p.getQuantity();
+				updateQty = products.getOrDefault(p.getProductId(), 0) + Optional.of(p.getQuantity()).orElse(0);
 				products.put(p.getProductId(), updateQty);
 			});
 
@@ -97,10 +99,10 @@ public class DealerInventoryProcessor {
 		if (!CollectionUtils.isEmpty(order.getReturnProducts())) {
 			order.getReturnProducts().forEach((p) -> {
 
-				Integer updateQty = products.getOrDefault(p.getProductId(), 0) - p.getQuantity();
+				Integer updateQty = products.getOrDefault(p.getProductId(), 0) - Optional.of(p.getQuantity()).orElse(0);
 				products.put(p.getProductId(), updateQty);
 
-				updateQty = emptyStocks.getOrDefault(p.getProductId(), 0) + p.getQuantity();
+				updateQty = emptyStocks.getOrDefault(p.getProductId(), 0) + Optional.of(p.getQuantity()).orElse(0);
 				emptyStocks.put(p.getProductId(), updateQty);
 
 			});
@@ -112,8 +114,11 @@ public class DealerInventoryProcessor {
 		customerHoldings.removeIf(c -> c.getCustomerId().equals(customerHldgs.getCustomerId())); // remove the old
 																									// Entry;
 		customerHoldings.add(customerHldgs); // Set
-		di.setInTransitStock(inTransit);
+
 		di.setCustomerHoldings(customerHoldings);
+
+		di.setInTransitStock(inTransit);
+
 		di.setEmptyStock(emptyStocks);
 		di.setLastmodifiedAt(LocalDateTime.now().toString());
 		di.setLastmodifiedBy("SYSTEM");
@@ -133,7 +138,8 @@ public class DealerInventoryProcessor {
 
 		if (!CollectionUtils.isEmpty(order.getOrderedProducts())) {
 			order.getOrderedProducts().forEach((p) -> {
-				Integer updateQty = availableStock.getOrDefault(p.getProductId(), 0) + p.getQuantity();
+				Integer updateQty = availableStock.getOrDefault(p.getProductId(), 0)
+						+ Optional.of(p.getQuantity()).orElse(0);
 				availableStock.put(p.getProductId(), updateQty);
 			});
 
@@ -141,7 +147,8 @@ public class DealerInventoryProcessor {
 
 		if (!CollectionUtils.isEmpty(order.getReturnProducts())) {
 			order.getReturnProducts().forEach((p) -> {
-				Integer updateQty = emptyStocks.getOrDefault(p.getProductId(), 0) - p.getQuantity();
+				Integer updateQty = emptyStocks.getOrDefault(p.getProductId(), 0)
+						- Optional.of(p.getQuantity()).orElse(0);
 				emptyStocks.put(p.getProductId(), updateQty);
 			});
 
@@ -182,10 +189,11 @@ public class DealerInventoryProcessor {
 		if (!CollectionUtils.isEmpty(order.getOrderedProducts())) {
 			order.getOrderedProducts().forEach((p) -> {
 
-				Integer updateQty = availableStock.getOrDefault(p.getProductId(), 0) + p.getQuantity();
+				Integer updateQty = availableStock.getOrDefault(p.getProductId(), 0)
+						+ Optional.of(p.getQuantity()).orElse(0);
 				availableStock.put(p.getProductId(), updateQty);
 
-				updateQty = inTransit.getOrDefault(p.getProductId(), 0) - p.getQuantity();
+				updateQty = inTransit.getOrDefault(p.getProductId(), 0) - Optional.of(p.getQuantity()).orElse(0);
 				inTransit.put(p.getProductId(), updateQty);
 
 			});

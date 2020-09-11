@@ -2,6 +2,9 @@ package com.connectgas.app.model.common;
 
 import java.io.Serializable;
 
+import com.google.firebase.database.IgnoreExtraProperties;
+
+@IgnoreExtraProperties
 public class ConnectGasEntity implements Serializable {
 
 	/**
