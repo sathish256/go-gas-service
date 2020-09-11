@@ -316,7 +316,7 @@ public class OrderService {
 				&& o.getDealerId().equals(dealerId) && o.getCustomer().getId().equals(customerId)
 				&& LocalDateTime.parse(o.getCreatedAt()).isAfter(fromDate)
 				&& LocalDateTime.parse(o.getCreatedAt()).isBefore(toDate);
-		return orderRepository.findAll(Order.class).stream().filter(predicate).map(Order::getOrderLedger)
+		return orderRepository.findAll(Order.class).stream().filter(predicate).map(OrderLedger::new)
 				.collect(Collectors.toList());
 	}
 

@@ -179,8 +179,8 @@ public class PurchaseOrderService {
 				&& o.getDealerId().equals(dealerId) && o.getCandfId().equals(candfId)
 				&& LocalDateTime.parse(o.getCreatedAt()).isAfter(fromDate)
 				&& LocalDateTime.parse(o.getCreatedAt()).isBefore(toDate);
-		return purchaseOrderRepository.findAll(PurchaseOrder.class).stream().filter(predicate)
-				.map(PurchaseOrder::getOrderLedger).collect(Collectors.toList());
+		return purchaseOrderRepository.findAll(PurchaseOrder.class).stream().filter(predicate).map(OrderLedger::new)
+				.collect(Collectors.toList());
 	}
 
 }

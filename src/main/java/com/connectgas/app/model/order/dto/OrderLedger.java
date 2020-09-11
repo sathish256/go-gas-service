@@ -2,8 +2,11 @@ package com.connectgas.app.model.order.dto;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.stream.Collectors;
 
+import com.connectgas.app.model.order.Order;
 import com.connectgas.app.model.order.OrderProduct;
+import com.connectgas.app.model.order.PurchaseOrder;
 
 public class OrderLedger implements Serializable {
 
@@ -73,6 +76,40 @@ public class OrderLedger implements Serializable {
 
 	public void setPaymentReference(String paymentReference) {
 		this.paymentReference = paymentReference;
+	}
+
+	public OrderLedger(Order order) {
+		this.setBillAmount(order.getPaymentInfo().getBillAmount());
+		this.setDeliveredProducts(order.getOrderedProducts());
+		this.setReturnedProducts(order.getReturnProducts());
+		this.setOrderCreatedAt(order.getCreatedAt());
+		Double totalAmount = order.getPaymentInfo().getPaidDetails().stream().mapToDouble(pd -> pd.getAmount())
+				.reduce(0, Double::sum);
+		String paymentReference = order.getPaymentInfo().getPaidDetails().stream().map(pr -> pr.getReference())
+				.collect(Collectors.joining("|"));
+		this.setPaymentReference(paymentReference);
+		this.setPaidAmount(totalAmount);
+		this.setOrderId(order.getId());
+
+	}
+
+	public OrderLedger(PurchaseOrder order) {
+		this.setBillAmount(order.getPaymentInfo().getBillAmount());
+		this.setDeliveredProducts(order.getOrderedProducts());
+		this.setReturnedProducts(order.getReturnProducts());
+		this.setOrderCreatedAt(order.getCreatedAt());
+		Double totalAmount = order.getPaymentInfo().getPaidDetails().stream().mapToDouble(pd -> pd.getAmount())
+				.reduce(0, Double::sum);
+		String paymentReference = order.getPaymentInfo().getPaidDetails().stream().map(pr -> pr.getReference())
+				.collect(Collectors.joining("|"));
+		this.setPaymentReference(paymentReference);
+		this.setPaidAmount(totalAmount);
+		this.setOrderId(order.getId());
+
+	}
+	
+	public OrderLedger() {
+		//Default Constructor
 	}
 
 }
