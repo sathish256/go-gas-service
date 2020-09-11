@@ -1,7 +1,6 @@
 package com.connectgas.app.controller;
 
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
 
@@ -89,12 +88,10 @@ public class OrderController {
 			@RequestParam(value = "from", required = false) String from,
 			@RequestParam(value = "to", required = false) String to) {
 
-		LocalDateTime fromDate = Optional.ofNullable(from)
-				.map(s -> LocalDateTime.parse(s, DateTimeFormatter.ofPattern("dd-MM-YYYY")))
-				.orElse(LocalDateTime.now().minusDays(30));
+		LocalDateTime fromDate = Optional.ofNullable(from).map(s -> s.concat("T00:00:01"))
+				.map(s -> LocalDateTime.parse(s)).orElse(LocalDateTime.now().minusDays(30));
 
-		LocalDateTime toDate = Optional.ofNullable(to)
-				.map(s -> LocalDateTime.parse(s, DateTimeFormatter.ofPattern("dd-MM-YYYY")))
+		LocalDateTime toDate = Optional.ofNullable(to).map(s -> s.concat("T23:59:59")).map(s -> LocalDateTime.parse(s))
 				.orElse(LocalDateTime.now());
 
 		return orderService.getOrderLedgerByCustomer(dealerId, customerId, fromDate, toDate);
