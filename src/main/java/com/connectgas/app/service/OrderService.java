@@ -217,6 +217,9 @@ public class OrderService {
 	}
 
 	private void updatePaymentInfoAndPaymentBacklog(Order dbOrder) {
+		
+		if(dbOrder.getPaymentInfo() == null || CollectionUtils.isEmpty(dbOrder.getPaymentInfo().getPaidDetails()))
+			return;
 
 		Double totalPaid = 0.0;
 		for (PaidDetails pd : dbOrder.getPaymentInfo().getPaidDetails()) {
