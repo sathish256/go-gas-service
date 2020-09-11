@@ -80,7 +80,7 @@ public class DealerInventoryProcessor {
 
 		CustomerHolding customerHldgs = customerHoldings.stream()
 				.filter(ch -> ch.getCustomerId().equals(order.getCustomer().getId())).findFirst()
-				.orElse(new CustomerHolding(order.getCustomer().getId(), order.getCustomer().getId(), new HashMap<>()));
+				.orElse(new CustomerHolding(order.getCustomer().getId(), order.getCustomer().getName(), new HashMap<>()));
 
 		Map<String, Integer> products = Optional.ofNullable(customerHldgs.getProducts()).orElse(new HashMap<>());
 
