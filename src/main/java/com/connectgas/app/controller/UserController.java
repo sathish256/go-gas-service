@@ -5,6 +5,7 @@ import java.util.List;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AuthorizationServiceException;
 import org.springframework.security.core.Authentication;
@@ -22,6 +23,8 @@ import org.springframework.web.bind.annotation.RestController;
 import com.connectgas.app.model.dto.ConnectGasResponse;
 import com.connectgas.app.model.dto.CredentialsDTO;
 import com.connectgas.app.model.user.User;
+import com.connectgas.app.notification.Notification;
+import com.connectgas.app.notification.NotificationService;
 import com.connectgas.app.service.UserService;
 
 @RestController
@@ -30,6 +33,9 @@ public class UserController {
 
 	@Autowired
 	private UserService userService;
+
+	@Autowired
+	private NotificationService notificationService;
 
 	@GetMapping("/{uid}")
 	public ResponseEntity<User> getUser(@PathVariable String uid) {
@@ -45,7 +51,7 @@ public class UserController {
 	public ResponseEntity<User> updateUser(@RequestBody User user) {
 		return ResponseEntity.ok(userService.updateUser(user));
 	}
-	
+
 	@GetMapping("/findall")
 	public List<User> findAll() {
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
@@ -72,10 +78,23 @@ public class UserController {
 	public ResponseEntity<User> deleteUser(@PathVariable String phone) {
 		return ResponseEntity.ok(userService.deleteUser(phone));
 	}
-	
+
 	@GetMapping("/search")
 	public List<User> search(@RequestParam(value = "candfId") String candfId,
 			@RequestParam(value = "dealerId") String dealerId) {
 		return userService.search(candfId, dealerId);
+	}
+
+	@PostMapping("/{userId}/notifications")
+	public ResponseEntity<ConnectGasResponse> triggerNotifications(@PathVariable String userId) {
+		return ResponseEntity.ok(notificationService.triggerNotifications(userId));
+	}
+
+	@PostMapping("/{userId}/notify")
+	public ResponseEntity<ConnectGasResponse> addNotificaiton(@PathVariable String userId) {
+
+		Notification notification = new Notification("Notification for User " + userId);
+		notificationService.notify(notification, userId);
+		return ResponseEntity.ok(new ConnectGasResponse(HttpStatus.OK, "Notification Added!!!"));
 	}
 }
