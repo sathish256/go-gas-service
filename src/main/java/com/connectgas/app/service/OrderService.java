@@ -146,18 +146,18 @@ public class OrderService {
 						+ order.getDealerId() + " not available in the system"));
 
 		if (OrderStatus.PLACED.equals(order.getOrderStatus())) {
-			dealerInventoryProcessor.validateAndProcessNewOrder(order);
+			dealerInventoryProcessor.validateAndProcessNewOrder(order, modifiedBy);
 			if (StringUtils.hasText(order.getCustomer().getPhone()))
 				SMSUtil.sendSMS(Long.parseLong(order.getCustomer().getPhone()),
 						"Order ID " + order.getId() + " placed to " + dealer.getName());
 		}
 		if (OrderStatus.CANCELLED.equals(order.getOrderStatus()))
-			dealerInventoryProcessor.processCancellation(order);
+			dealerInventoryProcessor.processCancellation(order, modifiedBy);
 
 		if (OrderStatus.DELIVERED.equals(order.getOrderStatus())) {
 			updatePaymentInfoAndPaymentBacklog(order);
 			order.setDeliveredTimestamp(LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME));
-			dealerInventoryProcessor.processDelivery(order);
+			dealerInventoryProcessor.processDelivery(order, modifiedBy);
 			Notification notification = new Notification(
 					"Order Id " + order.getId() + " has been delivered to " + order.getCustomer().getName());
 			notificationService.notify(notification, order.getDealerId());
@@ -186,9 +186,8 @@ public class OrderService {
 		if (!order.getOrderStatus().equals(OrderStatus.DELIVERED)
 				&& !order.getOrderStatus().equals(OrderStatus.ASSIGNED))
 			order.setOrderStatus(OrderStatus.PLACED);
-
-		if (order.getOrderStatus().equals(OrderStatus.ASSIGNED))
-			dealerInventoryProcessor.validateAndProcessNewOrder(order);
+		else
+			dealerInventoryProcessor.validateAndProcessNewOrder(order, modifiedBy);
 
 		return saveOrUpdateOrder(order, null, modifiedBy);
 	}

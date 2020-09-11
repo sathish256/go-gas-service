@@ -34,7 +34,7 @@ public class DealerInventoryProcessor {
 	@Autowired
 	private FirebaseRealtimeDatabase firebaseRealtimeDatabase;
 
-	public void validateAndProcessNewOrder(Order order) {
+	public void validateAndProcessNewOrder(Order order, String modifiedBy) {
 
 		DealerInventory di = initializeDealerInventory(order.getDealerId());
 
@@ -44,11 +44,11 @@ public class DealerInventoryProcessor {
 		if (!CollectionUtils.isEmpty(order.getOrderedProducts())) {
 			order.getOrderedProducts().forEach((p) -> {
 				Integer availableQty = availableStock.getOrDefault(p.getProductId(), 0);
-				if (availableQty < p.getQuantity())
+				if (availableQty < p.getQuantity()) {
 					throw new ConnectGasDataAccessException(
 							"No available stock at the moment to process your Order! Please contact dealer");
-				Integer updateQty = availableStock.getOrDefault(p.getProductId(), 0)
-						- Optional.of(p.getQuantity()).orElse(0);
+				}
+				Integer updateQty = availableQty - Optional.of(p.getQuantity()).orElse(0);
 				availableStock.put(p.getProductId(), updateQty);
 
 				updateQty = inTransit.getOrDefault(p.getProductId(), 0) + Optional.of(p.getQuantity()).orElse(0);
@@ -69,7 +69,7 @@ public class DealerInventoryProcessor {
 
 	}
 
-	public void processDelivery(Order order) {
+	public void processDelivery(Order order, String modifiedBy) {
 
 		DealerInventory di = initializeDealerInventory(order.getDealerId());
 
@@ -80,7 +80,8 @@ public class DealerInventoryProcessor {
 
 		CustomerHolding customerHldgs = customerHoldings.stream()
 				.filter(ch -> ch.getCustomerId().equals(order.getCustomer().getId())).findFirst()
-				.orElse(new CustomerHolding(order.getCustomer().getId(), order.getCustomer().getName(), new HashMap<>()));
+				.orElse(new CustomerHolding(order.getCustomer().getId(), order.getCustomer().getName(),
+						new HashMap<>()));
 
 		Map<String, Integer> products = Optional.ofNullable(customerHldgs.getProducts()).orElse(new HashMap<>());
 
@@ -129,7 +130,7 @@ public class DealerInventoryProcessor {
 
 	}
 
-	public void updateDealerInventory(PurchaseOrder order) {
+	public void updateDealerInventory(PurchaseOrder order, String modifiedBy) {
 
 		DealerInventory di = initializeDealerInventory(order.getDealerId());
 
@@ -179,7 +180,7 @@ public class DealerInventoryProcessor {
 		return di;
 	}
 
-	public void processCancellation(Order order) {
+	public void processCancellation(Order order, String modifiedBy) {
 
 		DealerInventory di = initializeDealerInventory(order.getDealerId());
 

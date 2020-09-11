@@ -54,7 +54,7 @@ public class PurchaseOrderService {
 						"Order id " + id + " not available in the system"));
 	}
 
-	private PurchaseOrder saveOrUpdateOrder(PurchaseOrder order) {
+	private PurchaseOrder saveOrUpdateOrder(PurchaseOrder order, String modifiedBy) {
 		if (order.getPurchaseOrderStatus().equals(PurchaseOrderStatus.PAYMENT_INFO_UPDATED)) {
 			updatePaymentInfoAndPaymentBacklog(order);
 		}
@@ -68,7 +68,7 @@ public class PurchaseOrderService {
 		}
 
 		if (PurchaseOrderStatus.DELIVERED.equals(order.getPurchaseOrderStatus()))
-			dealerInventoryProcessor.updateDealerInventory(order);
+			dealerInventoryProcessor.updateDealerInventory(order, modifiedBy);
 
 		return purchaseOrderRepository.save(order, PurchaseOrder.class);
 
@@ -78,7 +78,7 @@ public class PurchaseOrderService {
 		order.setId("PO" + Instant.now().getEpochSecond());
 		order.setCreatedAt(LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME));
 		order.setLastmodifiedAt(LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME));
-		return saveOrUpdateOrder(order);
+		return saveOrUpdateOrder(order, modifiedBy);
 	}
 
 	public PurchaseOrder updateOrderStatus(String orderId, String status, String modifiedBy) {
@@ -90,7 +90,7 @@ public class PurchaseOrderService {
 		dbOrder.setLastmodifiedBy(modifiedBy);
 		dbOrder.setPurchaseOrderStatus(PurchaseOrderStatus.valueOf(status));
 
-		return saveOrUpdateOrder(dbOrder);
+		return saveOrUpdateOrder(dbOrder, modifiedBy);
 	}
 
 	public List<PurchaseOrder> getOrders(String phone) {
@@ -138,7 +138,7 @@ public class PurchaseOrderService {
 
 		order.setLastmodifiedAt(LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME));
 		order.setLastmodifiedBy(userId);
-		return saveOrUpdateOrder(order);
+		return saveOrUpdateOrder(order, userId);
 	}
 
 	private void updatePaymentInfoAndPaymentBacklog(PurchaseOrder dbOrder) {
