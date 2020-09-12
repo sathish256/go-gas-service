@@ -215,9 +215,10 @@ public class DashboardService {
 	}
 
 	private double getAmountSummary(List<Order> todayOrders) {
-		return Optional
-				.ofNullable(todayOrders).orElse(new ArrayList<>()).stream().mapToDouble(o -> o.getPaymentInfo()
-						.getPaidDetails().stream().mapToDouble(pd -> pd.getAmount()).reduce(0, Double::sum))
+		return Optional.ofNullable(todayOrders).orElse(new ArrayList<>()).stream()
+				.filter(o -> o.getPaymentInfo() != null && o.getPaymentInfo().getPaidDetails() != null)
+				.mapToDouble(o -> o.getPaymentInfo().getPaidDetails().stream().mapToDouble(pd -> pd.getAmount())
+						.reduce(0, Double::sum))
 				.reduce(0, Double::sum);
 	}
 
