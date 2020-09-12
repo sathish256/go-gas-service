@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -94,7 +95,8 @@ public class DashboardService {
 	}
 
 	private Map<OrderStatus, Long> getOrdersMap(List<Order> todayOrders) {
-		return todayOrders.stream().collect(Collectors.groupingBy(Order::getOrderStatus, Collectors.counting()));
+		return Optional.ofNullable(todayOrders).orElse(new ArrayList<>()).stream()
+				.collect(Collectors.groupingBy(Order::getOrderStatus, Collectors.counting()));
 	}
 
 	public Dashboard getDealerDashboard(String dealer, String modifiedBy) {
@@ -213,8 +215,10 @@ public class DashboardService {
 	}
 
 	private double getAmountSummary(List<Order> todayOrders) {
-		return todayOrders.stream().mapToDouble(o -> o.getPaymentInfo().getPaidDetails().stream()
-				.mapToDouble(pd -> pd.getAmount()).reduce(0, Double::sum)).reduce(0, Double::sum);
+		return Optional
+				.ofNullable(todayOrders).orElse(new ArrayList<>()).stream().mapToDouble(o -> o.getPaymentInfo()
+						.getPaidDetails().stream().mapToDouble(pd -> pd.getAmount()).reduce(0, Double::sum))
+				.reduce(0, Double::sum);
 	}
 
 	private Double getTotalDuesFromDealers(String candfId) {
