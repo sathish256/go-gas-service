@@ -44,7 +44,7 @@ public class NotificationService {
 		logger.info("NotificationService::notify::user::{}", user);
 		Queue<Notification> queuedNotifications = notificationQueue.getOrDefault(user, new LinkedBlockingQueue<>());
 		queuedNotifications.add(notification);
-		if (simpUserRegistry.getUser(user).hasSessions()) {
+		if (simpUserRegistry.getUser(user) != null && simpUserRegistry.getUser(user).hasSessions()) {
 			logger.info("NotificationService::notify::User has live Session::{}", user);
 			while (!queuedNotifications.isEmpty())
 				messagingTemplate.convertAndSendToUser(user, "/queue/notify", queuedNotifications.poll());
