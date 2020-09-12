@@ -29,9 +29,9 @@ import com.connectgas.app.model.dto.ConnectGasResponse;
 
 @Order(Ordered.HIGHEST_PRECEDENCE)
 @ControllerAdvice
-public class GoGasExceptionHandler extends ResponseEntityExceptionHandler {
+public class ConnectGasExceptionHandler extends ResponseEntityExceptionHandler {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(GoGasExceptionHandler.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(ConnectGasExceptionHandler.class);
 
 	/**
 	 * Handle ResponseStatusException. Triggered when a 'required' request parameter
@@ -41,7 +41,7 @@ public class GoGasExceptionHandler extends ResponseEntityExceptionHandler {
 	 * @param headers HttpHeaders
 	 * @param status  HttpStatus
 	 * @param request WebRequest
-	 * @return the GoGasResponse object
+	 * @return the ConnectGasResponse object
 	 */
 	@ExceptionHandler(ResponseStatusException.class)
 	protected ResponseEntity<Object> handleResponseStatusException(ResponseStatusException ex, WebRequest request) {
@@ -56,7 +56,7 @@ public class GoGasExceptionHandler extends ResponseEntityExceptionHandler {
 	 * @param headers HttpHeaders
 	 * @param status  HttpStatus
 	 * @param request WebRequest
-	 * @return the GoGasResponse object
+	 * @return the ConnectGasResponse object
 	 */
 	@Override
 	protected ResponseEntity<Object> handleMissingServletRequestParameter(MissingServletRequestParameterException ex,
@@ -73,7 +73,7 @@ public class GoGasExceptionHandler extends ResponseEntityExceptionHandler {
 	 * @param headers HttpHeaders
 	 * @param status  HttpStatus
 	 * @param request WebRequest
-	 * @return the GoGasResponse object
+	 * @return the ConnectGasResponse object
 	 */
 	@Override
 	protected ResponseEntity<Object> handleHttpMediaTypeNotSupported(HttpMediaTypeNotSupportedException ex,
@@ -95,7 +95,7 @@ public class GoGasExceptionHandler extends ResponseEntityExceptionHandler {
 	 * @param headers HttpHeaders
 	 * @param status  HttpStatus
 	 * @param request WebRequest
-	 * @return the GoGasResponse object
+	 * @return the ConnectGasResponse object
 	 */
 	@Override
 	protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex,
@@ -112,7 +112,7 @@ public class GoGasExceptionHandler extends ResponseEntityExceptionHandler {
 	 * fails.
 	 *
 	 * @param ex the ConstraintViolationException
-	 * @return the GoGasResponse object
+	 * @return the ConnectGasResponse object
 	 */
 	@ExceptionHandler(javax.validation.ConstraintViolationException.class)
 	protected ResponseEntity<Object> handleConstraintViolation(javax.validation.ConstraintViolationException ex) {
@@ -127,7 +127,7 @@ public class GoGasExceptionHandler extends ResponseEntityExceptionHandler {
 	 * detail than javax.persistence.EntityNotFoundException.
 	 *
 	 * @param ex the EntityNotFoundException
-	 * @return the GoGasResponse object
+	 * @return the ConnectGasResponse object
 	 */
 	@ExceptionHandler(EntityNotFoundException.class)
 	protected ResponseEntity<Object> handleEntityNotFound(EntityNotFoundException ex) {
@@ -144,7 +144,7 @@ public class GoGasExceptionHandler extends ResponseEntityExceptionHandler {
 	 * @param headers HttpHeaders
 	 * @param status  HttpStatus
 	 * @param request WebRequest
-	 * @return the GoGasResponse object
+	 * @return the ConnectGasResponse object
 	 */
 	@Override
 	protected ResponseEntity<Object> handleHttpMessageNotReadable(HttpMessageNotReadableException ex,
@@ -162,7 +162,7 @@ public class GoGasExceptionHandler extends ResponseEntityExceptionHandler {
 	 * @param headers HttpHeaders
 	 * @param status  HttpStatus
 	 * @param request WebRequest
-	 * @return the GoGasResponse object
+	 * @return the ConnectGasResponse object
 	 */
 	@Override
 	protected ResponseEntity<Object> handleHttpMessageNotWritable(HttpMessageNotWritableException ex,
@@ -203,7 +203,7 @@ public class GoGasExceptionHandler extends ResponseEntityExceptionHandler {
 	 * causes.
 	 *
 	 * @param ex the DataIntegrityViolationException
-	 * @return the GoGasResponse object
+	 * @return the ConnectGasResponse object
 	 *//*
 	@ExceptionHandler(DataIntegrityViolationException.class)
 	protected ResponseEntity<Object> handleDataIntegrityViolation(DataIntegrityViolationException ex,
@@ -218,7 +218,7 @@ public class GoGasExceptionHandler extends ResponseEntityExceptionHandler {
 	 * Handle Exception, handle generic Exception.class
 	 *
 	 * @param ex the Exception
-	 * @return the GoGasResponse object
+	 * @return the ConnectGasResponse object
 	 */
 	@ExceptionHandler(MethodArgumentTypeMismatchException.class)
 	protected ResponseEntity<Object> handleMethodArgumentTypeMismatch(MethodArgumentTypeMismatchException ex,
@@ -234,7 +234,7 @@ public class GoGasExceptionHandler extends ResponseEntityExceptionHandler {
 	 * Handle Exception, handle generic Exception.class
 	 *
 	 * @param ex the Exception
-	 * @return the GoGasResponse object
+	 * @return the ConnectGasResponse object
 	 */
 	@ExceptionHandler(Exception.class)
 	protected ResponseEntity<Object> handleGenericException(Exception ex, WebRequest request) {
@@ -249,7 +249,7 @@ public class GoGasExceptionHandler extends ResponseEntityExceptionHandler {
 	 * Handle Exception, handle generic Exception.class
 	 *
 	 * @param ex the Exception
-	 * @return the GoGasResponse object
+	 * @return the ConnectGasResponse object
 	 */
 	@ExceptionHandler(AccessDeniedException.class)
 	protected ResponseEntity<Object> handleAccessDeniedException(AccessDeniedException ex, WebRequest request) {

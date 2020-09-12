@@ -9,11 +9,11 @@
 		<version>2.3.3.RELEASE</version>
 		<relativePath /> <!-- lookup parent from repository -->
 	</parent>
-	<groupId>com.gogas.app</groupId>
+	<groupId>com.connectgas.app</groupId>
 	<artifactId>connect-gas-service</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>connect-gas-service</name>
-	<description>Demo project for Spring Boot</description>
+	<description>ConnectGas App backend Service</description>
 
 	<properties>
 		<java.version>1.8</java.version>

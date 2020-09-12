@@ -9,12 +9,10 @@ import org.springframework.messaging.simp.stomp.StompCommand;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.web.socket.messaging.SessionSubscribeEvent;
 
-import com.connectgas.app.exception.GoGasExceptionHandler;
-
 @Configuration
 public class StompSubscriberConfig implements ApplicationListener<SessionSubscribeEvent> {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(GoGasExceptionHandler.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(StompSubscriberConfig.class);
 
 	@Override
 	public void onApplicationEvent(SessionSubscribeEvent event) {

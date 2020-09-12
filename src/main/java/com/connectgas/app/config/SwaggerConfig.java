@@ -32,7 +32,7 @@ public class SwaggerConfig {
 
 	private ApiInfo apiInfo() {
 		return new ApiInfo("Go-Gas-Service", "API to manage go-gas users and products", "API TOS", "Terms of service",
-				new Contact("Admin", "admin@gogas", "admin@gogas.co.in"), "License of API", "API license URL",
+				new Contact("Admin", "admin@connectgas", "admin@connectgas.in"), "License of API", "API license URL",
 				Collections.emptyList());
 	}
 
