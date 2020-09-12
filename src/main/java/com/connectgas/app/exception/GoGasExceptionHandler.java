@@ -25,14 +25,13 @@ import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.NoHandlerFoundException;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
-import com.connectgas.app.auth.SecurityServiceImpl;
 import com.connectgas.app.model.dto.ConnectGasResponse;
 
 @Order(Ordered.HIGHEST_PRECEDENCE)
 @ControllerAdvice
 public class GoGasExceptionHandler extends ResponseEntityExceptionHandler {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(SecurityServiceImpl.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(GoGasExceptionHandler.class);
 
 	/**
 	 * Handle ResponseStatusException. Triggered when a 'required' request parameter
@@ -239,7 +238,7 @@ public class GoGasExceptionHandler extends ResponseEntityExceptionHandler {
 	 */
 	@ExceptionHandler(Exception.class)
 	protected ResponseEntity<Object> handleGenericException(Exception ex, WebRequest request) {
-		ex.printStackTrace();
+		LOGGER.error("Exception {}", ex.getLocalizedMessage());
 		ConnectGasResponse apiError = new ConnectGasResponse(HttpStatus.INTERNAL_SERVER_ERROR);
 		apiError.setMessage(ex.getMessage());
 		apiError.setDebugMessage(ex.getMessage());

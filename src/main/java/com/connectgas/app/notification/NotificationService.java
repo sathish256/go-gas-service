@@ -51,16 +51,11 @@ public class NotificationService {
 		if (simpUserRegistry.getUser(user) != null)
 			logger.info("usercount in simpleUserRegistry user sessions {}",
 					simpUserRegistry.getUser(user).getSessions());
-		if (simpUserRegistry.getUser(user) != null && simpUserRegistry.getUser(user).hasSessions()) {
-			logger.info("NotificationService::notify::User has live Session::{}", user);
-			while (!queuedNotifications.isEmpty())
-				messagingTemplate.convertAndSendToUser(user, "/queue/notify", queuedNotifications.poll());
-		} else {
-			logger.info("NotificationService::notify::User does not have live Session::Notification Added to Queue::{}",
-					queuedNotifications.size());
 
-			notificationQueue.put(user, queuedNotifications);
-		}
+		notificationQueue.put(user, queuedNotifications);
+
+		triggerNotifications(user);
+
 	}
 
 	public ConnectGasResponse triggerNotifications(String user) {

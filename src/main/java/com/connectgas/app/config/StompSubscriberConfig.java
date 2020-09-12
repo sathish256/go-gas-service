@@ -1,15 +1,25 @@
 package com.connectgas.app.config;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationListener;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.simp.stomp.StompCommand;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.web.socket.messaging.SessionSubscribeEvent;
 
+import com.connectgas.app.exception.GoGasExceptionHandler;
+
+@Configuration
 public class StompSubscriberConfig implements ApplicationListener<SessionSubscribeEvent> {
+
+	private static final Logger LOGGER = LoggerFactory.getLogger(GoGasExceptionHandler.class);
 
 	@Override
 	public void onApplicationEvent(SessionSubscribeEvent event) {
+
+		LOGGER.info("Received Event" + event.getTimestamp());
 		Message<byte[]> message = event.getMessage();
 		StompHeaderAccessor accessor = StompHeaderAccessor.wrap(message);
 		StompCommand command = accessor.getCommand();
@@ -20,7 +30,7 @@ public class StompSubscriberConfig implements ApplicationListener<SessionSubscri
 			// Handle subscription event here
 			// e.g. send welcome message to *destination*
 
-			System.out.println("User subscribed" + sessionId + "---" + stompSubscriptionId + "---" + destination);
+			LOGGER.info("User subscribed" + sessionId + "---" + stompSubscriptionId + "---" + destination);
 
 		}
 
@@ -30,7 +40,7 @@ public class StompSubscriberConfig implements ApplicationListener<SessionSubscri
 			String destination = accessor.getDestination();
 			// Handle subscription event here
 			// e.g. send welcome message to *destination*
-			System.out.println("User Disconnected" + sessionId + "---" + stompSubscriptionId + "---" + destination);
+			LOGGER.info("User Disconnected" + sessionId + "---" + stompSubscriptionId + "---" + destination);
 		}
 	}
 
