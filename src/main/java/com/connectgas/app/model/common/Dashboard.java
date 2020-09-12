@@ -2,6 +2,9 @@ package com.connectgas.app.model.common;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.Map;
+
+import com.connectgas.app.model.order.OrderStatus;
 
 public class Dashboard implements Serializable {
 
@@ -10,8 +13,8 @@ public class Dashboard implements Serializable {
 	 */
 	private static final long serialVersionUID = -968263020046623199L;
 
-	private Integer todayOrders;
-	private Integer monthlyOrders;
+	private Map<OrderStatus, Long> todayOrders;
+	private Map<OrderStatus, Long> monthlyOrders;
 	private Double todayAmount;
 	private Double monthlyAmount;
 	private Double totalDuesFromCustomers;
@@ -19,19 +22,19 @@ public class Dashboard implements Serializable {
 
 	private List<ChartDataPoint> chartDataPoints;
 
-	public Integer getTodayOrders() {
+	public Map<OrderStatus, Long> getTodayOrders() {
 		return todayOrders;
 	}
 
-	public void setTodayOrders(Integer todayOrders) {
+	public void setTodayOrders(Map<OrderStatus, Long> todayOrders) {
 		this.todayOrders = todayOrders;
 	}
 
-	public Integer getMonthlyOrders() {
+	public Map<OrderStatus, Long> getMonthlyOrders() {
 		return monthlyOrders;
 	}
 
-	public void setMonthlyOrders(Integer monthlyOrders) {
+	public void setMonthlyOrders(Map<OrderStatus, Long> monthlyOrders) {
 		this.monthlyOrders = monthlyOrders;
 	}
 

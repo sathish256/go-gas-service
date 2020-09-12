@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -53,7 +54,12 @@ public class DashboardService {
 		final LocalDateTime fromDate = LocalDateTime.of(today, midnight);
 		final LocalDateTime toDate = fromDate.plusDays(1);
 
-		Predicate<Order> dailypredicate = o -> o.getOrderStatus().equals(OrderStatus.DELIVERED)
+		List<OrderStatus> allowedStatus = new ArrayList<>();
+		allowedStatus.add(OrderStatus.DELIVERED);
+		allowedStatus.add(OrderStatus.ASSIGNED);
+		allowedStatus.add(OrderStatus.CANCELLED);
+
+		Predicate<Order> dailypredicate = o -> allowedStatus.contains(o.getOrderStatus())
 				&& o.getDeliveryPersonId().equals(modifiedBy) && LocalDateTime.parse(o.getCreatedAt()).isAfter(fromDate)
 				&& LocalDateTime.parse(o.getCreatedAt()).isBefore(toDate);
 
@@ -71,8 +77,8 @@ public class DashboardService {
 				.collect(Collectors.toList());
 
 		Dashboard dashboard = new Dashboard();
-		dashboard.setTodayOrders(todayOrders.size());
-		dashboard.setMonthlyOrders(last30DaysOrders.size());
+		dashboard.setTodayOrders(getOrdersMap(todayOrders));
+		dashboard.setMonthlyOrders(getOrdersMap(last30DaysOrders));
 
 		Double todayAmount = getAmountSummary(todayOrders);
 
@@ -87,6 +93,10 @@ public class DashboardService {
 		return dashboard;
 	}
 
+	private Map<OrderStatus, Long> getOrdersMap(List<Order> todayOrders) {
+		return todayOrders.stream().collect(Collectors.groupingBy(Order::getOrderStatus, Collectors.counting()));
+	}
+
 	public Dashboard getDealerDashboard(String dealer, String modifiedBy) {
 
 		String modifiedByDealerId = userRepository.fetchById(modifiedBy, User.class).map(User::getDealershipId)
@@ -99,8 +109,8 @@ public class DashboardService {
 		final LocalDateTime fromDate = LocalDateTime.of(today, midnight);
 		final LocalDateTime toDate = fromDate.plusDays(1);
 
-		Predicate<Order> dailypredicate = o -> o.getOrderStatus().equals(OrderStatus.DELIVERED)
-				&& o.getDealerId().equals(dealerId) && LocalDateTime.parse(o.getCreatedAt()).isAfter(fromDate)
+		Predicate<Order> dailypredicate = o -> // o.getOrderStatus().equals(OrderStatus.DELIVERED) &&
+		o.getDealerId().equals(dealerId) && LocalDateTime.parse(o.getCreatedAt()).isAfter(fromDate)
 				&& LocalDateTime.parse(o.getCreatedAt()).isBefore(toDate);
 
 		List<Order> todayOrders = orderRepository.findAll(Order.class).stream().filter(dailypredicate)
@@ -108,16 +118,16 @@ public class DashboardService {
 
 		final LocalDateTime before30Days = LocalDateTime.of(today.minusDays(30), midnight);
 
-		Predicate<Order> monthlyPredicate = o -> o.getOrderStatus().equals(OrderStatus.DELIVERED)
-				&& o.getDealerId().equals(dealerId) && LocalDateTime.parse(o.getCreatedAt()).isAfter(before30Days)
+		Predicate<Order> monthlyPredicate = o -> // o.getOrderStatus().equals(OrderStatus.DELIVERED) &&
+		o.getDealerId().equals(dealerId) && LocalDateTime.parse(o.getCreatedAt()).isAfter(before30Days)
 				&& LocalDateTime.parse(o.getCreatedAt()).isBefore(toDate);
 
 		List<Order> last30DaysOrders = orderRepository.findAll(Order.class).stream().filter(monthlyPredicate)
 				.collect(Collectors.toList());
 
 		Dashboard dashboard = new Dashboard();
-		dashboard.setTodayOrders(todayOrders.size());
-		dashboard.setMonthlyOrders(last30DaysOrders.size());
+		dashboard.setTodayOrders(getOrdersMap(todayOrders));
+		dashboard.setMonthlyOrders(getOrdersMap(last30DaysOrders));
 
 		Double todayAmount = getAmountSummary(todayOrders);
 
@@ -162,8 +172,8 @@ public class DashboardService {
 		final LocalDateTime fromDate = LocalDateTime.of(today, midnight);
 		final LocalDateTime toDate = fromDate.plusDays(1);
 
-		Predicate<Order> dailypredicate = o -> o.getOrderStatus().equals(OrderStatus.DELIVERED)
-				&& dealerIdbyCandf.contains(o.getDealerId()) && LocalDateTime.parse(o.getCreatedAt()).isAfter(fromDate)
+		Predicate<Order> dailypredicate = o -> // o.getOrderStatus().equals(OrderStatus.DELIVERED) &&
+		dealerIdbyCandf.contains(o.getDealerId()) && LocalDateTime.parse(o.getCreatedAt()).isAfter(fromDate)
 				&& LocalDateTime.parse(o.getCreatedAt()).isBefore(toDate);
 
 		List<Order> todayOrders = orderRepository.findAll(Order.class).stream().filter(dailypredicate)
@@ -171,17 +181,16 @@ public class DashboardService {
 
 		final LocalDateTime before30Days = LocalDateTime.of(today.minusDays(30), midnight);
 
-		Predicate<Order> monthlyPredicate = o -> o.getOrderStatus().equals(OrderStatus.DELIVERED)
-				&& dealerIdbyCandf.contains(o.getDealerId())
-				&& LocalDateTime.parse(o.getCreatedAt()).isAfter(before30Days)
+		Predicate<Order> monthlyPredicate = o -> // o.getOrderStatus().equals(OrderStatus.DELIVERED) &&
+		dealerIdbyCandf.contains(o.getDealerId()) && LocalDateTime.parse(o.getCreatedAt()).isAfter(before30Days)
 				&& LocalDateTime.parse(o.getCreatedAt()).isBefore(toDate);
 
 		List<Order> last30DaysOrders = orderRepository.findAll(Order.class).stream().filter(monthlyPredicate)
 				.collect(Collectors.toList());
 
 		Dashboard dashboard = new Dashboard();
-		dashboard.setTodayOrders(todayOrders.size());
-		dashboard.setMonthlyOrders(last30DaysOrders.size());
+		dashboard.setTodayOrders(getOrdersMap(todayOrders));
+		dashboard.setMonthlyOrders(getOrdersMap(last30DaysOrders));
 
 		Double todayAmount = getAmountSummary(todayOrders);
 
