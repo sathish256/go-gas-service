@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
+import com.connectgas.app.exception.ConnectGasDataAccessException;
 import com.connectgas.app.model.Dealership;
 import com.connectgas.app.model.common.ChartDataPoint;
 import com.connectgas.app.model.common.Dashboard;
@@ -24,6 +25,7 @@ import com.connectgas.app.model.order.Order;
 import com.connectgas.app.model.order.OrderStatus;
 import com.connectgas.app.model.payment.AccountHolderType;
 import com.connectgas.app.model.payment.PaymentBacklog;
+import com.connectgas.app.model.user.User;
 import com.connectgas.app.repository.SimpleFirestoreRepository;
 
 @Service
@@ -40,6 +42,9 @@ public class DashboardService {
 
 	@Autowired
 	private SimpleFirestoreRepository<Dealership, String> dealerRepository;
+
+	@Autowired
+	private SimpleFirestoreRepository<User, String> userRepository;
 
 	public Dashboard getDeliveryPersonDashboard(String modifiedBy) {
 
@@ -75,7 +80,6 @@ public class DashboardService {
 
 		Double monthlyAmount = getAmountSummary(last30DaysOrders);
 		dashboard.setMonthlyAmount(monthlyAmount);
-		
 
 		List<ChartDataPoint> chartDataPoints = getChartData(last30DaysOrders);
 		dashboard.setChartDataPoints(chartDataPoints);
@@ -83,9 +87,12 @@ public class DashboardService {
 		return dashboard;
 	}
 
-
 	public Dashboard getDealerDashboard(String dealer, String modifiedBy) {
-		final String dealerId = StringUtils.isEmpty(dealer) ? modifiedBy : dealer;
+
+		String modifiedByDealerId = userRepository.fetchById(modifiedBy, User.class).map(User::getDealershipId)
+				.orElseThrow(() -> new ConnectGasDataAccessException("User Not found in the system"));
+
+		final String dealerId = StringUtils.isEmpty(dealer) ? modifiedByDealerId : dealer;
 
 		LocalTime midnight = LocalTime.MIDNIGHT;
 		LocalDate today = LocalDate.now(ZoneId.of("Asia/Kolkata"));
@@ -121,7 +128,6 @@ public class DashboardService {
 
 		Double totalDuesFromCustomers = getTotalDuesFromCustomers(dealerId);
 		dashboard.setTotalDuesFromCustomers(totalDuesFromCustomers);
-		
 
 		List<ChartDataPoint> chartDataPoints = getChartData(last30DaysOrders);
 		dashboard.setChartDataPoints(chartDataPoints);
@@ -143,8 +149,10 @@ public class DashboardService {
 		return totalDuesFromCustomers.stream().mapToDouble(PaymentBacklog::getBacklogAmount).reduce(0, Double::sum);
 	}
 
+	public Dashboard getCandfDashboard(String userId) {
 
-	public Dashboard getCandfDashboard(String candfId) {
+		String candfId = userRepository.fetchById(userId, User.class).map(User::getCandfId)
+				.orElseThrow(() -> new ConnectGasDataAccessException("User Not found in the system"));
 
 		final List<String> dealerIdbyCandf = dealerRepository.findAll(Dealership.class).stream()
 				.filter(c -> c.getCandfId().equals(candfId)).map(Dealership::getId).collect(Collectors.toList());
@@ -199,7 +207,7 @@ public class DashboardService {
 		return todayOrders.stream().mapToDouble(o -> o.getPaymentInfo().getPaidDetails().stream()
 				.mapToDouble(pd -> pd.getAmount()).reduce(0, Double::sum)).reduce(0, Double::sum);
 	}
-	
+
 	private Double getTotalDuesFromDealers(String candfId) {
 
 		final List<String> dealerIdbyCandF = dealerRepository.findAll(Dealership.class).stream()
