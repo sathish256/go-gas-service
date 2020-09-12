@@ -79,37 +79,54 @@ public class OrderLedger implements Serializable {
 	}
 
 	public OrderLedger(Order order) {
-		this.setBillAmount(order.getPaymentInfo().getBillAmount());
+		Double totalAmount = 0.0;
+		String referenceSummary = "";
+		if (order.getPaymentInfo() != null) {
+			this.setBillAmount(order.getPaymentInfo().getBillAmount());
+
+			if (order.getPaymentInfo().getPaidDetails() != null) {
+
+				totalAmount = order.getPaymentInfo().getPaidDetails().stream().mapToDouble(pd -> pd.getAmount())
+						.reduce(0, Double::sum);
+				referenceSummary = order.getPaymentInfo().getPaidDetails().stream().map(pr -> pr.getReference())
+						.collect(Collectors.joining("|"));
+			}
+		}
 		this.setDeliveredProducts(order.getOrderedProducts());
 		this.setReturnedProducts(order.getReturnProducts());
 		this.setOrderCreatedAt(order.getCreatedAt());
-		Double totalAmount = order.getPaymentInfo().getPaidDetails().stream().mapToDouble(pd -> pd.getAmount())
-				.reduce(0, Double::sum);
-		String paymentReference = order.getPaymentInfo().getPaidDetails().stream().map(pr -> pr.getReference())
-				.collect(Collectors.joining("|"));
-		this.setPaymentReference(paymentReference);
+
+		this.setPaymentReference(referenceSummary);
 		this.setPaidAmount(totalAmount);
 		this.setOrderId(order.getId());
 
 	}
 
 	public OrderLedger(PurchaseOrder order) {
-		this.setBillAmount(order.getPaymentInfo().getBillAmount());
+		Double totalAmount = 0.0;
+		String referenceSummary = "";
+		if (order.getPaymentInfo() != null) {
+			this.setBillAmount(order.getPaymentInfo().getBillAmount());
+
+			if (order.getPaymentInfo().getPaidDetails() != null) {
+
+				totalAmount = order.getPaymentInfo().getPaidDetails().stream().mapToDouble(pd -> pd.getAmount())
+						.reduce(0, Double::sum);
+				referenceSummary = order.getPaymentInfo().getPaidDetails().stream().map(pr -> pr.getReference())
+						.collect(Collectors.joining("|"));
+			}
+		}
 		this.setDeliveredProducts(order.getOrderedProducts());
 		this.setReturnedProducts(order.getReturnProducts());
 		this.setOrderCreatedAt(order.getCreatedAt());
-		Double totalAmount = order.getPaymentInfo().getPaidDetails().stream().mapToDouble(pd -> pd.getAmount())
-				.reduce(0, Double::sum);
-		String paymentReference = order.getPaymentInfo().getPaidDetails().stream().map(pr -> pr.getReference())
-				.collect(Collectors.joining("|"));
-		this.setPaymentReference(paymentReference);
+
+		this.setPaymentReference(referenceSummary);
 		this.setPaidAmount(totalAmount);
 		this.setOrderId(order.getId());
-
 	}
-	
+
 	public OrderLedger() {
-		//Default Constructor
+		// Default Constructor
 	}
 
 }
