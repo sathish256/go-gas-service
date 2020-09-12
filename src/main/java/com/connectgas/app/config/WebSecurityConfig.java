@@ -28,7 +28,11 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 	private JwtUserDetailsService jwtUserDetailsService;
 
 	@Autowired
-	private JwtRequestFilter jwtRequestFilter;
+	private JwtTokenUtil jwtTokenUtil;
+
+	/*
+	 * @Autowired private JwtRequestFilter jwtRequestFilter;
+	 */
 
 	@Autowired
 	public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
@@ -56,7 +60,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 				// dont authenticate this particular request
 				.authorizeRequests()
 				.antMatchers("/authenticate", "/register", "/swagger-ui.html", "/v2/api-docs", "/webjars/**",
-						"/swagger-resources/**", "/v1/*/reset-password","/cgnotifications/**","/api/cgnotifications/**")
+						"/swagger-resources/**", "/v1/*/reset-password", "/cgnotifications/**",
+						"/api/cgnotifications/**")
 				.permitAll()
 				// all other requests need to be authenticated
 				.anyRequest().authenticated().and().
@@ -66,12 +71,13 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 				.sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 
 		// Add a filter to validate the tokens with every request
-		httpSecurity.addFilterAfter(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
+		httpSecurity.addFilterAfter(new JwtRequestFilter(jwtUserDetailsService, jwtTokenUtil),
+				UsernamePasswordAuthenticationFilter.class);
 	}
 
 	@Override
 	public void configure(WebSecurity web) throws Exception {
 		web.ignoring().antMatchers("/authenticate", "/register", "/swagger-ui.html", "/v2/api-docs", "/webjars/**",
-				"/swagger-resources/**", "/v1/*/reset-password","/cgnotifications/**","/api/cgnotifications/**");
+				"/swagger-resources/**", "/v1/*/reset-password", "/cgnotifications/**", "/api/cgnotifications/**");
 	}
 }
