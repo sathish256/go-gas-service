@@ -48,8 +48,9 @@ public class NotificationService {
 		logger.info("usercount in simpleUserRegistry count {}", simpUserRegistry.getUserCount());
 
 		logger.info("usercount in simpleUserRegistry users {}", simpUserRegistry.getUsers().toString());
-
-		logger.info("usercount in simpleUserRegistry user sessions {}", simpUserRegistry.getUser(user).getSessions());
+		if (simpUserRegistry.getUser(user) != null)
+			logger.info("usercount in simpleUserRegistry user sessions {}",
+					simpUserRegistry.getUser(user).getSessions());
 		if (simpUserRegistry.getUser(user) != null && simpUserRegistry.getUser(user).hasSessions()) {
 			logger.info("NotificationService::notify::User has live Session::{}", user);
 			while (!queuedNotifications.isEmpty())
