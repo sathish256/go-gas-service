@@ -236,7 +236,7 @@ public class ConnectGasExceptionHandler extends ResponseEntityExceptionHandler {
 	 * @param ex the Exception
 	 * @return the ConnectGasResponse object
 	 */
-	@ExceptionHandler(Exception.class)
+/*	@ExceptionHandler(Exception.class)
 	protected ResponseEntity<Object> handleGenericException(Exception ex, WebRequest request) {
 		LOGGER.error("Exception {}", ex.getLocalizedMessage());
 		ConnectGasResponse apiError = new ConnectGasResponse(HttpStatus.INTERNAL_SERVER_ERROR);
@@ -244,7 +244,7 @@ public class ConnectGasExceptionHandler extends ResponseEntityExceptionHandler {
 		apiError.setDebugMessage(ex.getMessage());
 		return buildResponseEntity(apiError);
 	}
-
+*/
 	/**
 	 * Handle Exception, handle generic Exception.class
 	 *
